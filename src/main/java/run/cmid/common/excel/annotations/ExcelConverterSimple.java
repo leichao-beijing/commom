@@ -42,5 +42,5 @@ public @interface ExcelConverterSimple {
     /**
      * 只有满足fileds内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置
      */
-    FieldGet[] fileds() default {};
+    FieldGet[] fields() default {};
 }

@@ -41,11 +41,7 @@ public class ExcelReadRuntimeException extends RuntimeException {
     @Override
     public String getMessage() {
         if (errorType == ExcelConverterExceptionType.StringIndexOutBounds) {
-            String value = "StringIndexOutBounds 设置异常 getExcelRead 空指针！！";
-            if (fieldDetail.getExcelRead() != null) {
-                value = fieldDetail.getExcelRead().getMax() + "";
-            }
-            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + value;
+            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
         }
         return "第" + row + "行，出现了" + errorType.getTypeName() + " 错误";
     }

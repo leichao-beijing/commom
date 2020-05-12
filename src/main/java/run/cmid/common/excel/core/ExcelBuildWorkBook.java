@@ -32,7 +32,6 @@ import run.cmid.common.io.EnumUtil;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
- * 
  * @author leichao
  */
 public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
@@ -71,7 +70,7 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
 
     /**
      * 构建表内全部内容
-     * 
+     *
      * @throws ConverterExcelException
      */
     public ExcelListResult<T> build() throws ConverterExcelException {
@@ -115,7 +114,7 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
                         ExcelExceptionType.INDEX_ERROR,
                         (qepeat.getQepeatIndex() != -1)
                                 ? " 冲突的行号"
-                                        + (excelListResult.getRusultList().get(qepeat.getQepeatIndex()).getRowmun() + 1)
+                                + (excelListResult.getRusultList().get(qepeat.getQepeatIndex()).getRowmun() + 1)
                                 : "冲突行"));
             }
         }
@@ -126,7 +125,7 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
 
     /**
      * 当所有内容均未匹配时，返回null;
-     * 
+     *
      * @throws ConverterExcelException
      */
     private ExcelResult<T> build(Row row, List<CompareResponse<FieldDetail<T>, String>> list, Class<T> classes) {
@@ -137,9 +136,9 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
             String methodName = "set" + ReflectLcUtils.upperCase(compareResponse.getSrcData().getFieldName());
             FieldDetail<T> fieldDetail = compareResponse.getSrcData();
             Cell cell = row.getCell(compareResponse.getDesIndex());
-            ExcelConverterEntity excelRead = compareResponse.getSrcData().getExcelRead();
+            FieldDetail<T> detail = compareResponse.getSrcData();
             if (cell == null) {
-                if (excelRead.isCheck()) {
+                if (detail.isCheck()) {
                     tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
                     CellAddressAndMessage cellAddressAndMessage = new CellAddressAndMessage(row.getRowNum(),
                             compareResponse.getDesIndex(), ExcelExceptionType.NOT_FIND_CHACK_VALUE, null);
@@ -148,7 +147,7 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
                 continue;
             }
             if (cell.toString().equals(""))
-                if (excelRead.isCheck()) {
+                if (detail.isCheck()) {
                     tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
                     checkErrorList.add(new CellAddressAndMessage(row.getRowNum(), compareResponse.getDesIndex(),
                             ExcelExceptionType.NOT_FIND_CHACK_VALUE, ""));
@@ -157,7 +156,7 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
 
             CellAddressAndMessage cellMessages = cellValueToClass(cell, cell.getCellType(), out, methodName,
                     fieldDetail, cell.getAddress());
-            if (cellMessages.getEx() != ExcelExceptionType.SUCCESS && excelRead.isCheck()) {
+            if (cellMessages.getEx() != ExcelExceptionType.SUCCESS && detail.isCheck()) {
                 tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
                 checkErrorList.add(new CellAddressAndMessage(row.getRowNum(), compareResponse.getDesIndex(),
                         cellMessages.getEx(), cellMessages.getMessage()));
@@ -169,103 +168,103 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
 
     /**
      * 依照cellType内数据类型将其转换成set内参数1的数据类型
-     * 
+     *
      * @param cell             存储数值cell对象
      * @param type             存储判断cell类型的对象
      * @param out              输出的对象的实例
      * @param setFunctionValue set方法的构造名称
      */
     public CellAddressAndMessage cellValueToClass(Cell cell, CellType type, Object out, String setFunctionValue,
-            FieldDetail<T> fieldDetail, CellAddress cellAddress) {
+                                                  FieldDetail<T> fieldDetail, CellAddress cellAddress) {
         Class<?> paramterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
         if (paramterClasses == null)
             return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
                     ExcelExceptionType.NO_FIND_METHOD,
                     ExcelExceptionType.NO_FIND_METHOD.getTypeName() + ": " + setFunctionValue);
         Object value = null;
-        if (fieldDetail.getRangeList().size() != 0) {
-            if (!fieldDetail.getRangeList().contains(cell.toString())) {
+        if (fieldDetail.getRange()!=null&&fieldDetail.getRange().size() != 0) {
+            if (!fieldDetail.getRange().contains(cell.toString())) {
                 return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
                         ExcelExceptionType.ENUM_ERROR, cell + " " + ExcelExceptionType.ENUM_ERROR.getTypeName()
-                                + ",支持范围：" + fieldDetail.getRangeList());
+                        + ",支持范围：" + fieldDetail.getRange());
             }
         }
         if (fieldDetail.getType() == FieldDetailType.LIST)
             paramterClasses = String.class;
         switch (type) {
-        case NUMERIC:
-            if (paramterClasses == String.class)
-                invokeValue(out, setFunctionValue, cell.toString(), fieldDetail);
-            else if (paramterClasses == Date.class)
-                invokeValue(out, setFunctionValue, cell.getDateCellValue(), fieldDetail);
-            else {
-                value = converterRegistry.convert(paramterClasses, cell.getNumericCellValue());
-                invokeValue(out, setFunctionValue, value, fieldDetail);
-            }
-            break;
-        case STRING:
-            String val = cell.toString().trim();
-            if (val.length() > fieldDetail.getExcelRead().getMax()) {
-                return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                        ExcelExceptionType.STRING_OUT_BOUNDS,
-                        cell + " " + ExcelExceptionType.STRING_OUT_BOUNDS.getTypeName() + "，允许最大字符串长度"
-                                + fieldDetail.getExcelRead().getMax());
-            }
-            if (paramterClasses.isEnum()) {
-                value = EnumUtil.isEnumName(paramterClasses, val, fieldDetail.getEnumFileName());
-                if (value == null)
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.ENUM_ERROR, cell + " " + ExcelExceptionType.ENUM_ERROR.getTypeName()
-                                    + ",支持范围：" + EnumUtil.getEnumNames(paramterClasses, fieldDetail.getEnumFileName()));
-            } else {
-                try {
-                    value = converterRegistry.convert(paramterClasses, val);
-                } catch (NumberFormatException e) {
-                    if (fieldDetail.getExcelRead() != null && fieldDetail.getExcelRead().isCheck())
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.NUMBER_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.SUCCESS);
+            case NUMERIC:
+                if (paramterClasses == String.class)
+                    invokeValue(out, setFunctionValue, cell.toString(), fieldDetail);
+                else if (paramterClasses == Date.class)
+                    invokeValue(out, setFunctionValue, cell.getDateCellValue(), fieldDetail);
+                else {
+                    value = converterRegistry.convert(paramterClasses, cell.getNumericCellValue());
+                    invokeValue(out, setFunctionValue, value, fieldDetail);
                 }
-                if (value == null) {
-                    if (fieldDetail.getExcelRead() != null && fieldDetail.getExcelRead().isCheck())
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.DATE_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
+                break;
+            case STRING:
+                String val = cell.toString().trim();
+                if (val.length() > fieldDetail.getMax()) {
                     return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.SUCCESS);
+                            ExcelExceptionType.STRING_OUT_BOUNDS,
+                            cell + " " + ExcelExceptionType.STRING_OUT_BOUNDS.getTypeName() + "，允许最大字符串长度"
+                                    + fieldDetail.getMax());
                 }
-            }
-            invokeValue(out, setFunctionValue, value, fieldDetail);
-            break;
-        case FORMULA:
-            return cellValueToClass(cell, cell.getCachedFormulaResultType(), out, setFunctionValue, fieldDetail,
-                    cellAddress);
-        case BLANK:
-            CellType cellType = cell.getCellType();
-            if (cellRangeMap != null) {
-                CellAddress cellRangeAddress = cellRangeMap.get(cell.getAddress());
-                if (cellRangeAddress == null) {
-                    cellType = CellType.ERROR;
+                if (paramterClasses.isEnum()) {
+                    value = EnumUtil.isEnumName(paramterClasses, val, fieldDetail.getEnumFileName());
+                    if (value == null)
+                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                                ExcelExceptionType.ENUM_ERROR, cell + " " + ExcelExceptionType.ENUM_ERROR.getTypeName()
+                                + ",支持范围：" + EnumUtil.getEnumNames(paramterClasses, fieldDetail.getEnumFileName()));
                 } else {
-                    cell = SheetUtil.getCellWithMerges(cell.getSheet(), cellRangeAddress.getRow(),
-                            cellRangeAddress.getColumn());
-                    if (cell == null)
-                        cellType = CellType.ERROR;
-                    else {
-                        if (cell.getCellType() == CellType.BLANK)
-                            cellType = CellType.ERROR;
-                        else
-                            cellType = cell.getCellType();
+                    try {
+                        value = converterRegistry.convert(paramterClasses, val);
+                    } catch (NumberFormatException e) {
+                        if (fieldDetail.isCheck())
+                            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                                    ExcelExceptionType.NUMBER_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
+                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                                ExcelExceptionType.SUCCESS);
+                    }
+                    if (value == null) {
+                        if (fieldDetail.isCheck())
+                            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                                    ExcelExceptionType.DATE_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
+                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                                ExcelExceptionType.SUCCESS);
                     }
                 }
-            } else {
-                cellType = CellType.ERROR;
-            }
-            return cellValueToClass(cell, cellType, out, setFunctionValue, fieldDetail, cellAddress);
-        default:
-            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                    ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE, cell + " "
-                            + ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE.getTypeName() + " : " + type);
+                invokeValue(out, setFunctionValue, value, fieldDetail);
+                break;
+            case FORMULA:
+                return cellValueToClass(cell, cell.getCachedFormulaResultType(), out, setFunctionValue, fieldDetail,
+                        cellAddress);
+            case BLANK:
+                CellType cellType = cell.getCellType();
+                if (cellRangeMap != null) {
+                    CellAddress cellRangeAddress = cellRangeMap.get(cell.getAddress());
+                    if (cellRangeAddress == null) {
+                        cellType = CellType.ERROR;
+                    } else {
+                        cell = SheetUtil.getCellWithMerges(cell.getSheet(), cellRangeAddress.getRow(),
+                                cellRangeAddress.getColumn());
+                        if (cell == null)
+                            cellType = CellType.ERROR;
+                        else {
+                            if (cell.getCellType() == CellType.BLANK)
+                                cellType = CellType.ERROR;
+                            else
+                                cellType = cell.getCellType();
+                        }
+                    }
+                } else {
+                    cellType = CellType.ERROR;
+                }
+                return cellValueToClass(cell, cellType, out, setFunctionValue, fieldDetail, cellAddress);
+            default:
+                return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                        ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE, cell + " "
+                        + ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE.getTypeName() + " : " + type);
         }
         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
     }

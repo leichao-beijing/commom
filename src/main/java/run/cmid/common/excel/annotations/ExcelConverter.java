@@ -14,22 +14,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ExcelConverter {
-//    String[] value() default {};
-//
-//    /**
-//     * 只验证string类型数据<br>
-//     * check=true时，range不匹配时，抛出异常。<br>
-//     * range() ={}或false时，不匹配时，不做赋值操作。
-//     **/
-//    String[] range() default {};
-//
-//    ExcelReadType model() default ExcelReadType.EQUALS;
-//
-//    /**
-//     * 当读取对象为枚举对象时，识别该参数。存在时，直接调用参数值的返回值。不存在时，读取枚举对象名称
-//     */
-//    String enumGetValueMethodName() default "";
-    
+    /**
+     * 只验证string类型数据<br>
+     * check=true时，range不匹配时，抛出异常。<br>
+     * range() ={}或false时，不匹配时，不做赋值操作。
+     **/
+    String[] range() default {};
     boolean check() default false;
 
     /**

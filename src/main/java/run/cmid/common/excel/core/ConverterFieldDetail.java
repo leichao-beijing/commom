@@ -22,7 +22,6 @@ import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.excel.model.to.FindSheetModel;
 
 /**
- * 
  * @author leichao
  */
 public class ConverterFieldDetail {
@@ -31,34 +30,38 @@ public class ConverterFieldDetail {
         Field[] fields = ReflectUtil.getFields(classes);
         FieldDetail<T> fieldDetail = null;
         for (Field field : fields) {
-            if (field.isAnnotationPresent(ExcelConverter.class)) {
-                fieldDetail = new FieldDetail<T>(field, classes, field.getAnnotation(JsonFormat.class),
-                        field.getAnnotation(ExcelConverter.class), field.getAnnotation(TableName.class),
-                        field.getAnnotation(TableNames.class));
-                if (fieldDetail.isState(excelHeadModel))
-                    list.add(fieldDetail);
-                continue;
-            }
-             if (field.isAnnotationPresent(ExcelConverterList.class)) {
-                ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
-                ExcelConverterSimple[] values = excelConverterStringList.value();
-                for (int i = 0; i < values.length; i++) {
-                    fieldDetail = new FieldDetail<T>(field, classes, field.getAnnotation(JsonFormat.class), values[i],
-                            i);
-                    if (fieldDetail.isState(excelHeadModel))
-                        list.add(fieldDetail);
-                }
-                continue;
-            }
-
-            fieldDetail = new FieldDetail<T>(field, classes, field.getAnnotation(JsonFormat.class),
-                    field.getAnnotation(ExcelConverter.class));
-            if (fieldDetail.isState(excelHeadModel)) {
+            JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
+            TableName name = field.getAnnotation(TableName.class);
+            TableNames names = field.getAnnotation(TableNames.class);
+            ExcelConverter excelConverter = field.getAnnotation(ExcelConverter.class);
+            ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
+            if (name != null && names != null)
+                throw new NullPointerException("TableNames and TableName Override");
+            if(name!=null){
+                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, name.model(), name.values());
                 list.add(fieldDetail);
                 continue;
             }
-            throw new ConverterFieldException(FieldExceptionType.NOT_SUPPORT_FIELD_TYPE)
-                    .setMessage("fieldType:" + field.getType().getName() + ",fieldName:" + field.getName());
+            if(names!=null){
+                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, names.model(), names.values());
+                list.add(fieldDetail);
+                continue;
+            }
+            if(excelConverterStringList!=null){
+                ExcelConverterSimple[] values = excelConverterStringList.value();
+                if(values.length==0){
+                    throw new NullPointerException("ExcelConverterList no data");
+                }
+                for (int i = 0; i < values.length; i++) {
+                    list.add(new FieldDetail<T>(field, classes, jsonFormat, values[i],
+                            i));
+                }
+                continue;
+            }
+            if (excelHeadModel.isSkipNoAnnotationField())
+                continue;
+            fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter);
+            list.add(fieldDetail);
         }
         return list;
 
@@ -96,6 +99,7 @@ public class ConverterFieldDetail {
 
     public static final Set<Class<?>> SupportClassesList = new HashSet<Class<?>>() {
         private static final long serialVersionUID = 1L;
+
         {
             add(String.class);
 

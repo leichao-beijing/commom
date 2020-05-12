@@ -27,7 +27,6 @@ import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.excel.plugins.SheetUtils;
 
 /**
- * 
  * @author leichao
  */
 
@@ -50,16 +49,16 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
         this(workbookInfo, null, createFieldDetail(clazz), clazz);
     }
 
-    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetname, Class<T> clazz) throws IOException {
-        this(workbookInfo, sheetname, createFieldDetail(clazz), clazz);
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Class<T> clazz) throws IOException {
+        this(workbookInfo, sheetName, createFieldDetail(clazz), clazz);
     }
 
-    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetname, List<FieldDetail<T>> list,
-            Class<T> clazz) {
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, List<FieldDetail<T>> list,
+                                 Class<T> clazz) {
         super(clazz);
         this.workbookInfo = workbookInfo;
-        if (sheetname != null)
-            setSheetName(sheetname);
+        if (sheetName != null)
+            setSheetName(sheetName);
         headAndFieldDataList();
     }
 
@@ -102,9 +101,7 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
      */
     private void headAndFieldDataList() {
         for (FieldDetail<T> t : getList()) {
-            if (t.getExcelRead() != null) {
-                headNames.add(t.getExcelRead().getList().get(0));
-            }
+            headNames.add(t.getMatchValue());
         }
     }
 

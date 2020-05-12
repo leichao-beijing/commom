@@ -13,11 +13,11 @@ import run.cmid.common.excel.model.eumns.ExcelReadType;
  * @author leichao
  * @date 2020-04-29 05:50:09
  */
-@Target({ ElementType.TYPE })
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TableName {
-    String value();
+    String[] values();
     
     /**
      * 当读取对象为枚举对象时，识别该参数。存在时，直接调用参数值的返回值。不存在时，读取枚举对象名称

@@ -110,9 +110,9 @@ public class FindWorkbookMatchSheet<T> {
         CompareResponseAndErrorList<FieldDetail<T>, String, ConverterExcelException> list = Compares
                 .toListsLocationTagToErrorList(src, des, (s, d) -> {
                     CompareResponse<String, String> response = null;
-                    ExcelConverterEntity excelRead = s.getValue().getExcelRead();
-                    if (excelRead.getModel() == ExcelReadType.EQUALS) {
-                        response = Compares.toList(d.getValue(), d.getRowmun().intValue(), excelRead.getList(),
+                    FieldDetail<T> detail = s.getValue();
+                    if (detail.getModel() == ExcelReadType.EQUALS) {
+                        response = Compares.toList(d.getValue(), d.getRowmun().intValue(), detail.getValues(),
                                 (tag, value) -> {
                                     if (d.getValue().equals(value)) {
                                         return true;
@@ -120,8 +120,8 @@ public class FindWorkbookMatchSheet<T> {
                                     return false;
                                 });
                     }
-                    if (excelRead.getModel() == ExcelReadType.INCLUDE) {
-                        response = Compares.toList(d.getValue(), d.getRowmun().intValue(), excelRead.getList(),
+                    if (detail.getModel() == ExcelReadType.INCLUDE) {
+                        response = Compares.toList(d.getValue(), d.getRowmun().intValue(), detail.getValues(),
                                 (tag, value) -> {
                                     if (d.getValue().indexOf(value) != -1) {
                                         return true;
@@ -134,9 +134,9 @@ public class FindWorkbookMatchSheet<T> {
                     }
                     return false;
                 }, (e) -> {
-                    if (e.getValue().getValue().getExcelRead().isCheck()) {
+                    if (e.getValue().getValue().isCheck()) {
                         return new ConverterExcelException(ExcelExceptionType.NOT_FIND_CHECK_COLUMN)
-                                .setMessage(e.getValue().getValue().getExcelRead().getList().toString());
+                                .setMessage(e.getValue().getValue().getValues().toString());
                     }
                     return null;
                 });

@@ -13,7 +13,7 @@ import run.cmid.common.excel.model.eumns.ExcelReadType;
  * @author leichao
  * @date 2020-04-29 05:50:09
  */
-@Target({ ElementType.TYPE })
+@Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TableNames {
