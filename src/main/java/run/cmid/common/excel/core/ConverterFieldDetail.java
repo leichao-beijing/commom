@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmid.common.excel.annotations.ExcelConverter;
 import run.cmid.common.excel.annotations.ExcelConverterList;
+import run.cmid.common.excel.annotations.ExcelConverterSimple;
+import run.cmid.common.excel.annotations.TableName;
+import run.cmid.common.excel.annotations.TableNames;
 import run.cmid.common.excel.exception.ConverterFieldException;
 import run.cmid.common.excel.model.FieldDetail;
 import run.cmid.common.excel.model.eumns.FieldExceptionType;
@@ -30,15 +33,15 @@ public class ConverterFieldDetail {
         for (Field field : fields) {
             if (field.isAnnotationPresent(ExcelConverter.class)) {
                 fieldDetail = new FieldDetail<T>(field, classes, field.getAnnotation(JsonFormat.class),
-                        field.getAnnotation(ExcelConverter.class));
+                        field.getAnnotation(ExcelConverter.class), field.getAnnotation(TableName.class),
+                        field.getAnnotation(TableNames.class));
                 if (fieldDetail.isState(excelHeadModel))
                     list.add(fieldDetail);
                 continue;
             }
-
-            if (field.isAnnotationPresent(ExcelConverterList.class)) {
+             if (field.isAnnotationPresent(ExcelConverterList.class)) {
                 ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
-                ExcelConverter[] values = excelConverterStringList.value();
+                ExcelConverterSimple[] values = excelConverterStringList.value();
                 for (int i = 0; i < values.length; i++) {
                     fieldDetail = new FieldDetail<T>(field, classes, field.getAnnotation(JsonFormat.class), values[i],
                             i);

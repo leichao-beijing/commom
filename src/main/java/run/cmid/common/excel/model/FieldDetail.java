@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.ToString;
 import run.cmid.common.excel.annotations.ExcelConverter;
+import run.cmid.common.excel.annotations.ExcelConverterSimple;
+import run.cmid.common.excel.annotations.TableName;
+import run.cmid.common.excel.annotations.TableNames;
 import run.cmid.common.excel.core.ConverterFieldDetail;
 import run.cmid.common.excel.exception.ConverterFieldException;
 import run.cmid.common.excel.model.entity.ExcelConverterEntity;
@@ -26,17 +29,11 @@ import run.cmid.common.utils.ReflectLcUtils;
 @Getter
 @ToString
 public class FieldDetail<T> {
-    public FieldDetail(Field field, Class<?> classType, JsonFormat jsonFormat, ExcelConverter excelConverter) {
+    private FieldDetail(Field field, Class<?> classType, JsonFormat jsonFormat) {
         this.jsonFormat = jsonFormat;
-        this.excelConverter = excelConverter;
-        rangeList = Arrays.asList(excelConverter.range());
         this.field = field;
         this.fieldName = field.getName();
         this.classType = classType;
-        this.index = 0;
-        this.type = FieldDetailType.SINGLE;
-        this.excelRead = new ExcelConverterEntity(excelConverter);
-        this.enumFileName = excelConverter.enumGetValueMethodName();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -45,8 +42,35 @@ public class FieldDetail<T> {
     }
 
     public FieldDetail(Field field, Class<?> classType, JsonFormat jsonFormat, ExcelConverter excelConverter,
+            TableName name, TableNames names) {
+        this(field, classType, jsonFormat);
+        this.excelConverter = excelConverter;
+        this.index = 0;
+        this.type = FieldDetailType.SINGLE;
+
+        if (names != null)
+            rangeList = Arrays.asList(names.values());
+        else
+            rangeList = null;
+
+        if (name == null && names == null)
+            throw new NullPointerException("@TableName or @TableNames not Enable");
+        if (name != null) {
+            this.enumFileName = name.enumGetValueMethodName();
+            this.excelRead = new ExcelConverterEntity(excelConverter, name.model(), name.value());
+            return;
+        }
+        if (names != null) {
+            this.enumFileName = names.enumGetValueMethodName();
+            this.excelRead = new ExcelConverterEntity(excelConverter, names.model(), names.values());
+            return;
+        }
+    }
+
+    public FieldDetail(Field field, Class<?> classType, JsonFormat jsonFormat, ExcelConverterSimple excelConverters,
             int index) {
-        this(field, classType, jsonFormat, excelConverter);
+        this(field, classType, jsonFormat);
+        this.excelConverters = excelConverters;
         this.type = FieldDetailType.LIST;
         this.index = index;
         if (!ConverterFieldDetail.IsInterface(field.getType(), List.class)) {
@@ -67,17 +91,18 @@ public class FieldDetail<T> {
         return true;
     }
 
-    private final ExcelConverter excelConverter;
-    private final JsonFormat jsonFormat;
-    private final Field field;
-    private final Class<?> classType;
-    private final List<String> rangeList;
+    private ExcelConverterSimple excelConverters;
+    private ExcelConverter excelConverter;
+    private JsonFormat jsonFormat;
+    private Field field;
+    private Class<?> classType;
+    private List<String> rangeList;
     private int index;
     private FieldDetailType type;
     private String matchValue;
     private final String fieldName;
     private String enumFileName = "";
     private String enumTypeNameFiledValue = "";
-    private final ExcelConverterEntity excelRead;
+    private ExcelConverterEntity excelRead;
     // private boolean state = false;
 }

@@ -34,7 +34,7 @@ public class ComputeTest {
     @ComputeMethod("v1*v2")
     private Double v3;
 
-    @ComputeMethod("computs.v11*computs.v12")
+    @ComputeMethod("computes.v11*computes.v12")
     private Double v4;
 
     @ComputeMethodFieldName("compute")
@@ -43,7 +43,7 @@ public class ComputeTest {
     @ComputeMethodFieldName("compute")
     private Double v6;
 
-    private String compute = "computs.v11*computs.v12";
+    private String compute = "computes.v11*computes.v12";
 
     private Compute computes = new Compute();
 }

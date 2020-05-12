@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ExcelConverterList {
-    ExcelConverter[] value();
+    ExcelConverterSimple[] value();
 }

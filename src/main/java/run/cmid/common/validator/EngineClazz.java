@@ -18,29 +18,27 @@ import run.cmid.common.utils.SpotPath;
  * @author leichao
  * @date 2020-05-01 02:52:02
  */
-public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1>,RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1,RETURN2>>
+public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1>>
         implements FindSpotPath<RETURN1> {
     private final OverflowUtils<SpotPath> overflow;
     @Getter
     private final Map<SpotPath, RETURN1> fieldMap = new HashedMap<SpotPath, RETURN1>();
     private boolean loopState = true;
     private final FUN1 funClazz;
-    private final FUN2 funObject;
 
     /**
      * @param clazz     需要分析的class类
      * @param loopState 是否递归解析下位class对象 默认进行递归
      */
-    public EngineClazz(Class<T> clazz, FUN1 funClazz, FUN2 funObject, boolean loopState) {
+    public EngineClazz(Class<T> clazz, FUN1 funClazz,  boolean loopState) {
         this.loopState = loopState;
         overflow = new OverflowUtils<SpotPath>();
         this.funClazz = funClazz;
-        this.funObject = funObject;
         analysis(clazz);
     }
 
-    public EngineClazz(Class<T> clazz, FUN1 funClazz, FUN2 funObject) {
-        this(clazz, funClazz, funObject, true);
+    public EngineClazz(Class<T> clazz, FUN1 funClazz) {
+        this(clazz, funClazz,  true);
     }
 
     private void analysis(Class<T> clazz) {
@@ -82,7 +80,7 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
         return fieldMap.get(path);
     }
 
-    public EngineObject<T, RETURN1,RETURN2, FUN2> engineObjcet(T t) {
+    public<RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1,RETURN2>> EngineObject<T, RETURN1,RETURN2, FUN2> engineObjcet(T t,FUN2 funObject) {
         return new EngineObject<T, RETURN1,RETURN2, FUN2>(t, fieldMap, funObject);
     }
 

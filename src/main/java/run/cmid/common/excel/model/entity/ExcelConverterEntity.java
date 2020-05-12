@@ -13,14 +13,20 @@ import run.cmid.common.excel.model.eumns.ExcelReadType;
  */
 @Getter
 public class ExcelConverterEntity {
-    public ExcelConverterEntity(ExcelConverter excelConverter) {
-        list = Arrays.asList(excelConverter.value());
-        check = excelConverter.check();
-        max = excelConverter.max();
-        model = excelConverter.model();
+    public ExcelConverterEntity(ExcelConverter excelConverter, ExcelReadType model, String value) {
+        this(excelConverter, model);
+        list = Arrays.asList(value);
     }
 
-    public ExcelConverterEntity() {
+    public ExcelConverterEntity(ExcelConverter excelConverter, ExcelReadType model, String[] values) {
+        this(excelConverter, model);
+        list = Arrays.asList(values);
+    }
+
+    public ExcelConverterEntity(ExcelConverter excelConverter, ExcelReadType model) {
+        check = excelConverter.check();
+        max = excelConverter.max();
+        this.model = model;
     }
 
     private List<String> list;
