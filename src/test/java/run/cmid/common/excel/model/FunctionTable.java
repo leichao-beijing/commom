@@ -3,7 +3,6 @@ package run.cmid.common.excel.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmid.common.excel.annotations.ExcelConverter;
 
 @ToString
 @Getter

@@ -15,9 +15,7 @@ import run.cmid.common.excel.annotations.ExcelConverterList;
 import run.cmid.common.excel.annotations.ExcelConverterSimple;
 import run.cmid.common.excel.annotations.TableName;
 import run.cmid.common.excel.annotations.TableNames;
-import run.cmid.common.excel.exception.ConverterFieldException;
 import run.cmid.common.excel.model.FieldDetail;
-import run.cmid.common.excel.model.eumns.FieldExceptionType;
 import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.excel.model.to.FindSheetModel;
 
@@ -25,11 +23,16 @@ import run.cmid.common.excel.model.to.FindSheetModel;
  * @author leichao
  */
 public class ConverterFieldDetail {
-    public static <T> List<FieldDetail<T>> toList(Class<T> classes, ExcelHeadModel excelHeadModel) {
+    public static <T> List<FieldDetail<T>> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
+            List<String> indexes) {
         LinkedList<FieldDetail<T>> list = new LinkedList<FieldDetail<T>>();
         Field[] fields = ReflectUtil.getFields(classes);
         FieldDetail<T> fieldDetail = null;
+        boolean check = false;
         for (Field field : fields) {
+            check = false;
+            if (indexes!=null&&indexes.contains(field.getName()))
+                check = true;
             JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
             TableName name = field.getAnnotation(TableName.class);
             TableNames names = field.getAnnotation(TableNames.class);
@@ -37,30 +40,40 @@ public class ConverterFieldDetail {
             ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
             if (name != null && names != null)
                 throw new NullPointerException("TableNames and TableName Override");
-            if(name!=null){
-                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, name.model(), name.values());
+            if (name != null) {
+                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, name.model(),
+                        name.values());
+                if (check)
+                    fieldDetail.setCheck(true);
                 list.add(fieldDetail);
                 continue;
             }
-            if(names!=null){
-                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, names.model(), names.values());
+            if (names != null) {
+                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, names.model(),
+                        names.values());
+                if (check)
+                    fieldDetail.setCheck(true);
                 list.add(fieldDetail);
                 continue;
             }
-            if(excelConverterStringList!=null){
+            if (excelConverterStringList != null) {
                 ExcelConverterSimple[] values = excelConverterStringList.value();
-                if(values.length==0){
+                if (values.length == 0) {
                     throw new NullPointerException("ExcelConverterList no data");
                 }
                 for (int i = 0; i < values.length; i++) {
-                    list.add(new FieldDetail<T>(field, classes, jsonFormat, values[i],
-                            i));
+                    fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, values[i], i);
+                    if (check)
+                        fieldDetail.setCheck(true);
+                    list.add(fieldDetail);
                 }
                 continue;
             }
             if (excelHeadModel.isSkipNoAnnotationField())
                 continue;
             fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter);
+            if (check)
+                fieldDetail.setCheck(true);
             list.add(fieldDetail);
         }
         return list;
@@ -79,7 +92,7 @@ public class ConverterFieldDetail {
     }
 
     public static <T> FindSheetModel<T> toFindModel(Class<T> classes, ExcelHeadModel excelHeadModel) {
-        return new FindSheetModel<T>(toList(classes, excelHeadModel));
+        return new FindSheetModel<T>(toList(classes, excelHeadModel, null));
     }
 
     /**

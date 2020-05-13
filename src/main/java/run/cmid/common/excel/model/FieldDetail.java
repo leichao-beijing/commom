@@ -8,14 +8,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import run.cmid.common.excel.annotations.*;
-import run.cmid.common.excel.core.ConverterFieldDetail;
-import run.cmid.common.excel.exception.ConverterFieldException;
+import run.cmid.common.excel.annotations.ExcelConverter;
+import run.cmid.common.excel.annotations.ExcelConverterSimple;
+import run.cmid.common.excel.annotations.FieldGet;
 import run.cmid.common.excel.model.eumns.ExcelReadType;
 import run.cmid.common.excel.model.eumns.FieldDetailType;
-import run.cmid.common.excel.model.eumns.FieldExceptionType;
-import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
@@ -34,17 +33,17 @@ public class FieldDetail<T> {
         this.index = 0;
         this.type = FieldDetailType.SINGLE;
         this.model = ExcelReadType.EQUALS;
-
+        this.rangeMode = ExcelReadType.EQUALS;
         if (excelConverter != null) {
             this.max = excelConverter.max();
             this.check = excelConverter.check();
             this.fieldGet = excelConverter.fileds();
-            this.range=Arrays.asList(excelConverter.range());
+            this.range = Arrays.asList(excelConverter.range());
         } else {
             this.max = 100;
             this.check = false;
             this.fieldGet = null;
-            this.range=null;
+            this.range = null;
         }
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
@@ -53,7 +52,8 @@ public class FieldDetail<T> {
         }
     }
 
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ExcelConverter excelConverter, ExcelReadType model, String... values) {
+    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ExcelConverter excelConverter,
+            ExcelReadType model, String... values) {
         this.jsonFormat = jsonFormat;
         this.field = field;
         this.fieldName = field.getName();
@@ -66,12 +66,14 @@ public class FieldDetail<T> {
             this.max = excelConverter.max();
             this.check = excelConverter.check();
             this.fieldGet = excelConverter.fileds();
-            this.range=Arrays.asList(excelConverter.range());
+            this.range = Arrays.asList(excelConverter.range());
+            this.rangeMode = excelConverter.rangeMode();
         } else {
             this.max = 100;
             this.check = false;
             this.fieldGet = null;
-            this.range=null;
+            this.range = null;
+            this.rangeMode = ExcelReadType.EQUALS;
         }
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
@@ -80,7 +82,8 @@ public class FieldDetail<T> {
         }
     }
 
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ExcelConverterSimple excelConverterSimple, int index) {
+    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat,
+            ExcelConverterSimple excelConverterSimple, int index) {
         this.jsonFormat = jsonFormat;
         this.field = field;
         this.fieldName = field.getName();
@@ -88,12 +91,14 @@ public class FieldDetail<T> {
         this.index = index;
         this.type = FieldDetailType.SINGLE;
 
+        this.rangeMode = excelConverterSimple.rangeMode();
         this.model = excelConverterSimple.model();
         values = Arrays.asList(excelConverterSimple.value());
         range = Arrays.asList(excelConverterSimple.range());
         this.max = excelConverterSimple.max();
         this.check = excelConverterSimple.check();
         this.fieldGet = excelConverterSimple.fields();
+
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -110,11 +115,12 @@ public class FieldDetail<T> {
     private final String fieldName;
     private String enumFileName = "";
     private String enumTypeNameFiledValue = "";
-    //private ExcelConverterEntity excelRead;
     private final List<String> values;
     private final List<String> range;
+    private final ExcelReadType rangeMode;
     private final ExcelReadType model;
-    private final boolean check;
+    @Setter
+    private  boolean check;
     private final int max;
     private final FieldGet[] fieldGet;
 }

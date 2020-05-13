@@ -13,11 +13,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.CompareResponse;
 import run.cmid.common.compare.model.LocationTag;
+import run.cmid.common.excel.exception.ConverterExcelConfigException;
 import run.cmid.common.excel.exception.ConverterExcelException;
 import run.cmid.common.excel.model.FieldDetail;
 import run.cmid.common.excel.model.SheetModel;
 import run.cmid.common.excel.model.entity.CompareResponseAndErrorList;
-import run.cmid.common.excel.model.entity.ExcelConverterEntity;
+import run.cmid.common.excel.model.eumns.ConfigErrorType;
 import run.cmid.common.excel.model.eumns.ExcelExceptionType;
 import run.cmid.common.excel.model.eumns.ExcelReadType;
 import run.cmid.common.excel.model.to.ExcelHeadModel;
@@ -128,6 +129,9 @@ public class FindWorkbookMatchSheet<T> {
                                     }
                                     return false;
                                 });
+                    }
+                    if (detail.getModel() == ExcelReadType.NO_EQUALS || detail.getModel() == ExcelReadType.NO_INCLUDE) {
+                      throw  new ConverterExcelConfigException(ConfigErrorType.NO_SUPPORT_ENUM_YYPE).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
                     }
                     if (response != null) {
                         return true;

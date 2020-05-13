@@ -1,20 +1,17 @@
 package run.cmid.common.excel;
 
-  import cn.hutool.poi.excel.WorkbookUtil;
-  import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-  import org.apache.poi.ss.usermodel.Workbook;
-  import org.junit.Test;
-  import run.cmid.common.excel.core.ExcelBuild;
-  import run.cmid.common.excel.core.ExcelBuildings;
-  import run.cmid.common.excel.exception.ConverterExcelException;
-  import run.cmid.common.excel.model.DemandTable;
-  import run.cmid.common.excel.model.entity.ExcelListResult;
-
-  import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+  import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Test;
+
+import run.cmid.common.excel.core.ExcelBuild;
+import run.cmid.common.excel.core.ExcelBuildings;
+import run.cmid.common.excel.exception.ConverterExcelException;
+import run.cmid.common.excel.model.DemandTable;
+import run.cmid.common.excel.model.entity.ExcelListResult;
 
 /**
  * @author leichao
@@ -29,7 +26,13 @@ public class ExcelTest {
         Workbook  workbook =new HSSFWorkbook(ras);
         ExcelBuild<DemandTable> e = ee.find(workbook);
         ExcelListResult<DemandTable> result = e.build();
-
+        
+        result.getErrorType().forEach((ss)->{
+            System.err.println(ss);
+        });
+        result.getCellErrorList().forEach((value)->{
+            System.err.println(value.getMessage());
+        });
         result.getRusultList().forEach((var)->{
             System.out.println(var.getValue());
         });

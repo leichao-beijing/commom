@@ -48,8 +48,8 @@ public class Compares {
     /**
      * 将list内重复数据和重复数据的对象位置索引返回list。重复数据的对象也写入List中，但QepeatResponse.qepeatIndex=-1
      */
-    public static <S, X1 extends Throwable> List<QepeatResponse> repeatDataAll(List<S> s1, Function<S, String> fun)
-            throws X1 {
+    public static <S> List<QepeatResponse> repeatDataAll(List<S> s1, Function<S, String> fun
+           )  {
         List<QepeatResponse> qepeatList = new ArrayList<QepeatResponse>();
         Map<String, Integer> map = new HashMap<String, Integer>();
         int size = s1.size();
@@ -260,7 +260,7 @@ public class Compares {
     }
 
     /**
-     * 将数据转换成带状态标记的数据 
+     * 将数据转换成带状态标记的数据
      * 
      * @param <S1>        原始数据类型
      * @param <D1>        目标数据类型
@@ -271,6 +271,26 @@ public class Compares {
      * @return 带状态标记的数据
      */
     public static <S1, D1> CompareResponse<S1, D1> toList(S1 s1, int srcIndex, List<D1> deses,
+            BiFunction<Integer, D1, Boolean> desFunction) {
+        for (int i = 0; i < deses.size(); i++) {
+            if (desFunction.apply(i, deses.get(i)))
+                return new CompareResponse<S1, D1>(srcIndex, i, s1, deses.get(i));
+        }
+        return null;
+    }
+
+    /**
+     * 将数据转换成带状态标记的数据 数据必须全部匹配，失败将会返回无法匹配的目标数据列表
+     * 
+     * @param <S1>        原始数据类型
+     * @param <D1>        目标数据类型
+     * @param s1          匹配原始单数据
+     * @param srcIndex    sl 数据索引为止，生成CompareResponse对象需要
+     * @param deses       目标数据List LocationTag 带有位置数据的参数
+     * @param desFunction 回调函数返回true时为匹配到的数据
+     * @return 带状态标记的数据
+     */
+    public static <S1, D1> CompareResponse<S1, D1> toListAll(S1 s1, int srcIndex, List<D1> deses,
             BiFunction<Integer, D1, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))

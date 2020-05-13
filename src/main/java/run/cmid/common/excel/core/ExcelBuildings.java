@@ -56,7 +56,11 @@ public class ExcelBuildings<T> {
         indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
         sheetName = head.sheetName();
-        list = ConverterFieldDetail.toList(clazz, headModel);
+        List<String> values = new ArrayList<String>();
+        for (List<String> index : indexes) {
+            values.addAll(index);
+        }
+        list = ConverterFieldDetail.toList(clazz, headModel, values);
     }
 
     /**
