@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 import run.cmid.common.excel.annotations.ExcelConverter;
 import run.cmid.common.excel.annotations.ExcelConverterSimple;
-import run.cmid.common.excel.annotations.FieldGet;
+import run.cmid.common.excel.annotations.Method;
 import run.cmid.common.excel.model.eumns.ExcelReadType;
 import run.cmid.common.excel.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
@@ -37,12 +37,12 @@ public class FieldDetail<T> {
         if (excelConverter != null) {
             this.max = excelConverter.max();
             this.check = excelConverter.check();
-            this.fieldGet = excelConverter.fileds();
+            this.methods = excelConverter.methods();
             this.range = Arrays.asList(excelConverter.range());
         } else {
             this.max = 100;
             this.check = false;
-            this.fieldGet = null;
+            this.methods = null;
             this.range = null;
         }
         if (field.getType().isEnum()) {
@@ -65,13 +65,13 @@ public class FieldDetail<T> {
         if (excelConverter != null) {
             this.max = excelConverter.max();
             this.check = excelConverter.check();
-            this.fieldGet = excelConverter.fileds();
+            this.methods = excelConverter.methods();
             this.range = Arrays.asList(excelConverter.range());
             this.rangeMode = excelConverter.rangeMode();
         } else {
             this.max = 100;
             this.check = false;
-            this.fieldGet = null;
+            this.methods = null;
             this.range = null;
             this.rangeMode = ExcelReadType.EQUALS;
         }
@@ -93,11 +93,11 @@ public class FieldDetail<T> {
 
         this.rangeMode = excelConverterSimple.rangeMode();
         this.model = excelConverterSimple.model();
-        values = Arrays.asList(excelConverterSimple.value());
-        range = Arrays.asList(excelConverterSimple.range());
+        this.values = Arrays.asList(excelConverterSimple.value());
+        this.range = Arrays.asList(excelConverterSimple.range());
         this.max = excelConverterSimple.max();
         this.check = excelConverterSimple.check();
-        this.fieldGet = excelConverterSimple.fields();
+        this.methods = excelConverterSimple.methods();
 
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
@@ -122,5 +122,7 @@ public class FieldDetail<T> {
     @Setter
     private  boolean check;
     private final int max;
-    private final FieldGet[] fieldGet;
+    private final Method[] methods;
+    @Setter
+    private int column=-1;
 }

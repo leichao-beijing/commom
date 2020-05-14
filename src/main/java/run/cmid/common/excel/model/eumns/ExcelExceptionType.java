@@ -12,7 +12,9 @@ public enum ExcelExceptionType implements EnumTypeName {
     CUSTOM("自定义错误"),
 
     SHEET_NAME_NO_EXISTS("sheetName不存在"),
-
+    
+    CONVERT_ERROR("转换失败"),
+    
     NUMBER_CONVERT_TYPE_ERROR("数字类型转换错误"),
 
     DATE_CONVERT_TYPE_ERROR("时间类型转换错误"),

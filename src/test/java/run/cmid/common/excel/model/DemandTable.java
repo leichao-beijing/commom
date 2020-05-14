@@ -8,6 +8,7 @@ import run.cmid.common.excel.annotations.ExcelConverterHead;
 import run.cmid.common.excel.annotations.Index;
 import run.cmid.common.excel.annotations.TableName;
 import run.cmid.common.excel.model.eumns.ExcelReadType;
+import run.cmid.common.excel.annotations.Method;
 
 @ToString
 @Getter
@@ -16,7 +17,11 @@ import run.cmid.common.excel.model.eumns.ExcelReadType;
 public class DemandTable {
 
     @TableName(values = { "需求序号" })
-    @ExcelConverter(range = { "001" },rangeMode = ExcelReadType.NO_INCLUDE)
+    @ExcelConverter(range = { "001" }, methods = {
+            @Method(check = true, model = ExcelReadType.NO_EQUALS),
+            @Method(values= {"001"},check = false, model = ExcelReadType.NO_EQUALS) }
+
+    )
     private String needNumber;// 需求序号
     @TableName(values = { "需求名称" })
     private String needName;// 需求名称

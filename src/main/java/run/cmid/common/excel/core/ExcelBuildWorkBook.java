@@ -1,7 +1,7 @@
 package run.cmid.common.excel.core;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,9 +16,11 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.CompareResponse;
+import run.cmid.common.compare.model.DataArray;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.compare.model.LocationTagError;
 import run.cmid.common.compare.model.QepeatResponse;
+import run.cmid.common.excel.annotations.Method;
 import run.cmid.common.excel.exception.ConverterExcelException;
 import run.cmid.common.excel.model.FieldDetail;
 import run.cmid.common.excel.model.SheetModel;
@@ -28,14 +30,12 @@ import run.cmid.common.excel.model.entity.ExcelResult;
 import run.cmid.common.excel.model.eumns.ExcelExceptionType;
 import run.cmid.common.excel.model.eumns.ExcelReadType;
 import run.cmid.common.excel.model.eumns.FieldDetailType;
-import run.cmid.common.io.EnumUtil;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
  * @author leichao
  */
 public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
-
     private int sheetMaxRow;
     private final Class<T> classes;
     private final SheetModel<T> mode;
@@ -125,6 +125,71 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
         excelListResult.getCellErrorList().addAll(list);
     }
 
+    private HashMap<String, DataArray<Object, FieldDetail<T>>> buildRowMap(Row row,
+            List<CompareResponse<FieldDetail<T>, String>> list) {
+        HashMap<String, DataArray<Object, FieldDetail<T>>> map = new HashMap<String, DataArray<Object, FieldDetail<T>>>();
+        for (CompareResponse<FieldDetail<T>, String> compareResponse : list) {
+            FieldDetail<T> detail = compareResponse.getSrcData();
+            Cell cell = row.getCell(compareResponse.getDesIndex());
+            if (cell == null) {
+                map.put(detail.getFieldName(), null);
+                continue;
+            }
+            detail.setColumn(compareResponse.getDesIndex());
+            buildCellMap(map, detail.getFieldName(), cell.getCellType(), cell, detail);
+        }
+        return map;
+    }
+
+    private void buildCellMap(HashMap<String, DataArray<Object, FieldDetail<T>>> data, String name, CellType type,
+            Cell cell, FieldDetail<T> detail) {
+        switch (type) {
+        case _NONE:
+            data.put(name, new DataArray<Object, FieldDetail<T>>(null, detail));
+            break;
+        case BLANK:
+            if (cellRangeMap != null) {
+                CellAddress cellRangeAddress = cellRangeMap.get(cell.getAddress());
+                if (cellRangeAddress != null) {
+                    cell = SheetUtil.getCellWithMerges(cell.getSheet(), cellRangeAddress.getRow(),
+                            cellRangeAddress.getColumn());
+                    if (cell == null)
+                        type = CellType.ERROR;
+                    else {
+                        if (cell.getCellType() == CellType.BLANK)
+                            type = CellType.ERROR;
+                        else
+                            type = cell.getCellType();
+                    }
+                    buildCellMap(data, name, type, cell, detail);
+                    break;
+                }
+            }
+            data.put(name, new DataArray<Object, FieldDetail<T>>(null, detail));
+            break;
+        case BOOLEAN:
+            data.put(name, new DataArray<Object, FieldDetail<T>>(cell.getBooleanCellValue(), detail));
+            break;
+        case ERROR:
+            data.put(name, new DataArray<Object, FieldDetail<T>>(null, detail));
+            break;
+        case FORMULA:
+            CellType formulaType = cell.getCachedFormulaResultType();
+            if (formulaType == CellType.FORMULA) {
+                buildCellMap(data, name, CellType.ERROR, cell, detail);
+                break;
+            }
+            buildCellMap(data, name, formulaType, cell, detail);
+            break;
+        case NUMERIC:
+            data.put(name, new DataArray<Object, FieldDetail<T>>(cell.getNumericCellValue(), detail));
+            break;
+        case STRING:
+            data.put(name, new DataArray<Object, FieldDetail<T>>(cell.toString(), detail));
+            break;
+        }
+    }
+
     /**
      * 当所有内容均未匹配时，返回null;
      *
@@ -132,82 +197,88 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
      */
     private ExcelResult<T> build(Row row, List<CompareResponse<FieldDetail<T>, String>> list, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
+        HashMap<String, DataArray<Object, FieldDetail<T>>> map = buildRowMap(row, list);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(row.getRowNum(), out);
         for (CompareResponse<FieldDetail<T>, String> compareResponse : list) {
             String methodName = "set" + ReflectLcUtils.upperCase(compareResponse.getSrcData().getFieldName());
-            FieldDetail<T> fieldDetail = compareResponse.getSrcData();
-            Cell cell = row.getCell(compareResponse.getDesIndex());
+            // Cell cell = row.getCell(compareResponse.getDesIndex());
             FieldDetail<T> detail = compareResponse.getSrcData();
-            if (cell == null) {
-                if (detail.isCheck()) {
-                    tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
-                    CellAddressAndMessage cellAddressAndMessage = new CellAddressAndMessage(row.getRowNum(),
-                            compareResponse.getDesIndex(), ExcelExceptionType.NOT_FIND_CHACK_VALUE, null);
-                    checkErrorList.add(cellAddressAndMessage);
+            DataArray<Object, FieldDetail<T>> value = map.get(detail.getFieldName());
+            Method[] methods = detail.getMethods();
+            boolean state = true;
+            if (methods != null)
+                for (Method method : methods) {
+                    DataArray<Object, FieldDetail<T>> tmp = method.fieldName().equals("") ? value
+                            : map.get(method.fieldName());
+                    if (!rangeValue(tmp.getData1(), method.values(), method.model(),
+                            new CellAddress(row.getRowNum(), tmp.getData2().getColumn()), checkErrorList)) {
+                        state = false;
+                        break;
+                    }
                 }
+            if (!state)
                 continue;
-            }
-            if (cell.toString().equals(""))
-                if (detail.isCheck()) {
-                    tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
-                    checkErrorList.add(new CellAddressAndMessage(row.getRowNum(), compareResponse.getDesIndex(),
-                            ExcelExceptionType.NOT_FIND_CHACK_VALUE, ""));
-                    continue;
-                }
-            if (detail.isCheck() && !rangeValue(compareResponse.getSrcData().getRange(), cell,
-                    compareResponse.getSrcData().getRangeMode(), checkErrorList)) {
-                continue;
-            }
-            CellAddressAndMessage cellMessages = cellValueToClass(cell, cell.getCellType(), out, methodName,
-                    fieldDetail, cell.getAddress());
-            if (cellMessages.getEx() != ExcelExceptionType.SUCCESS && detail.isCheck()) {
+            CellAddressAndMessage messgae = cellValueToClass(value.getData1(), out, methodName, detail,
+                    new CellAddress(row.getRowNum(), compareResponse.getDesIndex()));
+            if (messgae.getEx() != ExcelExceptionType.SUCCESS) {
                 tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
-                checkErrorList.add(new CellAddressAndMessage(row.getRowNum(), compareResponse.getDesIndex(),
-                        cellMessages.getEx(), cellMessages.getMessage()));
+                checkErrorList.add(messgae);
                 continue;
             }
         }
         return new ExcelResult<T>(row.getRowNum(), tag, checkErrorList);// size == 0 ? null : tag;
     }
 
-    private boolean rangeValue(List<String> range, Cell cell, ExcelReadType mode,
+    public boolean rangeValue(Object value, String[] range, ExcelReadType mode, CellAddress address,
             List<CellAddressAndMessage> checkErrorList) {
-        if (range == null || range.size() == 0)
-            return true;
-        String value = cell.toString().trim();
+        List<String> list = Arrays.asList(range);
+        if(value != null&&value.equals("004"))
+            System.err.println(value);
         switch (mode) {
         case EQUALS:
-            if (range.contains(value))
+            if (list.size() == 0 && value == null)
+                return true;
+            else if (value != null && list.contains(value))
                 return true;
             else
                 break;
         case INCLUDE:
-            for (String val : range) {
-                if (value.startsWith(val))
+            if (value == null) {
+                break;
+            }
+            for (String val : list) {
+                if (val.startsWith(value.toString()))
                     return true;
             }
             break;
         case NO_EQUALS:
-            if (!range.contains(value))
+            if (list.size() == 0 && value != null)
+                return true;
+            else if (value != null && !list.contains(value))
                 return true;
             break;
         case NO_INCLUDE:
-            boolean state = true;
-            for (String val : range) {
-                if (value.startsWith(val)) {
-                    state = false;
+            if (value == null) {
+                break;
+            }
+            boolean state = false;
+            for (String val : list) {
+                if (val.startsWith(value.toString())) {
+                    state = true;
                     break;
                 }
             }
-            if (!state)
+            if (state)
                 return true;
             break;
         default:
             throw new IllegalArgumentException("Unexpected value: " + mode);
         }
-        String mgs = "数据 :" +value + " 不满足 范围："+ range.toString()+"。" + mode.getTypeName() + "的条件";
-        CellAddressAndMessage message = new CellAddressAndMessage(cell.getRowIndex(), cell.getColumnIndex(),
+//        String mgs = "数据 :" + value + " 不满足 " + ((list.size() == 0) ? " null " : "范围：" + list) + "。"
+//                + mode.getTypeName() + "的条件";
+        String mgs = "不能为：" + value + ((list.size() == 0) ? "" : "范围：" + list + " 条件" + mode.getTypeName());
+        CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);
         checkErrorList.add(message);
         return false;
@@ -221,94 +292,23 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
      * @param out              输出的对象的实例
      * @param setFunctionValue set方法的构造名称
      */
-    public CellAddressAndMessage cellValueToClass(Cell cell, CellType type, Object out, String setFunctionValue,
+    public CellAddressAndMessage cellValueToClass(Object value, Object out, String setFunctionValue,
             FieldDetail<T> fieldDetail, CellAddress cellAddress) {
         Class<?> paramterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
-        Object value = null;
-//        if (fieldDetail.getRange() != null && fieldDetail.getRange().size() != 0) {
-//            if (!fieldDetail.getRange().contains(cell.toString())) {
-//                return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-//                        ExcelExceptionType.ENUM_ERROR,
-//                        cell + " " + ExcelExceptionType.ENUM_ERROR.getTypeName() + ",支持范围：" + fieldDetail.getRange());
-//            }
-//        }
+
+        if (value == null && fieldDetail.getType() != FieldDetailType.LIST)
+            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
         if (fieldDetail.getType() == FieldDetailType.LIST)
             paramterClasses = String.class;
-        switch (type) {
-        case NUMERIC:
-            if (paramterClasses == String.class)
-                invokeValue(out, setFunctionValue, cell.toString(), fieldDetail);
-            else if (paramterClasses == Date.class)
-                invokeValue(out, setFunctionValue, cell.getDateCellValue(), fieldDetail);
-            else {
-                value = converterRegistry.convert(paramterClasses, cell.getNumericCellValue());
-                invokeValue(out, setFunctionValue, value, fieldDetail);
-            }
-            break;
-        case STRING:
-            String val = cell.toString().trim();
-            if (val.length() > fieldDetail.getMax()) {
+        else {
+            try {
+                value = converterRegistry.convert(paramterClasses, value);
+            } catch (Exception e) {
                 return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                        ExcelExceptionType.STRING_OUT_BOUNDS,
-                        cell + " " + ExcelExceptionType.STRING_OUT_BOUNDS.getTypeName() + "，允许最大字符串长度"
-                                + fieldDetail.getMax());
+                        ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + paramterClasses + " 类型失败。");
             }
-            if (paramterClasses.isEnum()) {
-                value = EnumUtil.isEnumName(paramterClasses, val, fieldDetail.getEnumFileName());
-                if (value == null)
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.ENUM_ERROR, cell + " " + ExcelExceptionType.ENUM_ERROR.getTypeName()
-                                    + ",支持范围：" + EnumUtil.getEnumNames(paramterClasses, fieldDetail.getEnumFileName()));
-            } else {
-                try {
-                    value = converterRegistry.convert(paramterClasses, val);
-                } catch (NumberFormatException e) {
-                    if (fieldDetail.isCheck())
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.NUMBER_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.SUCCESS);
-                }
-                if (value == null) {
-                    if (fieldDetail.isCheck())
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.DATE_CONVERT_TYPE_ERROR, cell + " " + "转换失败数据：" + val);
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.SUCCESS);
-                }
-            }
-            invokeValue(out, setFunctionValue, value, fieldDetail);
-            break;
-        case FORMULA:
-            return cellValueToClass(cell, cell.getCachedFormulaResultType(), out, setFunctionValue, fieldDetail,
-                    cellAddress);
-        case BLANK:
-            CellType cellType = cell.getCellType();
-            if (cellRangeMap != null) {
-                CellAddress cellRangeAddress = cellRangeMap.get(cell.getAddress());
-                if (cellRangeAddress == null) {
-                    cellType = CellType.ERROR;
-                } else {
-                    cell = SheetUtil.getCellWithMerges(cell.getSheet(), cellRangeAddress.getRow(),
-                            cellRangeAddress.getColumn());
-                    if (cell == null)
-                        cellType = CellType.ERROR;
-                    else {
-                        if (cell.getCellType() == CellType.BLANK)
-                            cellType = CellType.ERROR;
-                        else
-                            cellType = cell.getCellType();
-                    }
-                }
-            } else {
-                cellType = CellType.ERROR;
-            }
-            return cellValueToClass(cell, cellType, out, setFunctionValue, fieldDetail, cellAddress);
-        default:
-            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                    ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE,
-                    cell + " " + ExcelExceptionType.NO_CELL_TYPE_SUPPORT_TYPE.getTypeName() + " : " + type);
         }
+        invokeValue(out, setFunctionValue, value, fieldDetail);
         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
     }
 
@@ -316,16 +316,17 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
      * 生成list对象
      */
     private void invokeValue(Object out, String setFunctionValue, Object value, FieldDetail<T> fieldDetail) {
-        if (value == null)
-            return;
         if (fieldDetail.getType() == FieldDetailType.LIST) {
             String methodNameGet = "get" + ReflectLcUtils.upperCase(fieldDetail.getFieldName());
-            ArrayList<String> list = ReflectUtil.invoke(out, methodNameGet);
+            List<String> list = ReflectUtil.invoke(out, methodNameGet);
             if (list == null) {
                 list = new ArrayList<String>();
                 ReflectUtil.invoke(out, setFunctionValue, list);
             }
-            list.add(converterRegistry.convert(String.class, value));
+            if (value == null)
+                list.add("");
+            else
+                list.add(value.toString());
             return;
         }
         ReflectUtil.invoke(out, setFunctionValue, value);
