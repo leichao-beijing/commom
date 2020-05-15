@@ -15,11 +15,11 @@ import run.cmid.common.excel.model.FieldDetail;
 @Getter
 @Setter
 public class FindSheetModel<T> {
-    public FindSheetModel(List<FieldDetail<T>> findHeadFiel) {
+    public FindSheetModel(List<FieldDetail> findHeadFiel) {
         this.findHeadFiel = findHeadFiel;
     }
 
     private Sheet findSheet;
-    private final List<FieldDetail<T>> findHeadFiel;
+    private final List<FieldDetail> findHeadFiel;
 
 }

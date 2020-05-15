@@ -30,5 +30,5 @@ public @interface ExcelConverterHead {
     /***
      * sheetName 存在时，不进行全sheets搜索，只读取sheetName对应sheet不能存在时抛出异常
      */
-    String sheetName() default "";
+    String bookTagName() default "";
 }

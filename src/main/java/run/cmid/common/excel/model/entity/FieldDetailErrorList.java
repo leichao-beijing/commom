@@ -13,11 +13,11 @@ import run.cmid.common.excel.model.to.AddressCell;
  */
 @Getter
 public class FieldDetailErrorList<T> {
-    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetail<T>>> chackNullList) {
+    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetail>> chackNullList) {
         this.tag = tag;
         this.chackNullList = chackNullList;
     }
 
     private LocationTag<T> tag;
-    private List<AddressCell<FieldDetail<T>>> chackNullList;
+    private List<AddressCell<FieldDetail>> chackNullList;
 }

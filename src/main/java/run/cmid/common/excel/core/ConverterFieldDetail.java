@@ -21,11 +21,11 @@ import run.cmid.common.excel.model.to.FindSheetModel;
  * @author leichao
  */
 public class ConverterFieldDetail {
-    public static <T> List<FieldDetail<T>> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
-            List<String> indexes) {
-        LinkedList<FieldDetail<T>> list = new LinkedList<FieldDetail<T>>();
+    public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
+                                               List<String> indexes) {
+        LinkedList<FieldDetail> list = new LinkedList<FieldDetail>();
         Field[] fields = ReflectUtil.getFields(classes);
-        FieldDetail<T> fieldDetail = null;
+        FieldDetail fieldDetail = null;
         boolean check = false;
         for (Field field : fields) {
             check = false;
@@ -37,7 +37,7 @@ public class ConverterFieldDetail {
             if (excelConverter != null && excelConverterStringList != null)
                 throw new NullPointerException("@ExcelConverter and @ExcelConverterList Override");
             if (excelConverter != null) {
-                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter);
+                fieldDetail = new FieldDetail(field, classes, jsonFormat, excelConverter);
                 if (check)
                     fieldDetail.setNullCheck(true);
                 list.add(fieldDetail);
@@ -50,7 +50,7 @@ public class ConverterFieldDetail {
                     throw new NullPointerException("ExcelConverterList no data");
                 }
                 for (int i = 0; i < values.length; i++) {
-                    fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, values[i], i);
+                    fieldDetail = new FieldDetail(field, classes, jsonFormat, values[i], i);
                     if (check)
                         fieldDetail.setNullCheck(true);
                     list.add(fieldDetail);
@@ -59,7 +59,7 @@ public class ConverterFieldDetail {
             }
             if (excelHeadModel.isSkipNoAnnotationField())
                 continue;
-            fieldDetail = new FieldDetail<T>(field, classes, jsonFormat);
+            fieldDetail = new FieldDetail(field, classes, jsonFormat);
             if (check)
                 fieldDetail.setNullCheck(true);
             list.add(fieldDetail);
@@ -71,7 +71,7 @@ public class ConverterFieldDetail {
     /**
      * 功能废弃
      */
-    public static <T> FieldDetail<T> addCheckInteface(FieldDetail<T> fieldDetail, Field field) {
+    public static <T> FieldDetail addCheckInteface(FieldDetail fieldDetail, Field field) {
 //        if (field.isAnnotationPresent(ExcelCheckStringRule.class))
 //            fieldDetail.setStringRule(field.getAnnotation(ExcelCheckStringRule.class));
 //        if (field.isAnnotationPresent(ExcelCheckEumnRule.class))

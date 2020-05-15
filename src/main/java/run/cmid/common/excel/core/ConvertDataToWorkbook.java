@@ -43,6 +43,7 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
     private boolean headState = false;
     @Getter
     private boolean state = false;
+    private String sheetName;
 
     public ConvertDataToWorkbook(WorkbookInfo workbookInfo, Class<T> clazz)
             throws IOException, ConverterExcelException {
@@ -53,12 +54,11 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
         this(workbookInfo, sheetName, createFieldDetail(clazz), clazz);
     }
 
-    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, List<FieldDetail<T>> list,
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, List<FieldDetail> list,
                                  Class<T> clazz) {
         super(clazz);
         this.workbookInfo = workbookInfo;
-        if (sheetName != null)
-            setSheetName(sheetName);
+        this.sheetName=sheetName;
         headAndFieldDataList();
     }
 
@@ -66,7 +66,7 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
         if (!headState) {
             try {
                 workbookInfo.createFile();
-                sheet = workbookInfo.createWorkbook().createSheet(getSheetName());
+                sheet = workbookInfo.createWorkbook().createSheet(sheetName);
             } catch (IOException e) {
                 throw new NullPointerException(e.getMessage());
             }
@@ -78,7 +78,7 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
     }
 
     private void createCellStyle(Sheet sheet) {
-        for (FieldDetail<T> tt : getList()) {
+        for (FieldDetail tt : getList()) {
             if (tt.getJsonFormat() != null) {
                 CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
                 cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(tt.getJsonFormat().pattern()));
@@ -87,20 +87,20 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
         }
     }
 
-    private static <T> List<FieldDetail<T>> createFieldDetail(Class<T> classes) {
+    private static <T> List<FieldDetail> createFieldDetail(Class<T> classes) {
         ExcelConverterHead head = classes.getAnnotation(ExcelConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ExcelConverterHead not enable");
         isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。
         ExcelHeadModel headModel = new ExcelHeadModel(head);
-        return ConverterFieldDetail.toList(classes, headModel,null);
+        return ConverterFieldDetail.toList(classes, headModel, null);
     }
 
     /**
      * 分析FieldDetail<T> 获取 head和Field 名称List
      */
     private void headAndFieldDataList() {
-        for (FieldDetail<T> t : getList()) {
+        for (FieldDetail t : getList()) {
             headNames.add(t.getMatchValue());
         }
     }
@@ -129,7 +129,7 @@ public class ConvertDataToWorkbook<T> extends ExcelBuildings<T> implements DataC
         String str = null;
         int column = 0;
         Row row = SheetUtils.getCreateRow(sheet, rownum);
-        for (FieldDetail<T> tt : getList()) {
+        for (FieldDetail tt : getList()) {
             Object value = ReflectUtil.invoke(t, ("get" + StrUtil.upperFirst(tt.getFieldName())));
             if (value == null) {
                 column++;

@@ -11,18 +11,17 @@ import org.apache.poi.ss.util.CellAddress;
 
 import lombok.Getter;
 import run.cmid.common.compare.model.LocationTag;
-import run.cmid.common.excel.model.SheetModel;
+import run.cmid.common.excel.model.HeadModel;
 import run.cmid.common.excel.model.eumns.ExcelExceptionType;
 import run.cmid.common.excel.plugins.SheetStyle;
 import run.cmid.common.excel.plugins.SheetUtils;
 
 /**
- * 
  * @author leichao
  */
 @Getter
 public class ExcelListResult<T> {
-    public ExcelListResult(int readHeadRownum, int sheetMaxRow, Sheet sheet, SheetModel<T> mode) {
+    public ExcelListResult(int readHeadRownum, int sheetMaxRow, Sheet sheet, HeadModel mode) {
         this.readHeadRownum = readHeadRownum;
         this.sheetMaxRow = sheetMaxRow;
         this.sheet = sheet;
@@ -31,7 +30,7 @@ public class ExcelListResult<T> {
 
     private Set<ExcelExceptionType> errorType = EnumSet.noneOf(ExcelExceptionType.class);
 
-    private final SheetModel<T> mode;
+    private final HeadModel mode;
     /**
      * 读取头的起始行数
      */

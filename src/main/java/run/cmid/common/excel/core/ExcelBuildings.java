@@ -18,7 +18,7 @@ import run.cmid.common.excel.annotations.ExcelConverterHead;
 import run.cmid.common.excel.annotations.Index;
 import run.cmid.common.excel.exception.ConverterExcelException;
 import run.cmid.common.excel.model.FieldDetail;
-import run.cmid.common.excel.model.SheetModel;
+import run.cmid.common.excel.model.HeadModel;
 import run.cmid.common.excel.model.eumns.ExcelExceptionType;
 import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.excel.plugins.SheetUtils;
@@ -35,14 +35,14 @@ public class ExcelBuildings<T> {
     @Getter
     private final Class<T> clazz;
     @Getter
-    private final List<FieldDetail<T>> list;
+    private final List<FieldDetail> list;
     @Getter
     private final ExcelHeadModel headModel;
     @Getter
     private final List<List<String>> indexes;
-    @Getter
-    @Setter
-    private String sheetName;
+   // @Getter
+    //@Setter
+    //private String sheetName;
 
     /**
      * @param clazz
@@ -55,7 +55,7 @@ public class ExcelBuildings<T> {
         isIndexMethod(head.indexes(), clazz);// 验证idnex内值是否存在于对象中。
         indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
-        sheetName = head.sheetName();
+        //sheetName = head.sheetName();
         List<String> values = new ArrayList<String>();
         for (List<String> index : indexes) {
             values.addAll(index);
@@ -70,7 +70,7 @@ public class ExcelBuildings<T> {
      * @exception ConverterExcelException
      */
     public ExcelBuild<T> find(Workbook workbook) throws ConverterExcelException {
-        return find(workbook, 0, false, sheetName);
+        return find(workbook, 0, false);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ExcelBuildings<T> {
      * @exception ConverterExcelException
      */
     public ExcelBuild<T> find(Workbook workbook, int readHeadRownum) throws ConverterExcelException {
-        return find(workbook, readHeadRownum, false, sheetName);
+        return find(workbook, readHeadRownum, false);
     }
 
     /**
@@ -90,13 +90,12 @@ public class ExcelBuildings<T> {
      * @param workbook
      * @param readHeadRownum 头读取行
      * @param rangeState     单元格合并计算
-     * @param sheetName      等于""时，忽略。反之直接通过sheetName读取sheet
      * @exception ConverterExcelException
      */
-    public ExcelBuild<T> find(Workbook workbook, int readHeadRownum, boolean rangeState, String sheetName)
+    public ExcelBuild<T> find(Workbook workbook, int readHeadRownum, boolean rangeState)
             throws ConverterExcelException {
-
-        SheetModel<T> mode = new FindWorkbookMatchSheet<T>(list, headModel, readHeadRownum).find(workbook, sheetName);// 查找sheet
+        WorkBookResources resource = new WorkBookResources(workbook);
+        HeadModel  mode = new FindWorkbook(list, headModel, readHeadRownum).find(resource);
         int sheetMaxRow = SheetUtils.sheetCount(mode.getSheet(), mode.getResponse().getList());// 获取最大行
         Map<ExcelExceptionType, String> errorType = computeErrorType(mode.getResponse().getErrorList());
         if (errorType.size() != 0)
@@ -110,10 +109,10 @@ public class ExcelBuildings<T> {
     }
 
     private Map<ExcelExceptionType, String> computeErrorType(
-            List<LocationTagError<FieldDetail<T>, ConverterExcelException>> columnErrorList) {
+            List<LocationTagError<FieldDetail, ConverterExcelException>> columnErrorList) {
         EnumMap<ExcelExceptionType, String> errorTypeMap = new EnumMap<ExcelExceptionType, String>(
                 ExcelExceptionType.class);
-        for (LocationTagError<FieldDetail<T>, ConverterExcelException> locationTagError : columnErrorList) {
+        for (LocationTagError<FieldDetail, ConverterExcelException> locationTagError : columnErrorList) {
             if (errorTypeMap.get(locationTagError.getEx().getType()) == null) {
                 errorTypeMap.put(locationTagError.getEx().getType(), locationTagError.getEx().getMessage());
                 continue;
@@ -135,8 +134,6 @@ public class ExcelBuildings<T> {
         set.forEach((value) -> {
             if (ReflectUtil.getMethodByName(clazz, false, ReflectLcUtils.methodGetString(value)) == null)
                 throw new NullPointerException("index;" + value + " Set method no find.");
-//            if (ReflectUtil.getMethodByName(clazz, false, ReflectLcUtils.methodGetString(value)) == null)
-//                throw new NullPointerException("index;" + value + " Get method no find.");
         });
     }
 

@@ -20,6 +20,7 @@ public class ExcelHeadModel {
             return;
         maxWorngCount = head.maxWrongCount();
         skipNoAnnotationField = head.skipNoAnnotationField();
+        bookTagName=head.bookTagName();
     }
 
     private int maxWorngCount = 3;
@@ -28,6 +29,6 @@ public class ExcelHeadModel {
      * 开始后跳过没有ExcelConverter的Field字段。默认false
      */
     private boolean skipNoAnnotationField = false;
+    private String bookTagName;
 
-    
 }

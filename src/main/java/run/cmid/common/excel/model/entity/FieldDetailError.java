@@ -14,11 +14,11 @@ import run.cmid.common.excel.model.FieldDetail;
 @ToString
 public class FieldDetailError<T> {
 
-    public FieldDetailError(FieldDetail<T> t, String errorMessage) {
+    public FieldDetailError(FieldDetail t, String errorMessage) {
         this.t = t;
         this.errorMessage = errorMessage;
     }
 
     private final String errorMessage;
-    private final FieldDetail<T> t;
+    private final FieldDetail t;
 }

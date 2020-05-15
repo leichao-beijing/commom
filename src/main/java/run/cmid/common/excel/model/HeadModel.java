@@ -14,40 +14,39 @@ import run.cmid.common.excel.model.entity.CompareResponseAndErrorList;
  */
 @Getter
 @Setter
-public class SheetModel<T> implements Comparable<SheetModel<T>> {
-    public SheetModel(CompareResponseAndErrorList<FieldDetail<T>, String,ConverterExcelException> response, Sheet sheet) {
+public class HeadModel implements Comparable<HeadModel> {
+    public HeadModel(CompareResponseAndErrorList<FieldDetail, String,ConverterExcelException> response) {
         this.response = response;
-        this.sheet = sheet;
         size = response.getList().size();
     }
 
-    public SheetModel(ConverterExcelException ex) {
+    public HeadModel(ConverterExcelException ex) {
         this.ex = ex;
     }
 
     private ConverterExcelException ex;
     private Sheet sheet;
     private int size;
-    private CompareResponseAndErrorList<FieldDetail<T>, String,ConverterExcelException> response;
+    private CompareResponseAndErrorList<FieldDetail, String,ConverterExcelException> response;
 
-    public int compareTo(SheetModel<T> sheetModel) {
-        if (this.size < sheetModel.getSize()) {
+    public int compareTo(HeadModel headModel) {
+        if (this.size < headModel.getSize()) {
             return -1;
         }
         return 0;
     }
 
     public Integer getTag(String fieldName) {
-        CompareResponse<FieldDetail<T>, String> compareResponse = getCompareResponse(fieldName);
+        CompareResponse<FieldDetail, String> compareResponse = getCompareResponse(fieldName);
         if (compareResponse == null)
             return null;
         return compareResponse.getSrcIndex();
     }
 
-    public CompareResponse<FieldDetail<T>, String> getCompareResponse(String fieldName) {
+    public CompareResponse<FieldDetail, String> getCompareResponse(String fieldName) {
         if (response.getList() == null)
             return null;
-        for (CompareResponse<FieldDetail<T>, String> compareResponse : response.getList()) {
+        for (CompareResponse<FieldDetail, String> compareResponse : response.getList()) {
             if (compareResponse.getSrcData().getFieldName().equals(fieldName))
                 return compareResponse;
         }

@@ -25,7 +25,7 @@ import run.cmid.common.utils.ReflectLcUtils;
  */
 @Getter
 @ToString
-public class FieldDetail<T> {
+public class FieldDetail {
     public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ExcelConverter excelConverter) {
         this.jsonFormat = jsonFormat;
         this.field = field;
