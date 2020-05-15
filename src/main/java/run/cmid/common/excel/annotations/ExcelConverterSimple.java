@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import run.cmid.common.excel.model.eumns.ExcelReadType;
+import run.cmid.common.validator.eumns.ValueType;
 
 /**
  * 
@@ -16,7 +17,8 @@ import run.cmid.common.excel.model.eumns.ExcelReadType;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ExcelConverterSimple {
-    String[] value() default {};
+    /** 不能等于空 */
+    String[] value();
 
     /**
      * 只验证string类型数据<br>
@@ -32,7 +34,10 @@ public @interface ExcelConverterSimple {
      */
     String enumGetValueMethodName() default "";
 
-    boolean check() default false;
+    /**
+     * true时，不允许出现null数据
+     */
+    boolean checkNull() default false;
 
     /**
      * 当读取内容为字符串时，最大字符串长度限制
@@ -43,6 +48,8 @@ public @interface ExcelConverterSimple {
      * 只有满足fileds内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置
      */
     Method[] methods() default {};
-    
-    ExcelReadType rangeMode() default ExcelReadType.EQUALS;;
+
+    ExcelReadType rangeMode() default ExcelReadType.EQUALS;
+
+    ValueType classType() default ValueType.STRING;
 }

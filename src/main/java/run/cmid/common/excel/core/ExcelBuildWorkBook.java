@@ -12,6 +12,7 @@ import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.SheetUtil;
 
 import cn.hutool.core.convert.ConverterRegistry;
+import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import run.cmid.common.compare.Compares;
@@ -21,14 +22,15 @@ import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.compare.model.LocationTagError;
 import run.cmid.common.compare.model.QepeatResponse;
 import run.cmid.common.excel.annotations.Method;
+import run.cmid.common.excel.exception.ConverterExcelConfigException;
 import run.cmid.common.excel.exception.ConverterExcelException;
 import run.cmid.common.excel.model.FieldDetail;
 import run.cmid.common.excel.model.SheetModel;
 import run.cmid.common.excel.model.entity.CellAddressAndMessage;
 import run.cmid.common.excel.model.entity.ExcelListResult;
 import run.cmid.common.excel.model.entity.ExcelResult;
+import run.cmid.common.excel.model.eumns.ConfigErrorType;
 import run.cmid.common.excel.model.eumns.ExcelExceptionType;
-import run.cmid.common.excel.model.eumns.ExcelReadType;
 import run.cmid.common.excel.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
 
@@ -205,20 +207,40 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
             // Cell cell = row.getCell(compareResponse.getDesIndex());
             FieldDetail<T> detail = compareResponse.getSrcData();
             DataArray<Object, FieldDetail<T>> value = map.get(detail.getFieldName());
+            if (value.getData2().isNullCheck() && value.getData1() == null) {
+                tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
+                CellAddressAndMessage message = new CellAddressAndMessage(row.getRowNum(),
+                        compareResponse.getDesIndex(), ExcelExceptionType.NOT_FIND_CHACK_VALUE);
+                checkErrorList.add(message);
+                continue;
+            }
             Method[] methods = detail.getMethods();
-            boolean state = true;
-            if (methods != null)
+            ArrayList<CellAddressAndMessage> megs = null;
+            if (methods != null && methods.length != 0) {
+                megs = new ArrayList<CellAddressAndMessage>();
                 for (Method method : methods) {
                     DataArray<Object, FieldDetail<T>> tmp = method.fieldName().equals("") ? value
                             : map.get(method.fieldName());
-                    if (!rangeValue(tmp.getData1(), method.values(), method.model(),
-                            new CellAddress(row.getRowNum(), tmp.getData2().getColumn()), checkErrorList)) {
-                        state = false;
-                        break;
-                    }
+                    CellAddressAndMessage mess = rangeValue(tmp, method,
+                            new CellAddress(row.getRowNum(), tmp.getData2().getColumn()));
+                    if (mess != null)
+                        megs.add(mess);
                 }
-            if (!state)
+                if (megs.size() != 0) {
+                    tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
+                    checkErrorList.addAll(megs);
+                    continue;
+                }
+            }
+            if (value.getData1() != null && value.getData1().toString().length() > value.getData2().getMax()) {
+                tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
+                CellAddressAndMessage message = new CellAddressAndMessage(row.getRowNum(),
+                        compareResponse.getDesIndex(), ExcelExceptionType.STRING_OUT_BOUNDS,
+                        value.getData2().getMax() + "");
+                tag.getSetFiledNull().add(compareResponse.getSrcData().getFieldName());
+                checkErrorList.add(message);
                 continue;
+            }
             CellAddressAndMessage messgae = cellValueToClass(value.getData1(), out, methodName, detail,
                     new CellAddress(row.getRowNum(), compareResponse.getDesIndex()));
             if (messgae.getEx() != ExcelExceptionType.SUCCESS) {
@@ -230,58 +252,61 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
         return new ExcelResult<T>(row.getRowNum(), tag, checkErrorList);// size == 0 ? null : tag;
     }
 
-    public boolean rangeValue(Object value, String[] range, ExcelReadType mode, CellAddress address,
-            List<CellAddressAndMessage> checkErrorList) {
-        List<String> list = Arrays.asList(range);
-        if(value != null&&value.equals("004"))
-            System.err.println(value);
-        switch (mode) {
+    public CellAddressAndMessage rangeValue(DataArray<Object, FieldDetail<T>> tmp, Method method, CellAddress address) {
+        if (tmp.getData1() == null)
+            return null;
+        if (method.values().length == 0)
+            throw new ConverterExcelConfigException(ConfigErrorType.METHOD_VALUES_IS_EMPTY);
+
+        List<String> list = Arrays.asList(method.values());
+        switch (method.model()) {
         case EQUALS:
-            if (list.size() == 0 && value == null)
-                return true;
-            else if (value != null && list.contains(value))
-                return true;
+            if (tmp.getData1() != null && list.contains(tmp.getData1()))
+                return null;
             else
                 break;
         case INCLUDE:
-            if (value == null) {
-                break;
-            }
             for (String val : list) {
-                if (val.startsWith(value.toString()))
-                    return true;
+                if (val.startsWith(tmp.getData1().toString()))
+                    return null;
             }
             break;
         case NO_EQUALS:
-            if (list.size() == 0 && value != null)
-                return true;
-            else if (value != null && !list.contains(value))
-                return true;
+            if (!list.contains(tmp.getData1()))
+                return null;
             break;
         case NO_INCLUDE:
-            if (value == null) {
-                break;
-            }
             boolean state = false;
             for (String val : list) {
-                if (val.startsWith(value.toString())) {
+                if (val.startsWith(tmp.getData1().toString())) {
                     state = true;
                     break;
                 }
             }
             if (state)
-                return true;
+                return null;
             break;
         default:
             throw new IllegalArgumentException("Unexpected value: " + mode);
         }
-//        String mgs = "数据 :" + value + " 不满足 " + ((list.size() == 0) ? " null " : "范围：" + list) + "。"
-//                + mode.getTypeName() + "的条件";
-        String mgs = "不能为：" + value + ((list.size() == 0) ? "" : "范围：" + list + " 条件" + mode.getTypeName());
+        switch (method.exceptionType()) {
+        case NONE:
+            break;
+        case NUMBER:
+            if (Validator.isNumber(tmp.getData1().toString()))
+                return null;
+            break;
+        case STRING:
+            break;
+        default:
+            break;
+        }
+
+        String mgs = "不能为：" + tmp.getData1()
+                + ((list.size() == 0) ? "" : "范围：" + list + " 判断条件为：" + method.model().getTypeName());
         CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);
-        checkErrorList.add(message);
-        return false;
+        return message;
     }
 
     /**
@@ -302,7 +327,8 @@ public class ExcelBuildWorkBook<T> implements ExcelBuild<T> {
             paramterClasses = String.class;
         else {
             try {
-                value = converterRegistry.convert(paramterClasses, value);
+                if (!value.getClass().equals(paramterClasses))
+                    value = converterRegistry.convert(paramterClasses, value);
             } catch (Exception e) {
                 return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
                         ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + paramterClasses + " 类型失败。");

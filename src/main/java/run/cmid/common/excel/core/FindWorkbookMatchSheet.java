@@ -138,7 +138,7 @@ public class FindWorkbookMatchSheet<T> {
                     }
                     return false;
                 }, (e) -> {
-                    if (e.getValue().getValue().isCheck()) {
+                    if (e.getValue().getValue().isNullCheck()) {
                         return new ConverterExcelException(ExcelExceptionType.NOT_FIND_CHECK_COLUMN)
                                 .setMessage(e.getValue().getValue().getValues().toString());
                     }

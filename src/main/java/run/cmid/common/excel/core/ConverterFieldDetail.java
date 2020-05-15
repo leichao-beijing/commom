@@ -13,8 +13,6 @@ import cn.hutool.core.util.ReflectUtil;
 import run.cmid.common.excel.annotations.ExcelConverter;
 import run.cmid.common.excel.annotations.ExcelConverterList;
 import run.cmid.common.excel.annotations.ExcelConverterSimple;
-import run.cmid.common.excel.annotations.TableName;
-import run.cmid.common.excel.annotations.TableNames;
 import run.cmid.common.excel.model.FieldDetail;
 import run.cmid.common.excel.model.to.ExcelHeadModel;
 import run.cmid.common.excel.model.to.FindSheetModel;
@@ -34,28 +32,18 @@ public class ConverterFieldDetail {
             if (indexes!=null&&indexes.contains(field.getName()))
                 check = true;
             JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
-            TableName name = field.getAnnotation(TableName.class);
-            TableNames names = field.getAnnotation(TableNames.class);
             ExcelConverter excelConverter = field.getAnnotation(ExcelConverter.class);
             ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
-            if (name != null && names != null)
-                throw new NullPointerException("TableNames and TableName Override");
-            if (name != null) {
-                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, name.model(),
-                        name.values());
+            if (excelConverter != null && excelConverterStringList != null)
+                throw new NullPointerException("@ExcelConverter and @ExcelConverterList Override");
+            if (excelConverter != null) {
+                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter);
                 if (check)
-                    fieldDetail.setCheck(true);
+                    fieldDetail.setNullCheck(true);
                 list.add(fieldDetail);
                 continue;
             }
-            if (names != null) {
-                fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter, names.model(),
-                        names.values());
-                if (check)
-                    fieldDetail.setCheck(true);
-                list.add(fieldDetail);
-                continue;
-            }
+
             if (excelConverterStringList != null) {
                 ExcelConverterSimple[] values = excelConverterStringList.value();
                 if (values.length == 0) {
@@ -64,16 +52,16 @@ public class ConverterFieldDetail {
                 for (int i = 0; i < values.length; i++) {
                     fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, values[i], i);
                     if (check)
-                        fieldDetail.setCheck(true);
+                        fieldDetail.setNullCheck(true);
                     list.add(fieldDetail);
                 }
                 continue;
             }
             if (excelHeadModel.isSkipNoAnnotationField())
                 continue;
-            fieldDetail = new FieldDetail<T>(field, classes, jsonFormat, excelConverter);
+            fieldDetail = new FieldDetail<T>(field, classes, jsonFormat);
             if (check)
-                fieldDetail.setCheck(true);
+                fieldDetail.setNullCheck(true);
             list.add(fieldDetail);
         }
         return list;
