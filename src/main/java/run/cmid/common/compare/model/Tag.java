@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Tag {
-    public Tag(Integer rowmun) {
-        this.rowmun = rowmun;
+    public Tag(Integer column) {
+        this.column = column;
     }
 
     public Tag() {
     }
 
-    private Integer rowmun;
+    private Integer column;
 }

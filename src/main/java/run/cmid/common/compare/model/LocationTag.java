@@ -14,8 +14,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class LocationTag<R> extends Tag {
-    public LocationTag(int rownum, R value) {
-        super(rownum);
+    public LocationTag(int column, R value) {
+        super(column);
         this.value = value;
     }
     //存在本行内，filed为空的对象

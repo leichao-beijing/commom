@@ -6,5 +6,5 @@ package run.cmid.common.validator.eumns;
 *@date 2020-05-15 01:04:11
 */
 public enum ValueType {
-    NONE,NUMBER,STRING;
+    NONE,NUMBER;
 }

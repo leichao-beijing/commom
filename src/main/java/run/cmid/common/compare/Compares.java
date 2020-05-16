@@ -15,7 +15,7 @@ import run.cmid.common.compare.model.CompareState;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.compare.model.LocationTagError;
 import run.cmid.common.compare.model.QepeatResponse;
-import run.cmid.common.excel.model.entity.CompareResponseAndErrorList;
+import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
 
 /**
  * 
@@ -176,8 +176,8 @@ public class Compares {
                     continue;
 
                 if (biFunction.apply(secCompareState.getValue(), desCompareStateList.get(a).getValue())) {
-                    list.add(new CompareResponse<S1, D1>(secCompareState.getValue().getRowmun(),
-                            desCompareStateList.get(a).getValue().getRowmun(), secCompareState.getValue().getValue(),
+                    list.add(new CompareResponse<S1, D1>(secCompareState.getValue().getColumn(),
+                            desCompareStateList.get(a).getValue().getColumn(), secCompareState.getValue().getValue(),
                             desCompareState.getValue().getValue()));
 
                     desCompareStateList.get(a).setState(true);
@@ -227,8 +227,8 @@ public class Compares {
                     continue;
 
                 if (biFunction.apply(srcCompareState.getValue(), desCompareStateList.get(a).getValue())) {
-                    list.add(new CompareResponse<S1, D1>(srcCompareState.getValue().getRowmun(),
-                            desCompareStateList.get(a).getValue().getRowmun(), srcCompareState.getValue().getValue(),
+                    list.add(new CompareResponse<S1, D1>(srcCompareState.getValue().getColumn(),
+                            desCompareStateList.get(a).getValue().getColumn(), srcCompareState.getValue().getValue(),
                             desCompareState.getValue().getValue()));
                     desCompareStateList.get(a).setState(true);
                     srcCompareState.setState(true);
@@ -313,7 +313,7 @@ public class Compares {
             BiFunction<Integer, LocationTag<D1>, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))
-                return new CompareResponse<S1, D1>(srcIndex, deses.get(i).getRowmun().intValue(), s1,
+                return new CompareResponse<S1, D1>(srcIndex, deses.get(i).getColumn().intValue(), s1,
                         deses.get(i).getValue());
         }
         return null;
