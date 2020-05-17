@@ -38,7 +38,7 @@ public class SpotPath {
     /**
      * 创建一个和parent拥有相同父类的对象
      */
-    public SpotPath careSomeParentSpostPath(String value) {
+    public SpotPath careSomeParentSpotPath(String value) {
         if (getParent() == null)
             return new SpotPath(value);
         return getParent().createSub(value);

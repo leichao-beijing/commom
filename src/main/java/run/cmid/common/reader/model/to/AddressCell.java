@@ -9,12 +9,12 @@ import lombok.Getter;
 @Getter
 public class AddressCell<R> {
 
-    public AddressCell(int rowumn, int colmun, R value) {
-        this.rowumn = rowumn;
-        this.colmun = colmun;
+    public AddressCell(int rownum, int column, R value) {
+        this.rownum = rownum;
+        this.column = column;
         this.value = value;
     }
-    private final int rowumn;
-    private final int colmun;
+    private final int rownum;
+    private final int column;
     private final R value;
 }

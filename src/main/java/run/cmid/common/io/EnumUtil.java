@@ -86,7 +86,7 @@ public class EnumUtil {
 
     public static <T> T[] values(Class<T> clazz) {
         if (!clazz.isEnum()) {
-            throw new IllegalArgumentException("Class[" + clazz + "] no Eumn");
+            throw new IllegalArgumentException("Class[" + clazz + "] no Enum");
         }
         return clazz.getEnumConstants();
     }

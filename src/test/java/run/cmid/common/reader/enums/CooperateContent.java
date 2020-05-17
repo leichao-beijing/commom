@@ -19,13 +19,13 @@ public enum CooperateContent implements EnumTypeName {
 
     NO_SEVEN_CORE("7个非核心工作环节"),
 
-    CHCK("勘察"),
+    CHECK("勘察"),
 
     INFO_COLLECT("信息采集"),
 
     COOPERATION("现场配合"),
 
-    SUPPROT("支撑服务"),
+    SUPPORT("支撑服务"),
 
     CHART_DRAW("图表绘制"),
 
@@ -37,7 +37,7 @@ public enum CooperateContent implements EnumTypeName {
 
     DESIGNER("设计"),
 
-    CHCK_DESIGNER("勘察+设计");
+    CHECK_DESIGNER("勘察+设计");
 
     CooperateContent(String typeName) {
         this.typeName = typeName;

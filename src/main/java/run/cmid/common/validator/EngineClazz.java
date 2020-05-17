@@ -80,7 +80,7 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
         return fieldMap.get(path);
     }
 
-    public<RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1,RETURN2>> EngineObject<T, RETURN1,RETURN2, FUN2> engineObjcet(T t,FUN2 funObject) {
+    public<RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1,RETURN2>> EngineObject<T, RETURN1,RETURN2, FUN2> engineObject(T t, FUN2 funObject) {
         return new EngineObject<T, RETURN1,RETURN2, FUN2>(t, fieldMap, funObject);
     }
 

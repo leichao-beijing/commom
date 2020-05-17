@@ -32,7 +32,7 @@ public class DetailImpl implements ComputeDetail {
         this.object = object;
         this.jexlEngine = jexlEngine;
         this.map = new HashMap<>();
-        bulidMap();
+        buildMap();
     }
 
     public DetailImpl(Object object, Object parentObject, SpotPath spotPath, String computeValue,
@@ -54,7 +54,7 @@ public class DetailImpl implements ComputeDetail {
         }
 
         setComputeValue(computeValue);
-        bulidMap();
+        buildMap();
     }
 
     @Getter
@@ -102,12 +102,12 @@ public class DetailImpl implements ComputeDetail {
                 else
                     value = value + StringUtils.SPOT + list.get(j);
             }
-            SpotPath path = spotPath.careSomeParentSpostPath(value);
+            SpotPath path = spotPath.careSomeParentSpotPath(value);
             computeValues.add(path.getPath());
         }
     }
 
-    private void bulidMap() {
+    private void buildMap() {
         if (object == null)
             return;
         if (object.getClass().getPackageName().equals("java.lang"))

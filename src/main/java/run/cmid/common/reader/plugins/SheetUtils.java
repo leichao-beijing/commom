@@ -36,19 +36,19 @@ public class SheetUtils {
     }
 
     /**
-     * 获取指定行的范围列的内容，写入List columStart<columEnd 升序 columStart>columEnd 降序
+     * 获取指定行的范围列的内容，写入List columnStart<columnStart 升序 columnStart>columnEnd 降序
      */
-    public static List<String> getRowRangeCell(Row row, int columStart, int columEnd) {
+    public static List<String> getRowRangeCell(Row row, int columnStart, int columnEnd) {
         ArrayList<String> list = new ArrayList<String>();
-        if (columStart < columEnd) {// 升序
-            for (int i = columStart; i <= columEnd; i++) {
+        if (columnStart < columnEnd) {// 升序
+            for (int i = columnStart; i <= columnEnd; i++) {
                 if (row.getCell(i) != null)
                     list.add(row.getCell(i).toString());
                 else
                     list.add("");
             }
         } else {// 降序
-            for (int i = columStart; i >= columEnd; i--) {
+            for (int i = columnStart; i >= columnEnd; i--) {
                 if (row.getCell(i) != null)
                     list.add(row.getCell(i).toString());
                 else
@@ -115,7 +115,7 @@ public class SheetUtils {
     /**
      * 获取当前行最大列数
      */
-    public static int getColumCount(Sheet sheet, int rownum) {
+    public static int getColumnCount(Sheet sheet, int rownum) {
         if (sheet.getRow(rownum) == null)
             return 0;
         return sheet.getRow(rownum).getLastCellNum();
@@ -189,8 +189,8 @@ public class SheetUtils {
         CellStyle desStyle = desSheet.getWorkbook().createCellStyle();
         int rowCount = SheetUtils.getRowCount(srcSheet);
         for (int rownum = 0; rownum < rowCount; rownum++) {// row
-            int columCount = SheetUtils.getColumCount(srcSheet, rownum);
-            for (int column = 0; column < columCount; column++) {// column
+            int columnCount = SheetUtils.getColumnCount(srcSheet, rownum);
+            for (int column = 0; column < columnCount; column++) {// column
                 Optional<Cell> cellOptional = getCell(srcSheet, rownum, column);
                 if (cellOptional.isEmpty())
                     continue;

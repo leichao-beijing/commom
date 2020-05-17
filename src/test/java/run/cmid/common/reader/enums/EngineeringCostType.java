@@ -17,7 +17,7 @@ public enum EngineeringCostType implements EnumTypeName {
 
     INDOOR_SOURCE("室分信源"),
 
-    TRADITTIONAL_SYSTEM("传统分布系统（天线数）"),
+    TRADITION_SYSTEM("传统分布系统（天线数）"),
 
     NEW_TECHNIQUE("新技术室分系统（RRU/PRU数）");
 

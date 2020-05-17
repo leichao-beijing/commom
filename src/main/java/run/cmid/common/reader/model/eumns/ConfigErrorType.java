@@ -9,7 +9,7 @@ import run.cmid.common.io.EnumTypeName;
  */
 public enum ConfigErrorType implements EnumTypeName {
 
-    NO_SUPPORT_ENUM_YYPE("不支持的配置"),
+    NO_SUPPORT_ENUM_CONFIG("不支持的配置"),
     
     LIST_ERROR_VALUE_IS_EMPTY("@ExcelConverterSimple.values不能没有数据"),
     

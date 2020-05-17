@@ -150,7 +150,7 @@ public class Compares {
      * @param <X1>              自定义异常回调
      * @param srcList           原始数据类型
      * @param desList           目标数据类型
-     * @param biFunction        retrun true添加结果队列 false 跳过
+     * @param biFunction        return true添加结果队列 false 跳过
      * @param exceptionSupplier src与des进行匹配时，当src未能匹配到对应的des数据时。触发该回调函数 返回异常处理函数
      * @return 返回匹配成功的S1数据
      * @throws X1 自定义返回异常

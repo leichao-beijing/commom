@@ -11,15 +11,7 @@ import run.cmid.common.utils.SpotPath;
  * @date 2020-05-02 10:58:55
  */
 public interface ResultObjectInterface<T, RETURN1, RETURN2> {
-    /**
-     * @return null时，不写入数据
-     * @param path   对象位置
-     * @param field
-     * @param object 对象的值
-     */
-    // RETURN2 info(T t, SpostPath path, RETURN1 return1, Map<SpostPath, RETURN1>
-    // map);
-
+   
     /**
      * 用于更新 内RETURN1数据
      * 

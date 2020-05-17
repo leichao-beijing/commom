@@ -42,7 +42,7 @@ public class EntityBuildings<T> {
         ConverterHead head = clazz.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ExcelConverterHead not enable");
-        isIndexMethod(head.indexes(), clazz);// 验证idnex内值是否存在于对象中。
+        isIndexMethod(head.indexes(), clazz);// 验证index内值是否存在于对象中。
         indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
         //sheetName = head.sheetName();

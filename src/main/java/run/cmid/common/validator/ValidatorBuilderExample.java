@@ -9,15 +9,15 @@ import run.cmid.common.compute.ComputeTest;
  */
 public class ValidatorBuilderExample {
 
-    public static <T> EngineClazz<T, String, FunctionDefaultClazz> bulid(Class<T> clazz) {
+    public static <T> EngineClazz<T, String, FunctionDefaultClazz> build(Class<T> clazz) {
         return new EngineClazz<T, String, FunctionDefaultClazz>(clazz, new FunctionDefaultClazz());
     }
 
     public static void main(String[] args) {
         ComputeTest cc = new ComputeTest();
-        EngineClazz<ComputeTest, String, FunctionDefaultClazz> data = ValidatorBuilderExample.bulid(ComputeTest.class);
+        EngineClazz<ComputeTest, String, FunctionDefaultClazz> data = ValidatorBuilderExample.build(ComputeTest.class);
         EngineObject<ComputeTest, String, String, FunctionDefaultObject<ComputeTest>> engineObject = data
-                .engineObjcet(cc, new FunctionDefaultObject<ComputeTest>());
+                .engineObject(cc, new FunctionDefaultObject<ComputeTest>());
         engineObject.compute();
     }
 }

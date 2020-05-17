@@ -26,8 +26,8 @@ public class OverflowNode<T> {
             return;
         if (this.parents == null)
             this.parents = new HashSet<T>();
-        for (T spostPath : parents) {
-            this.parents.add(spostPath);
+        for (T path : parents) {
+            this.parents.add(path);
         }
     }
 

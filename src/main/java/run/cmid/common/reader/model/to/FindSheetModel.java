@@ -15,11 +15,11 @@ import run.cmid.common.reader.model.FieldDetail;
 @Getter
 @Setter
 public class FindSheetModel<T> {
-    public FindSheetModel(List<FieldDetail> findHeadFiel) {
-        this.findHeadFiel = findHeadFiel;
+    public FindSheetModel(List<FieldDetail> findHeadField) {
+        this.findHeadField = findHeadField;
     }
 
     private Sheet findSheet;
-    private final List<FieldDetail> findHeadFiel;
+    private final List<FieldDetail> findHeadField;
 
 }

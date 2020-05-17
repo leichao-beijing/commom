@@ -67,17 +67,6 @@ public class ConverterFieldDetail {
 
     }
 
-    /**
-     * 功能废弃
-     */
-    public static <T> FieldDetail addCheckInteface(FieldDetail fieldDetail, Field field) {
-//        if (field.isAnnotationPresent(ExcelCheckStringRule.class))
-//            fieldDetail.setStringRule(field.getAnnotation(ExcelCheckStringRule.class));
-//        if (field.isAnnotationPresent(ExcelCheckEumnRule.class))
-//            fieldDetail.setEumnRule(field.getAnnotation(ExcelCheckEumnRule.class));
-        return fieldDetail;
-    }
-
     public static <T> FindSheetModel<T> toFindModel(Class<T> classes, ExcelHeadModel excelHeadModel) {
         return new FindSheetModel<T>(toList(classes, excelHeadModel, null));
     }

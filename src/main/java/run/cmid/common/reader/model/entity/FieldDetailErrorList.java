@@ -13,11 +13,11 @@ import run.cmid.common.reader.model.to.AddressCell;
  */
 @Getter
 public class FieldDetailErrorList<T> {
-    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetail>> chackNullList) {
+    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetail>> checkNullList) {
         this.tag = tag;
-        this.chackNullList = chackNullList;
+        this.checkNullList = checkNullList;
     }
 
     private LocationTag<T> tag;
-    private List<AddressCell<FieldDetail>> chackNullList;
+    private List<AddressCell<FieldDetail>> checkNullList;
 }

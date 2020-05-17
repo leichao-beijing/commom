@@ -12,13 +12,13 @@ import lombok.Getter;
  */
 @Getter
 public class SameFileRename {
-    public static final String LINKE_TAG = "-";
+    public static final String LINK_TAG = "-";
 
     private HashMap<String, CountInt> map = new HashMap<String, CountInt>();
 
     private HashSet<String> fileAll = new HashSet<String>();
 
-    public void claer() {
+    public void clear() {
         map.clear();
     }
 
@@ -26,8 +26,8 @@ public class SameFileRename {
         fileAll.add(fileName);
         String name = StringUtils.getValueHead(fileName, StringUtils.SPOT);
         String suffix = StringUtils.getTagAfterValue(fileName, StringUtils.SPOT);
-        String nameHead = StringUtils.getValueHead(name, LINKE_TAG);
-        String nameBody = StringUtils.getTagAfterValue(name, LINKE_TAG);
+        String nameHead = StringUtils.getValueHead(name, LINK_TAG);
+        String nameBody = StringUtils.getTagAfterValue(name, LINK_TAG);
 
         String value = null;
         int i = -1;
@@ -49,8 +49,8 @@ public class SameFileRename {
 
         String name = StringUtils.getValueHead(fileName, StringUtils.SPOT);
         String suffix = StringUtils.getTagAfterValue(fileName, StringUtils.SPOT);
-        String nameHead = StringUtils.getValueHead(name, LINKE_TAG);
-        String nameBody = StringUtils.getTagAfterValue(name, LINKE_TAG);
+        String nameHead = StringUtils.getValueHead(name, LINK_TAG);
+        String nameBody = StringUtils.getTagAfterValue(name, LINK_TAG);
 
         String value = null;
         int i = -1;
@@ -74,7 +74,7 @@ public class SameFileRename {
         map.remove(value);
         map.put(value, countInt);
 
-        return nameHead + LINKE_TAG + countInt.getCount() + StringUtils.SPOT + suffix;
+        return nameHead + LINK_TAG + countInt.getCount() + StringUtils.SPOT + suffix;
     }
 }
 

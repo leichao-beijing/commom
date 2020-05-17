@@ -24,8 +24,6 @@ public class ComputeTest {
         ComputeTest computeTest = new ComputeTest();
         ComputeObject.compute(computeTest);
         computeTest.getCompute();
-// getComputs
-// getComputs
     }
 
     private Integer v1 = 10;

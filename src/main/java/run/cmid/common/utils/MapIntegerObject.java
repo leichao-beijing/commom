@@ -43,7 +43,7 @@ public class MapIntegerObject {
      * @param path
      * @param castState true时ClassCastException存在时，将会抛出异常。
      * @param state     true时直接存在数据，false时采用ReflectLcUtils.getObjectValue
-     *                  获取对应pathvalue值
+     *                  获取对应pathValue值
      * @exception ClassCastException
      */
     @SuppressWarnings("unchecked")

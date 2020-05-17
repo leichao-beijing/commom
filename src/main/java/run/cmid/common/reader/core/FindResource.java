@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 使用java对象内fiel从excel头文件中提取与java对象对应的内容
+ * 使用java对象内field从excel头文件中提取与java对象对应的内容
  *
  * @author leichao
  */
@@ -34,7 +34,7 @@ public class FindResource<T> {
 
     public FindResource(List<FieldDetail> findList, ExcelHeadModel headModel) {
         this.findList = toLocationTag(findList);
-        this.wrongCount = headModel.getMaxWorngCount();
+        this.wrongCount = headModel.getMaxWrongCount();
         this.headModel = headModel;
     }
 
@@ -140,7 +140,7 @@ public class FindResource<T> {
                     });
         }
         if (detail.getModel() == ExcelReadType.NO_EQUALS || detail.getModel() == ExcelReadType.NO_INCLUDE) {
-            throw new ConverterExcelConfigException(ConfigErrorType.NO_SUPPORT_ENUM_YYPE).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
+            throw new ConverterExcelConfigException(ConfigErrorType.NO_SUPPORT_ENUM_CONFIG).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
         }
         if (response != null) {
             return true;

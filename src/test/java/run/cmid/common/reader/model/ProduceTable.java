@@ -46,20 +46,20 @@ public class ProduceTable {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ConverterProperty(value = "勘察完成", checkNull = true, model = ExcelReadType.INCLUDE)
-    private Date chckDoneDate;
+    private Date checkDoneDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ConverterProperty(value = "设计完成", checkNull = true, model = ExcelReadType.INCLUDE)
     private Date designerDoneDate;
 
     @ConverterProperty(value = "勘察费", checkNull = true, model = ExcelReadType.INCLUDE)
-    private Double chckCost;
+    private Double checkCost;
 
     @ConverterProperty(value = "设计费", checkNull = true, model = ExcelReadType.INCLUDE)
     private Double designerCost;
 
     @ConverterProperty(value = "勘察设计费", checkNull = true, model = ExcelReadType.INCLUDE)
-    private Double chckDesignerCost;
+    private Double checkDesignerCost;
 
     @ConverterProperty(value = "合作类型", enumGetValueMethodName = "getTypeName", checkNull = true)
     private CooperateType cooperateType;

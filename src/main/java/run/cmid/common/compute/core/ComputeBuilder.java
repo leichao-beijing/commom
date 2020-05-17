@@ -28,15 +28,15 @@ public class ComputeBuilder<T> {
     public void compute(T t) {
         if (rco == null)
             rco = new ResultComputeObject<T>(jexlEngine, overflow);
-        engineClazz.engineObjcet(t, rco).compute();
+        engineClazz.engineObject(t, rco).compute();
     }
 
     public static void main(String[] args) {
         ComputeTest ct = new ComputeTest();
-        ComputeBuilder.bulid(ComputeTest.class).compute(ct);
+        ComputeBuilder.build(ComputeTest.class).compute(ct);
     }
 
-    public static <T> ComputeBuilder<T> bulid(Class<T> clazz) {
+    public static <T> ComputeBuilder<T> build(Class<T> clazz) {
         return new ComputeBuilder<T>(clazz);
     }
 }

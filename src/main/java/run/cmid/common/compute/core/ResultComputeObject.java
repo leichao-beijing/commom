@@ -42,9 +42,9 @@ public class ResultComputeObject<T> implements ResultObjectInterface<T, ComputeI
                 return;
             SpotPath fieldName = value.getComputeField();
             ComputeInfo info = map.get(fieldName);
-            Object computValue = ReflectLcUtils.getObjectValue(t, fieldName.getPaths());
-            if (computValue instanceof String) {
-                String val = (String) computValue;
+            Object computeValue = ReflectLcUtils.getObjectValue(t, fieldName.getPaths());
+            if (computeValue instanceof String) {
+                String val = (String) computeValue;
                 value.setComputeList(ResultComputeClazz.computeMethodToList(info.getPath(), val, jexlEngine));
                 if (value.getComputeList() == null)
                     throw new NullPointerException(key + "@ComputeField is null.");
@@ -97,8 +97,8 @@ public class ResultComputeObject<T> implements ResultObjectInterface<T, ComputeI
             Object value = je.evaluate(jc);
             mapObject.put(info.getInfo().getPath(), value);
             String methodName = ReflectLcUtils.methodSetString(info.getInfo().getPath().getName());
-            Class<?> paramterClasses = ReflectLcUtils.getMethodParameterTypeFirst(info.getInfo().getType(), methodName);
-            Object oo = converterRegistry.convert(paramterClasses, value);
+            Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(info.getInfo().getType(), methodName);
+            Object oo = converterRegistry.convert(parameterClasses, value);
             if (oo != null) {
                 SpotPath parent = info.getInfo().getPath().getParent();
                 Object parentObject = null;

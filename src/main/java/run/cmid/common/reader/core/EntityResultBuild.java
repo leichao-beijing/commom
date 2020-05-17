@@ -132,7 +132,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             if (value.getInfo().isNullCheck() && value.getValue() == null) {
                 tag.getFiledNull().add(name);
                 CellAddressAndMessage message = new CellAddressAndMessage(rowInfo.getRownum(),
-                        value.getInfo().getColumn(), ExcelExceptionType.NOT_FIND_CHACK_VALUE);
+                        value.getInfo().getColumn(), ExcelExceptionType.NOT_FIND_CHECK_VALUE);
                 checkErrorList.add(message);
                 continue;
             }

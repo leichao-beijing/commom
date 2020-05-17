@@ -18,12 +18,12 @@ public class ExcelHeadModel {
     public ExcelHeadModel(ConverterHead head) {
         if (head == null)
             return;
-        maxWorngCount = head.maxWrongCount();
+        maxWrongCount = head.maxWrongCount();
         skipNoAnnotationField = head.skipNoAnnotationField();
         bookTagName=head.bookTagName();
     }
 
-    private int maxWorngCount = 3;
+    private int maxWrongCount = 3;
 
     /**
      * 开始后跳过没有ExcelConverter的Field字段。默认false

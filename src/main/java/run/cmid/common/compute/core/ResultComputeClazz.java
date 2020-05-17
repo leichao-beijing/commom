@@ -37,7 +37,7 @@ public class ResultComputeClazz implements FunctionClazzInterface<ComputeInfo> {
         List<SpotPath> list = null;
         ComputeMethodFieldName computeMethodFieldName = field.getAnnotation(ComputeMethodFieldName.class);
         if (computeMethod != null && computeMethodFieldName != null) {
-            throw new NullPointerException("ComputeMethod and ComputeMethodFieldName Overeide");
+            throw new NullPointerException("ComputeMethod and ComputeMethodFieldName Override");
         }
         if (computeMethod != null) {
             list = computeMethodToList(path, computeMethod.value(), jexlEngine);
@@ -48,7 +48,7 @@ public class ResultComputeClazz implements FunctionClazzInterface<ComputeInfo> {
             if (computeMethodFieldName.value().trim().equals(""))
                 throw new NullPointerException("computeMethodFieldName.value is null");
             else
-                return new ComputeInfo(path, path.careSomeParentSpostPath(computeMethodFieldName.value()),
+                return new ComputeInfo(path, path.careSomeParentSpotPath(computeMethodFieldName.value()),
                         field.getType());
         return new ComputeInfo(path, (computeMethod == null) ? null : computeMethod.value(), list, field.getType());
     }
@@ -67,7 +67,7 @@ public class ResultComputeClazz implements FunctionClazzInterface<ComputeInfo> {
                 else
                     value = value + StringUtils.SPOT + list.get(j);
             }
-            SpotPath pathList = path.careSomeParentSpostPath(value);
+            SpotPath pathList = path.careSomeParentSpotPath(value);
             if (!paths.contains(pathList))
                 paths.add(pathList);
         }

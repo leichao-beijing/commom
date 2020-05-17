@@ -345,7 +345,7 @@ public class SheetStyleUtils {
         int row = SheetUtils.getRowCount(sheet);
         int maxColumn = 0;
         for (int i = 0; i < row; i++) {
-            int newColumn = SheetUtils.getColumCount(sheet, i);
+            int newColumn = SheetUtils.getColumnCount(sheet, i);
             if (maxColumn < newColumn)
                 maxColumn = newColumn;
         }
