@@ -23,7 +23,7 @@ import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
-import run.cmid.common.reader.plugins.SheetUtils;
+import run.cmid.common.poi.core.SheetUtils;
 
 /**
  * @author leichao

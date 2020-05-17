@@ -1,6 +1,8 @@
 package run.cmid.common.reader.service;
 
 import org.apache.poi.ss.usermodel.Workbook;
+import run.cmid.common.poi.core.PoiReader;
+import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.reader.core.EntityBuild;
 import run.cmid.common.reader.core.EntityBuildings;
 import run.cmid.common.reader.exception.ConverterExcelException;
@@ -45,7 +47,9 @@ public class ExcelEntityBuildings<T> extends EntityBuildings<T> {
      */
     public EntityBuild<T> find(Workbook workbook, int readHeadRownum, boolean rangeState)
             throws ConverterExcelException {
-        WorkbookResources resource = new WorkbookResources(workbook, rangeState);
+        ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();
+        readerPoiConfig.setCellRangeState(false);
+        PoiReader resource = PoiReader.build(workbook, readerPoiConfig, null);
         return find(readHeadRownum, resource);
     }
 }

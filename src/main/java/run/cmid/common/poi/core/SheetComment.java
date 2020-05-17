@@ -1,4 +1,4 @@
-package run.cmid.common.reader.plugins;
+package run.cmid.common.poi.core;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -27,18 +27,20 @@ import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-public class SheetStyle {
+public class SheetComment {
     public final CellStyle whiteBorder;
     public final CellStyle yellowBorder;
     public final CellStyle redBorder;
 
     private final Sheet sheet;
 
-    public SheetStyle(Sheet sheet) {
+    public SheetComment(Sheet sheet) {
+
         this.sheet = sheet;
         whiteBorder = getWhiteBorder();
         yellowBorder = getYellowBorder();
         redBorder = getRedBorder();
+
     }
 
     public Comment getComment(String maker, String value) throws IOException {
@@ -50,8 +52,7 @@ public class SheetStyle {
     }
 
     private Comment commentXssf(HSSFSheet sheet, String maker, String value) {
-
-        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 3, 3, (short) 5, 6);
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 1, 1, (short) 0, 0);
         HSSFPatriarch patriarch = sheet.getDrawingPatriarch();
         if (patriarch == null)
             patriarch = sheet.createDrawingPatriarch();
@@ -92,7 +93,7 @@ public class SheetStyle {
      */
     public void clearStyleCell(Cell cell) {
         cell.removeCellComment();
-        cell.setCellStyle(sheet.getWorkbook().createCellStyle());
+        cell.setCellStyle(null);
     }
 
     /**

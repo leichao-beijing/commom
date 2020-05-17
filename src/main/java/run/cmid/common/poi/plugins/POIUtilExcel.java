@@ -1,4 +1,4 @@
-package run.cmid.common.reader.plugins;
+package run.cmid.common.poi.plugins;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import cn.hutool.core.io.IoUtil;
 import lombok.Setter;
 
+@Deprecated
 public class POIUtilExcel {
     @Setter
     private InputStream is;
@@ -125,7 +126,7 @@ public class POIUtilExcel {
 
     /**
      * 获取此工作簿所有Sheet表
-     * 
+     *
      * @return sheet表列表
      */
     public List<Sheet> getSheets() {
@@ -139,7 +140,7 @@ public class POIUtilExcel {
 
     /**
      * 返回工作簿表格数
-     * 
+     *
      * @return 工作簿表格数
      */
     public int getSheetCount() {

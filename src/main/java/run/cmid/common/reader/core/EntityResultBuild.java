@@ -193,8 +193,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
         if (!method.value().equals("") && !srcValue.getValue().equals(method.value()))
             return null;
         List<String> list = Arrays.asList(method.compareValue());
-        if (desValue.getValue().equals("003"))
-            System.err.println("222");
         switch (method.model()) {
             case EQUALS:
                 if (desValue.getValue() != null && list.contains(desValue.getValue()))
@@ -203,7 +201,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     break;
             case INCLUDE:
                 for (String val : list) {
-                    if(desValue.getValue().toString().indexOf(val)!=-1)
+                    if (desValue.getValue().toString().indexOf(val) != -1)
                         return null;
                 }
                 break;
@@ -214,7 +212,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             case NO_INCLUDE:
                 boolean state = false;
                 for (String val : list) {
-                    if(desValue.getValue().toString().indexOf(val)==-1){
+                    if (desValue.getValue().toString().indexOf(val) == -1) {
                         state = true;
                         break;
                     }
@@ -236,10 +234,10 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
         String mgs = null;
         if (desValue.equals(srcValue)) {
             mgs = desValue.getInfo().getMatchValue() +
-                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list+ " 的范围内不满足 " +method.model().getTypeName() +" 的判断条件";
+                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
         } else {
             mgs = "当 " + srcValue.getInfo().getMatchValue() + " 列的值等于 " + method.value() + " 时，" + desValue.getInfo().getMatchValue() +
-                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list+ " 的范围内不满足 " +method.model().getTypeName() +" 的判断条件";
+                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
         }
         CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);
@@ -293,16 +291,21 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     }
 
     private RowInfo readRow(int rownum, ReaderPage readerPage) {
-        List<Object> list = readerPage.readRowList(rownum);
-        HashMap<String, DataArray<Object, FieldDetail>> map = buildRowMap(list, mode.getResponse().getList());
+        List<Object> row = readerPage.readRowList(rownum);
+        HashMap<String, DataArray<Object, FieldDetail>> map = buildRowMap(row, mode.getResponse().getList());
         return new RowInfo(rownum, map);
     }
 
     private HashMap<String, DataArray<Object, FieldDetail>> buildRowMap(List<Object> row,
                                                                         List<CompareResponse<FieldDetail, String>> list) {
         HashMap<String, DataArray<Object, FieldDetail>> map = new HashMap<String, DataArray<Object, FieldDetail>>();
+
         for (CompareResponse<FieldDetail, String> compareResponse : list) {
             FieldDetail detail = compareResponse.getSrcData();
+            if (row == null) {
+                map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(null, detail));
+                continue;
+            }
             Object value = null;
             try {
                 value = row.get(compareResponse.getDesIndex());

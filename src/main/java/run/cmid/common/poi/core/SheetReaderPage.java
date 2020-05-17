@@ -1,20 +1,18 @@
-package run.cmid.common.reader.service;
+package run.cmid.common.poi.core;
 
 import cn.hutool.core.date.DateTime;
-import org.apache.poi.hssf.record.FormatRecord;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.SheetUtil;
 import run.cmid.common.compare.model.CompareResponse;
 import run.cmid.common.compare.model.LocationTagError;
+import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.eumns.ExcelExceptionType;
-import run.cmid.common.reader.plugins.SheetUtils;
 
-import java.rmi.ServerError;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,11 +20,11 @@ public class SheetReaderPage implements ReaderPage {
     private final Sheet sheet;
     private final HashMap<CellAddress, CellAddress> cellRangeMap;
 
-    public SheetReaderPage(Sheet sheet, String tagName, boolean cellRangeState) {
+    public SheetReaderPage(Sheet sheet, String tagName, ReaderPoiConfig readerPoiConfig) {
         if (sheet == null)
             throw new NullPointerException((tagName == null) ? "" : tagName + " no find");
         this.sheet = sheet;
-        if (cellRangeState)
+        if (readerPoiConfig.isCellRangeState())
             this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
         else
             this.cellRangeMap = null;
