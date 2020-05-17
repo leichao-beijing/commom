@@ -176,8 +176,8 @@ public class Compares {
                     continue;
 
                 if (biFunction.apply(secCompareState.getValue(), desCompareStateList.get(a).getValue())) {
-                    list.add(new CompareResponse<S1, D1>(secCompareState.getValue().getColumn(),
-                            desCompareStateList.get(a).getValue().getColumn(), secCompareState.getValue().getValue(),
+                    list.add(new CompareResponse<S1, D1>(secCompareState.getValue().getPosition(),
+                            desCompareStateList.get(a).getValue().getPosition(), secCompareState.getValue().getValue(),
                             desCompareState.getValue().getValue()));
 
                     desCompareStateList.get(a).setState(true);
@@ -227,8 +227,8 @@ public class Compares {
                     continue;
 
                 if (biFunction.apply(srcCompareState.getValue(), desCompareStateList.get(a).getValue())) {
-                    list.add(new CompareResponse<S1, D1>(srcCompareState.getValue().getColumn(),
-                            desCompareStateList.get(a).getValue().getColumn(), srcCompareState.getValue().getValue(),
+                    list.add(new CompareResponse<S1, D1>(srcCompareState.getValue().getPosition(),
+                            desCompareStateList.get(a).getValue().getPosition(), srcCompareState.getValue().getValue(),
                             desCompareState.getValue().getValue()));
                     desCompareStateList.get(a).setState(true);
                     srcCompareState.setState(true);
@@ -313,7 +313,7 @@ public class Compares {
             BiFunction<Integer, LocationTag<D1>, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))
-                return new CompareResponse<S1, D1>(srcIndex, deses.get(i).getColumn().intValue(), s1,
+                return new CompareResponse<S1, D1>(srcIndex, deses.get(i).getPosition().intValue(), s1,
                         deses.get(i).getValue());
         }
         return null;

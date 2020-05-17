@@ -1,20 +1,19 @@
 package run.cmid.common.reader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
-import run.cmid.common.reader.core.ConvertDataToWorkbook;
+import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.reader.core.EntityBuild;
-import run.cmid.common.reader.core.EntityBuildings;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.DemandTable;
+import run.cmid.common.reader.model.ProduceTable;
 import run.cmid.common.reader.model.entity.EntityResult;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
-import run.cmid.common.reader.service.ExcelSaveService;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author leichao
@@ -34,8 +33,11 @@ public class ExcelTest {
             System.err.println(ss);
         });
         result.getCellErrorList().forEach((value) -> {
-            System.err.println(value+">>"+value.getMessage() );
+            System.err.println(value + ">>" + value.getMessage());
 
+        });
+        result.getResultList().forEach((var) -> {
+            System.err.println(var);
         });
 
 //
@@ -48,4 +50,24 @@ public class ExcelTest {
 //        save.save();
     }
 
+    @Test
+    public void produce() throws IOException, ConverterExcelException {
+        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
+        ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
+
+        Workbook workbook = new XSSFWorkbook(ras);
+        EntityBuild<ProduceTable> e = ee.find(workbook);
+        EntityResult<ProduceTable> result = e.build();
+
+        result.getErrorType().forEach((ss) -> {
+            System.err.println(ss);
+        });
+        result.getCellErrorList().forEach((value) -> {
+            System.err.println(value + ">>" + value.getMessage());
+
+        });
+        result.getResultList().forEach((var) -> {
+            System.err.println(var);
+        });
+    }
 }

@@ -10,9 +10,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import cn.hutool.core.util.ReflectUtil;
-import run.cmid.common.reader.annotations.ExcelConverter;
-import run.cmid.common.reader.annotations.ExcelConverterList;
-import run.cmid.common.reader.annotations.ExcelConverterSimple;
+import run.cmid.common.reader.annotations.ConverterProperty;
+import run.cmid.common.reader.annotations.ConverterPropertyList;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 import run.cmid.common.reader.model.to.FindSheetModel;
@@ -32,12 +31,12 @@ public class ConverterFieldDetail {
             if (indexes!=null&&indexes.contains(field.getName()))
                 check = true;
             JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
-            ExcelConverter excelConverter = field.getAnnotation(ExcelConverter.class);
-            ExcelConverterList excelConverterStringList = field.getAnnotation(ExcelConverterList.class);
-            if (excelConverter != null && excelConverterStringList != null)
+            ConverterProperty converterProperty = field.getAnnotation(ConverterProperty.class);
+            ConverterPropertyList excelConverterStringList = field.getAnnotation(ConverterPropertyList.class);
+            if (converterProperty != null && excelConverterStringList != null)
                 throw new NullPointerException("@ExcelConverter and @ExcelConverterList Override");
-            if (excelConverter != null) {
-                fieldDetail = new FieldDetail(field, classes, jsonFormat, excelConverter);
+            if (converterProperty != null) {
+                fieldDetail = new FieldDetail(field, classes, jsonFormat, converterProperty);
                 if (check)
                     fieldDetail.setNullCheck(true);
                 list.add(fieldDetail);
@@ -45,7 +44,7 @@ public class ConverterFieldDetail {
             }
 
             if (excelConverterStringList != null) {
-                ExcelConverterSimple[] values = excelConverterStringList.value();
+                ConverterProperty[] values = excelConverterStringList.value();
                 if (values.length == 0) {
                     throw new NullPointerException("ExcelConverterList no data");
                 }

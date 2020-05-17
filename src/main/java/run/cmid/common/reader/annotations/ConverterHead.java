@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExcelConverterHead {
+public @interface ConverterHead {
     /**
      * 允许最大发生匹配错误数量 默认3
      */

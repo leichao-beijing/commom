@@ -10,8 +10,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmid.common.reader.annotations.ExcelConverter;
-import run.cmid.common.reader.annotations.ExcelConverterSimple;
+import run.cmid.common.reader.annotations.ConverterProperty;
 import run.cmid.common.reader.annotations.Method;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.model.eumns.ConfigErrorType;
@@ -20,25 +19,24 @@ import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
- * @param <T> 读取原型的数据类型泛型
  * @author leichao
  */
 @Getter
 @ToString
 public class FieldDetail {
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ExcelConverter excelConverter) {
+    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ConverterProperty converterProperty) {
         this.jsonFormat = jsonFormat;
         this.field = field;
         this.fieldName = field.getName();
-        this.values = (excelConverter.values().length != 0) ? Arrays.asList(excelConverter.values())
+        this.values = (converterProperty.value().length != 0) ? Arrays.asList(converterProperty.value())
                 : Arrays.asList(field.getName());
         this.parentClass = parentClass;
         this.index = 0;
         this.type = FieldDetailType.SINGLE;
-        this.model = excelConverter.model();
-        this.max = excelConverter.max();
-        this.methods = excelConverter.methods();
-        this.nullCheck = excelConverter.checkNull();
+        this.model = converterProperty.model();
+        this.max = converterProperty.max();
+        this.methods = converterProperty.methods();
+        this.nullCheck = converterProperty.checkNull();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -47,21 +45,21 @@ public class FieldDetail {
     }
 
     public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat,
-            ExcelConverterSimple excelConverterSimple, int index) {
+                       ConverterProperty converterProperty, int index) {
         this.jsonFormat = jsonFormat;
         this.field = field;
         this.fieldName = field.getName();
         this.parentClass = parentClass;
         this.index = index;
         this.type = FieldDetailType.LIST;
-        this.nullCheck = excelConverterSimple.checkNull();
-        this.model = excelConverterSimple.model();
-        if (excelConverterSimple.value().length == 0) {
+        this.nullCheck = converterProperty.checkNull();
+        this.model = converterProperty.model();
+        if (converterProperty.value().length == 0) {
             throw new ConverterExcelConfigException(ConfigErrorType.LIST_ERROR_VALUE_IS_EMPTY);
         }
-        this.values = Arrays.asList(excelConverterSimple.value());
-        this.max = excelConverterSimple.max();
-        this.methods = excelConverterSimple.methods();
+        this.values = Arrays.asList(converterProperty.value());
+        this.max = converterProperty.max();
+        this.methods = converterProperty.methods();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -93,10 +91,18 @@ public class FieldDetail {
     private JsonFormat jsonFormat;
     private int index = -1;
     private FieldDetailType type;
+    @Setter
     private String matchValue;
+
+    public String getMatchValue() {
+        if (matchValue != null)
+            return matchValue;
+        return fieldName;
+    }
+
     private final String fieldName;
     private String enumFileName = "";
-    private String enumTypeNameFiledValue = "";
+    private String enumTypeNameFiledValue;
     private final List<String> values;
     private final ExcelReadType model;
     private int max = 100;

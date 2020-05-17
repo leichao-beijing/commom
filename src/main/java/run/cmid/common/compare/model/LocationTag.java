@@ -19,6 +19,6 @@ public class LocationTag<R> extends Tag {
         this.value = value;
     }
     //存在本行内，filed为空的对象
-    private HashSet<String> setFiledNull = new HashSet<String>();
+    private HashSet<String> filedNull = new HashSet<String>();
     private final R value;
 }

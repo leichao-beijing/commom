@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.codec.Resources;
-import org.apache.poi.ss.usermodel.Workbook;
-
 import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
-import run.cmid.common.reader.annotations.ExcelConverterHead;
+import run.cmid.common.reader.annotations.ConverterHead;
 import run.cmid.common.reader.annotations.Index;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
-import run.cmid.common.reader.service.WorkbookResources;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
@@ -43,7 +39,7 @@ public class EntityBuildings<T> {
      */
     public EntityBuildings(Class<T> clazz) {
         this.clazz = clazz;
-        ExcelConverterHead head = clazz.getAnnotation(ExcelConverterHead.class);
+        ConverterHead head = clazz.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ExcelConverterHead not enable");
         isIndexMethod(head.indexes(), clazz);// 验证idnex内值是否存在于对象中。

@@ -7,13 +7,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * 针对List对象的转换，不做头验证，不做值校验，只进行数据存储，无数据时存入空字符串。起始index：1
+ * 搜索头数据进行匹配，匹配起始与结束为止并将全部存入List数据中
+ * 
  * @author leichao
- * @date 2020-04-08 04:46:26
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExcelConverterRange {
-    String[] value();
+public @interface ConverterPropertyList {
+    ConverterProperty[] value();
 }

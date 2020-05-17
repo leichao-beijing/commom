@@ -33,13 +33,13 @@ public class EnumUtil {
      * @param classEnum enum类
      * @param fieldName 调用fieldName进行匹配 当null时，采用默认Enum.toString
      */
-    public static <T> List<String> getEnumNames(Class<T> classEnum, String fieldName) {
-        T[] ts = values(classEnum);
+    public static  List<String> getEnumNames(Class<?> classEnum, String fieldName) {
+        Object[] ts = values(classEnum);
         boolean fieldState = true;
         if (fieldName.equals(""))
             fieldState = false;
         ArrayList<String> list = new ArrayList<String>();
-        for (T t : ts) {
+        for (Object t : ts) {
             if (fieldState)
                 list.add(ReflectUtil.invoke(t, fieldName).toString());
             else

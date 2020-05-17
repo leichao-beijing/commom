@@ -118,20 +118,22 @@ public class FindResource<T> {
     private static Boolean getBoolean(LocationTag<String> d, FieldDetail detail) {
         CompareResponse<String, String> response = null;
         if (detail.getModel() == ExcelReadType.EQUALS) {
-            response = Compares.toList(d.getValue(), d.getColumn().intValue(), detail.getValues(),
+            response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().equals(value)) {
-                            detail.setColumn(d.getColumn());
+                            detail.setColumn(d.getPosition());
+                            detail.setMatchValue(value);
                             return true;
                         }
                         return false;
                     });
         }
         if (detail.getModel() == ExcelReadType.INCLUDE) {
-            response = Compares.toList(d.getValue(), d.getColumn().intValue(), detail.getValues(),
+            response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().indexOf(value) != -1) {
-                            detail.setColumn(d.getColumn());
+                            detail.setColumn(d.getPosition());
+                            detail.setMatchValue(d.getValue());
                             return true;
                         }
                         return false;

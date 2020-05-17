@@ -2,7 +2,7 @@ package run.cmid.common.reader.model.to;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.cmid.common.reader.annotations.ExcelConverterHead;
+import run.cmid.common.reader.annotations.ConverterHead;
 
 /**
  * 
@@ -15,7 +15,7 @@ public class ExcelHeadModel {
     public ExcelHeadModel() {
     }
 
-    public ExcelHeadModel(ExcelConverterHead head) {
+    public ExcelHeadModel(ConverterHead head) {
         if (head == null)
             return;
         maxWorngCount = head.maxWrongCount();

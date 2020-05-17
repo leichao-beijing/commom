@@ -18,7 +18,7 @@ import cn.hutool.core.convert.ConverterRegistry;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
-import run.cmid.common.reader.annotations.ExcelConverterHead;
+import run.cmid.common.reader.annotations.ConverterHead;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
@@ -87,7 +87,7 @@ public class ConvertDataToWorkbook<T> extends EntityBuildings<T> implements Data
     }
 
     private static <T> List<FieldDetail> createFieldDetail(Class<T> classes) {
-        ExcelConverterHead head = classes.getAnnotation(ExcelConverterHead.class);
+        ConverterHead head = classes.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ExcelConverterHead not enable");
         isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。

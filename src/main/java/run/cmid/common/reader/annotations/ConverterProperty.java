@@ -15,9 +15,9 @@ import run.cmid.common.reader.model.eumns.ExcelReadType;
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExcelConverter {
+public @interface ConverterProperty {
 
-    String[] values() default {};
+    String[] value() default {};
     
     /**
      * 当读取对象为枚举对象时，识别该参数。存在时，直接调用参数值的返回值。不存在时，读取枚举对象名称
@@ -32,7 +32,7 @@ public @interface ExcelConverter {
     int max() default 100;
 
     /**
-     * 只有满足fileds内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置
+     * 只有满足fields内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置
      */
     Method[] methods() default {};
 
