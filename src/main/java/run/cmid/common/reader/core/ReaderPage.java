@@ -5,8 +5,12 @@ import run.cmid.common.reader.model.HeadInfo;
 
 import java.util.List;
 
-public interface ReaderPage {
+public interface ReaderPage<PAGE, UNIT> {
+    PAGE getPage();
+
     List<Object> readRowList(int rowNum);
+
+    List<UNIT> readRowUnit(int rowNum);
 
     /**
      * 返回-1时，采取读完位置的策略

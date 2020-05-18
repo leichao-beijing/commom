@@ -1,20 +1,19 @@
 package run.cmid.common.poi.core;
 
-import cn.hutool.core.collection.CollUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import run.cmid.common.io.StringUtils;
-import run.cmid.common.poi.model.StyleInfo;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+
+import run.cmid.common.io.StringUtils;
+import run.cmid.common.poi.model.StyleInfo;
 
 public class StylePalette {
     private final FormatPalette formatPalette;
@@ -42,41 +41,66 @@ public class StylePalette {
         cellStyle.setBorderLeft(styleInfo.getBorderLeft());
         cellStyle.setBorderRight(styleInfo.getBorderRight());
         if (styleInfo.getTopBorderColor() != null)
-            cellStyle.setTopBorderColor(getColorIndex(styleInfo.getTopBorderColor()));
+            cellStyle.setTopBorderColor(styleInfo.getTopBorderColor());
         if (styleInfo.getLeftBorderColor() != null)
-            cellStyle.setLeftBorderColor(getColorIndex(styleInfo.getLeftBorderColor()));
+            cellStyle.setLeftBorderColor(styleInfo.getLeftBorderColor());
         if (styleInfo.getBottomBorderColor() != null)
-            cellStyle.setBottomBorderColor(getColorIndex(styleInfo.getBottomBorderColor()));
+            cellStyle.setBottomBorderColor(styleInfo.getBottomBorderColor());
         if (styleInfo.getRightBorderColor() != null)
-            cellStyle.setRightBorderColor(getColorIndex(styleInfo.getRightBorderColor()));
-        if (styleInfo.getFillBackgroundColor() != null)
-            cellStyle.setFillBackgroundColor(getColorIndex(styleInfo.getFillBackgroundColor()));
-        if (styleInfo.getFillForegroundColor() != null)
-            cellStyle.setFillForegroundColor(getColorIndex(styleInfo.getFillForegroundColor()));
+            cellStyle.setRightBorderColor(styleInfo.getRightBorderColor());
+
+        if (styleInfo.getFillBackgroundColor() != null) {
+           copyColorBackgroundColor(styleInfo.getFillBackgroundColor(), workbook, cellStyle);
+        }
+        if (styleInfo.getFillForegroundColor() != null) {
+            copyColorForegroundColor(styleInfo.getFillForegroundColor(), workbook, cellStyle);
+        }
         cellStyle.setFillPattern(styleInfo.getFillPattern());
         cellStyle.setHidden(styleInfo.isHidden());
         if (styleInfo.getFormat() != null)
             cellStyle.setDataFormat(formatPalette.getFormatIndex(styleInfo.getFormat()));
         cellStyle.setWrapText(styleInfo.isWrapText());
+        org.apache.poi.ss.usermodel.Color sss = cellStyle.getFillForegroundColorColor();
         return cellStyle;
     }
 
-    public short getColorIndex(Color color) {
-        if (workbook instanceof HSSFWorkbook) {
-            return color((HSSFWorkbook) workbook, color);
+    public static void copyColorBackgroundColor(Color srcColor, Workbook desWorkbook, CellStyle desStyle) {
+        if (desWorkbook instanceof HSSFWorkbook && desStyle instanceof HSSFCellStyle) {
+            short i = color((HSSFWorkbook) desWorkbook, srcColor);
+            desStyle.setFillBackgroundColor(i);
+            return;
         }
-        if (workbook instanceof XSSFWorkbook) {
-            return color((XSSFWorkbook) workbook, color);
+        if (desWorkbook instanceof XSSFWorkbook && desStyle instanceof XSSFCellStyle) {
+            XSSFColor color = color((XSSFWorkbook) desWorkbook, srcColor);
+            ((XSSFCellStyle) desStyle).setFillBackgroundColor(color);
+            return;
         }
-        throw new NullPointerException("ColorPalette.getColorIndex");
+        throw new NullPointerException("XSSFWorkbook or XSSFCellStyle HSSFWorkbook and HSSFCellStyle");
     }
 
-    private short color(HSSFWorkbook workbook, Color color) {
-        return workbook.getCustomPalette().findSimilarColor((byte) color.getRed(), (byte) color.getRGB(), (byte) color.getBlue()).getIndex();
+    public static void copyColorForegroundColor(Color srcColor, Workbook desWorkbook, CellStyle desStyle) {
+        if(srcColor==null)
+            return;
+        if (desWorkbook instanceof HSSFWorkbook && desStyle instanceof HSSFCellStyle) {
+            short i = color((HSSFWorkbook) desWorkbook, srcColor);
+            desStyle.setFillForegroundColor(i);
+            return;
+        }
+        if (desWorkbook instanceof XSSFWorkbook && desStyle instanceof XSSFCellStyle) {
+            XSSFColor color = color((XSSFWorkbook) desWorkbook, srcColor);
+            ((XSSFCellStyle) desStyle).setFillForegroundColor(color);
+            return;
+        }
+        throw new NullPointerException("XSSFWorkbook or XSSFCellStyle HSSFWorkbook and HSSFCellStyle");
     }
 
-    private short color(XSSFWorkbook workbook, Color color) {
-        return new XSSFColor(color, new DefaultIndexedColorMap()).getIndex();
+    private static short color(HSSFWorkbook workbook, Color color) {
+        return workbook.getCustomPalette()
+                .findSimilarColor((byte) color.getRed(), (byte) color.getRGB(), (byte) color.getBlue()).getIndex();
+    }
+
+    private static XSSFColor color(XSSFWorkbook workbook, Color color) {
+        return new XSSFColor(color, new DefaultIndexedColorMap());
     }
 
     public static java.awt.Color getColor(CellStyle style) {
@@ -84,12 +108,15 @@ public class StylePalette {
         return getColor(color);
     }
 
-    static Color getColor(org.apache.poi.ss.usermodel.Color color) {
+    public static Color getColor(org.apache.poi.ss.usermodel.Color color) {
         if (color == null)
             return null;
         if (color instanceof HSSFColor) {
             HSSFColor myColor = (HSSFColor) color;
             short[] tr = myColor.getTriplet();
+            String string = myColor.getHexString();
+            if (tr[0] == 0 && tr[1] == 0 && tr[2] == 0)
+                return null;
             return new Color(tr[0], tr[1], tr[2]);
         }
         if (color instanceof XSSFColor) {
@@ -102,5 +129,4 @@ public class StylePalette {
         }
         return null;
     }
-
 }

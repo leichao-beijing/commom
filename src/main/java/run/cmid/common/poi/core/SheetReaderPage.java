@@ -16,7 +16,7 @@ import run.cmid.common.reader.model.eumns.ExcelExceptionType;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class SheetReaderPage implements ReaderPage {
+public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
     private final Sheet sheet;
     private final HashMap<CellAddress, CellAddress> cellRangeMap;
 
@@ -28,6 +28,12 @@ public class SheetReaderPage implements ReaderPage {
             this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
         else
             this.cellRangeMap = null;
+        this.length=sheet.getLastRowNum();
+    }
+
+    @Override
+    public Sheet getPage() {
+        return sheet;
     }
 
     @Override
@@ -52,7 +58,7 @@ public class SheetReaderPage implements ReaderPage {
         switch (type) {
             case NUMERIC:
                 short formatIndex = cell.getCellStyle().getDataFormat();
-                int i = cell.getColumnIndex();
+               //int i = cell.getColumnIndex();
                 List<CompareResponse<FieldDetail, String>> list = headInfo.getResponse().getList();
                 FieldDetail detail = null;
                 for (CompareResponse<FieldDetail, String> fieldDetailStringCompareResponse : list) {
@@ -141,5 +147,23 @@ public class SheetReaderPage implements ReaderPage {
                     + " " + locationTagError.getEx().getMessageValue());
         }
         return errorTypeMap;
+    }
+
+    @Override
+    public List<Cell> readRowUnit(int rowNum) {
+        List<Cell> list = new ArrayList<>();
+        Row row = sheet.getRow(rowNum);
+        if (row == null)
+            return null;
+        short lastNum = row.getLastCellNum();
+        for (int i = 0; i < lastNum; i++) {
+            Cell value = row.getCell(i);
+            if (value == null) {
+                list.add(null);
+                continue;
+            }
+            list.add(value);
+        }
+        return (list.size() == 0) ? null : list;
     }
 }

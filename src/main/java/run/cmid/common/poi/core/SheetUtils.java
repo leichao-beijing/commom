@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import run.cmid.common.compare.model.CompareResponse;
+import run.cmid.common.poi.model.StyleInfo;
 import run.cmid.common.reader.model.to.BorderMode;
 
 /**
@@ -521,4 +522,35 @@ public class SheetUtils {
         return maxColumn;
     }
 
+    public static void copyCellValue(Cell srcCell, Cell desCell, StylePalette desStylePalette) {
+        StyleInfo info = new StyleInfo(srcCell.getCellStyle());
+        CellStyle cellStyle = desStylePalette.createStyle(info);
+        copyCellValue(srcCell, desCell, srcCell.getCellType());
+        desCell.setCellStyle(cellStyle);
+    }
+
+    /**
+     * cell的复制
+     */
+    public static void copyCellValue(Cell srcCell, Cell desCell, CellType type) {
+
+        switch (type) {
+            case NUMERIC:
+                desCell.setCellValue(srcCell.getNumericCellValue());
+                break;
+            case STRING:
+                desCell.setCellValue(srcCell.toString());
+                break;
+            case FORMULA:
+                if (desCell.getCachedFormulaResultType() != CellType.FORMULA)
+                    copyCellValue(srcCell, desCell, desCell.getCachedFormulaResultType());
+                break;
+            case BOOLEAN:
+                desCell.setCellValue(srcCell.getBooleanCellValue());
+                break;
+            default:
+                break;
+        }
+
+    }
 }

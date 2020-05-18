@@ -26,6 +26,27 @@ import java.io.InputStream;
 
 public class ExcelTest {
     @Test
+    public void poiReaderClone() throws IOException {
+        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
+        ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();
+        PoiReader poi = PoiReader.build(ras, null, readerPoiConfig, null);
+        poi.saveAndClose(new File("D:\\xxx.xls"));
+
+        InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
+        ReaderPoiConfig readerPoiConfig1 = new ReaderPoiConfig();
+        PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
+
+        poi.clone(poi1,"Sheet1","Sheet122222");
+
+
+        //poi1.saveAndClose(new File("D:\\xxx.xlsx"));
+
+
+    }
+
+
+
+    @Test
     public void poiReader() throws IOException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();

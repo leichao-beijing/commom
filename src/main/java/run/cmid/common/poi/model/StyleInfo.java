@@ -2,7 +2,11 @@ package run.cmid.common.poi.model;
 
 import lombok.Getter;
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Workbook;
+import run.cmid.common.poi.core.FormatPalette;
+import run.cmid.common.poi.core.StylePalette;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -14,6 +18,34 @@ import java.util.Map;
  */
 @Getter
 public class StyleInfo {
+
+
+    public StyleInfo() {
+    }
+
+    public StyleInfo(CellStyle cellStyle) {
+        setFillBackgroundColor(StylePalette.getColor(cellStyle.getFillBackgroundColorColor()));
+        setFillForegroundColor(StylePalette.getColor(cellStyle.getFillForegroundColorColor()));
+
+        setLeftBorderColor(cellStyle.getLeftBorderColor());
+        setBottomBorderColor(cellStyle.getBottomBorderColor());
+        setRightBorderColor(cellStyle.getRightBorderColor());
+        setTopBorderColor(cellStyle.getTopBorderColor());
+
+        setFillPattern(cellStyle.getFillPattern());
+
+        setWrapText(cellStyle.getWrapText());
+        setHidden(cellStyle.getHidden());
+
+        setFormat(cellStyle.getDataFormatString());
+
+
+        setBorderBottom(cellStyle.getBorderBottom());
+        setBorderLeft(cellStyle.getBorderLeft());
+        setBorderRight(cellStyle.getBorderRight());
+        setBorderTop(cellStyle.getBorderTop());
+    }
+
     private Map<String, Object> data = new HashMap<String, Object>();
     private BorderStyle borderBottom = BorderStyle.NONE;
     private BorderStyle borderLeft = BorderStyle.NONE;
@@ -24,12 +56,12 @@ public class StyleInfo {
     private String format;
     private Color fillForegroundColor;
     private Color fillBackgroundColor;
-    private boolean hidden=false;
+    private boolean hidden = false;
 
-    private Color leftBorderColor;
-    private Color bottomBorderColor;
-    private Color rightBorderColor;
-    private Color topBorderColor;
+    private Short leftBorderColor;
+    private Short bottomBorderColor;
+    private Short rightBorderColor;
+    private Short topBorderColor;
     private boolean wrapText;
 
 
@@ -83,31 +115,29 @@ public class StyleInfo {
         this.fillBackgroundColor = color;
     }
 
-
-
     public void setHidden(boolean hidden) {
         data.put("hidden", hidden);
         this.hidden = hidden;
     }
 
-    public void setLeftBorderColor(Color color) {
-        data.put("leftBorderColor", color);
-        this.leftBorderColor = color;
+    public void setLeftBorderColor(short index) {
+        data.put("leftBorderColor", index);
+        this.leftBorderColor = index;
     }
 
-    public void setBottomBorderColor(Color color) {
-        data.put("bottomBorderColor", color);
-        this.bottomBorderColor = color;
+    public void setBottomBorderColor(short index) {
+        data.put("bottomBorderColor", index);
+        this.bottomBorderColor = index;
     }
 
-    public void setRightBorderColor(Color color) {
-        data.put("rightBorderColor", color);
-        this.rightBorderColor = color;
+    public void setRightBorderColor(short index) {
+        data.put("rightBorderColor", index);
+        this.rightBorderColor = index;
     }
 
-    public void setTopBorderColor(Color color) {
-        data.put("topBorderColor", color);
-        this.topBorderColor = color;
+    public void setTopBorderColor(short index) {
+        data.put("topBorderColor", index);
+        this.topBorderColor = index;
     }
 
     public void setWrapText(boolean wrapText) {
@@ -119,4 +149,6 @@ public class StyleInfo {
         data.put("fillPattern", fillPattern.name());
         FillPattern = fillPattern;
     }
+
+
 }

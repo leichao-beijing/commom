@@ -16,6 +16,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import cn.hutool.core.io.IoUtil;
+import run.cmid.common.poi.core.PoiReader;
+import run.cmid.common.poi.model.ReaderPoiConfig;
 
 /**
  * Excel内图片文件导出功能
@@ -26,10 +28,11 @@ public class ExcelImageExport {
 
     public static int readExcel(Path srcPath, File outPath) throws IOException {
         FileInputStream is = new FileInputStream(srcPath.toFile());
-        POIUtilExcel poi = new POIUtilExcel(is);
+        //POIUtilExcel poi = new POIUtilExcel(is);
+        PoiReader poi=   PoiReader.build(is,null,new ReaderPoiConfig(),srcPath.toFile());
         Workbook word = poi.getWorkbook();
         int size = readWordbookAll(word, srcPath.getFileName().toString(), outPath);
-        poi.close();
+        poi.saveAndClose();
         IoUtil.close(is);
         return size;
     }

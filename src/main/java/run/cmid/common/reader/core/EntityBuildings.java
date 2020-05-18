@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
 import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
 import run.cmid.common.reader.annotations.ConverterHead;
@@ -62,7 +66,7 @@ public class EntityBuildings<T> {
      * @param resource       实现 BookResources 接口的方法。
      * @throws ConverterExcelException
      */
-    public EntityBuild<T> find(int readHeadRownum, BookResources resource)
+    public EntityBuild<T> find(int readHeadRownum, BookPage<Workbook,Sheet,Cell> resource)
             throws ConverterExcelException {
         HeadInfo mode = new FindResource(list, headModel, readHeadRownum).find(resource);
         return new EntityResultBuild<T>(clazz, mode, indexes, readHeadRownum);
