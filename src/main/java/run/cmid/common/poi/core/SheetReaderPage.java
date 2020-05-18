@@ -59,6 +59,8 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
             case NUMERIC:
                 short formatIndex = cell.getCellStyle().getDataFormat();
                //int i = cell.getColumnIndex();
+                if(headInfo==null)
+                    return  cell.getNumericCellValue();
                 List<CompareResponse<FieldDetail, String>> list = headInfo.getResponse().getList();
                 FieldDetail detail = null;
                 for (CompareResponse<FieldDetail, String> fieldDetailStringCompareResponse : list) {

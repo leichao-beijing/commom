@@ -119,4 +119,24 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
             }
         }
     }
+
+    /**
+     * 创建sheet，当sheet存在时，删除原sheet继续创建
+     */
+    public static Sheet createSheetRemove(Workbook workbook, String sheetName) {
+        Sheet sheet = workbook.getSheet(sheetName);
+        if (sheet != null) {
+            if (sheet.getPhysicalNumberOfRows() == 0)
+                return sheet;
+            int size = sheet.getPhysicalNumberOfRows();
+            for (int i = size - 1; i >= 0; i--) {
+                Row row = sheet.getRow(i);
+                if (row == null)
+                    continue;
+                sheet.removeRow(row);
+            }
+            return sheet;
+        }
+        return workbook.createSheet(sheetName);
+    }
 }

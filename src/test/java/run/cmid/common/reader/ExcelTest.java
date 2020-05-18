@@ -9,6 +9,7 @@ import run.cmid.common.poi.core.SheetComment;
 import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.poi.model.StyleInfo;
 import run.cmid.common.reader.core.EntityBuild;
+import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.DemandTable;
 import run.cmid.common.reader.model.ProduceTable;
@@ -17,6 +18,7 @@ import run.cmid.common.reader.service.ExcelEntityBuildings;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -38,10 +40,17 @@ public class ExcelTest {
 
         poi.clone(poi1,"Sheet1","Sheet122222");
 
-
-        //poi1.saveAndClose(new File("D:\\xxx.xlsx"));
-
-
+//        File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
+//
+//        ras= new FileInputStream(bigTable);
+//
+//        poi = PoiReader.build(ras, null, readerPoiConfig, null);
+//
+//        ReaderPage<Sheet, Cell> book = poi.book(0);
+//
+//        for (int i = 0; i <book.length() ; i++) {
+//            System.err.println(book.readRowList(i));
+//        }
     }
 
 
