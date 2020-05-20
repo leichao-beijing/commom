@@ -24,6 +24,7 @@ import run.cmid.common.reader.model.eumns.ConfigErrorType;
 import run.cmid.common.reader.model.eumns.ExcelExceptionType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
+import run.cmid.common.validator.eumns.ValueType;
 
 /**
  * @author leichao
@@ -59,10 +60,8 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
 
     /**
      * 构建表内全部内容
-     *
-     * @throws ConverterExcelException
      */
-    public EntityResult<T> build() throws ConverterExcelException {
+    public EntityResult<T> build() {
         return buildList(0, mode.getReaderPage().length());
     }
 
@@ -180,18 +179,16 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
      * @param address
      */
     public CellAddressAndMessage rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
-        if (srcValue.getInfo() == null)
-            if (StringUtils.isEmpty(desValue.getValue()))//不对desValue=null的对象进行判断
-                return null;
-        if (StringUtils.isEmpty(desValue.getValue()))
-            if (method.check())
+        //当{des}列的值{desValue}满足在{method.computeValue}范围内满足{method.mode}条件时，
+        //{src}列的值[不能没有数据]or[不能是{srcValue}]
+        if (srcValue.getInfo().getFieldName().equals(desValue.getInfo().getFieldName()))
+            if (StringUtils.isEmpty(srcValue.getValue()) && method.check())
                 return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, desValue.getInfo().getMatchValue() + " 列不能没有数据");
-            else
-                return null;
-        if (StringUtils.isEmpty(srcValue.getValue()))
+                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, srcValue.getInfo().getMatchValue() + " 列不能没有数据");
+
+        if (StringUtils.isEmpty(desValue.getValue()))
             return null;
-        if (!method.value().equals("") && !srcValue.getValue().equals(method.value()))
+        if (!method.value().equals("") && !StringUtils.isEmpty(srcValue.getValue()) && !srcValue.getValue().equals(method.value()))
             return null;
         if (method.compareValue().length == 0)
             return null;
@@ -199,14 +196,18 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
         switch (method.model()) {
             case EQUALS:
                 if (list.contains(desValue.getValue()))
-                    return null;
-                if (list.contains(""))
-                    return null;
+                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                        return null;
+                    else
+                        break;
                 break;
             case INCLUDE:
                 for (String val : list) {
                     if (desValue.getValue().toString().indexOf(val) != -1) {
-                        return null;
+                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                            return null;
+                        else
+                            break;
                     }
                 }
                 break;
@@ -223,28 +224,43 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     }
                 }
                 if (state)
-                    return null;
+                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                        return null;
+                    else
+                        break;
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected value: " + mode);
         }
         switch (method.exceptionType()) {
             case NUMBER:
-                if (Validator.isNumber(desValue.getValue().toString()))
+                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString()))
                     return null;
                 break;
             default:
                 break;
         }
+        if (method.value().equals("006"))
+            System.err.println("11");
         String mgs = null;
-        if (desValue.equals(srcValue)) {
-            mgs = desValue.getInfo().getMatchValue() +
-                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
-        } else {
-            mgs = "当 " + srcValue.getInfo().getMatchValue() + " 列的值等于 " + method.value() + " 时，" + desValue.getInfo().getMatchValue() +
-                    " 列的值 不能为：" + desValue.getValue() + ",在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
-
-        }
+        if (method.check() && StringUtils.isEmpty(srcValue.getValue()))
+            mgs = "当<" + desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
+                    "],在" + list + "的范围内满足判断条件 " + method.model().getTypeName() +
+                    " 时,<" + srcValue.getInfo().getMatchValue() + ">的值不能为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) +
+                    ((method.exceptionType() == ValueType.NONE) ? "]." : ".例外数据类型：" + method.exceptionType().getTypeName());
+        else
+            mgs = "在<" +
+                    (StringUtils.isEmpty(method.value()) ? "" : (srcValue.getInfo().getMatchValue() + ">的值为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) + "]和<")) +
+                    desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
+                    "]时,在" + list + "的范围内不满足判断条件 " + method.model().getTypeName() +
+                    ((method.exceptionType() == ValueType.NONE) ? "." : ".例外数据类型：" + method.exceptionType().getTypeName());
+//        if (desValue.equals(srcValue)) {
+//            mgs = desValue.getInfo().getMatchValue() +
+//                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
+//        } else {
+//            mgs = "当 " + srcValue.getInfo().getMatchValue() + " 列的值等于 " + method.value() + " 时，" + desValue.getInfo().getMatchValue() +
+//                    " 列的值 不能为：" + desValue.getValue() + ",在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
+//        }
         CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);
         return message;

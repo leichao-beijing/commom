@@ -22,7 +22,6 @@ public enum FileType implements EnumTypeName {
 
     private FileType(String typeName) {
         this.typeName = typeName;
-
     }
 
     @JsonValue

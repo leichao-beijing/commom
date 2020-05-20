@@ -20,11 +20,12 @@ import run.cmid.common.validator.eumns.ValueType;
 public class DemandTable {
 
     @ConverterProperty(value = { "需求序号" }, methods = {
-            //@Method(compareValue = "\\", exceptionType = ValueType.NUMBER,model = ExcelReadType.NO_EQUALS),
-            //@Method(compareValue = { "001" }, model = ExcelReadType.NO_EQUALS),
-            //@Method(value = "003",fieldName = "needName",  compareValue= { "E报表需求" }, model = ExcelReadType.NO_EQUALS),
-            //@Method(value = "006",fieldName = "needName",compareValue = {}, model = ExcelReadType.NO_EQUALS,check = true),
+            @Method(compareValue = "\\", exceptionType = ValueType.NUMBER,model = ExcelReadType.NO_EQUALS),
+            @Method(compareValue = { "001" }, model = ExcelReadType.NO_EQUALS),
+            @Method(value = "003",fieldName = "needName",  compareValue= { "E报表需求" }, model = ExcelReadType.NO_EQUALS),
             @Method(check = true),
+            @Method(fieldName = "needName",compareValue = "\\"),
+            @Method(fieldName = "needName",value = "006",compareValue = "\\",check = true),
     })
     private String needNumber;// 需求序号
 
