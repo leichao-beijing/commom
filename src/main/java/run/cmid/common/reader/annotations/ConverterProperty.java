@@ -9,23 +9,22 @@ import java.lang.annotation.Target;
 import run.cmid.common.reader.model.eumns.ExcelReadType;
 
 /**
- * 
  * @author leichao
  */
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConverterProperty {
 
     String[] value() default {};
-    
+
     /**
      * 当读取对象为枚举对象时，识别该参数。存在时，直接调用参数值的返回值。不存在时，读取枚举对象名称
      */
     String enumGetValueMethodName() default "";
-    
+
     ExcelReadType model() default ExcelReadType.EQUALS;
-    
+
     /**
      * 当读取内容为字符串时，最大字符串长度限制
      */
@@ -37,7 +36,7 @@ public @interface ConverterProperty {
     Method[] methods() default {};
 
     /**
-     * true时，不允许出现null数据
+     * true时，找不到这列时将抛出异常
      */
-    boolean checkNull() default false;
+    boolean checkColumn() default false;
 }

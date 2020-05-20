@@ -36,7 +36,7 @@ public class FieldDetail {
         this.model = converterProperty.model();
         this.max = converterProperty.max();
         this.methods = converterProperty.methods();
-        this.nullCheck = converterProperty.checkNull();
+        this.checkColumn = converterProperty.checkColumn();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -52,7 +52,7 @@ public class FieldDetail {
         this.parentClass = parentClass;
         this.index = index;
         this.type = FieldDetailType.LIST;
-        this.nullCheck = converterProperty.checkNull();
+        this.checkColumn = converterProperty.checkColumn();
         this.model = converterProperty.model();
         if (converterProperty.value().length == 0) {
             throw new ConverterExcelConfigException(ConfigErrorType.LIST_ERROR_VALUE_IS_EMPTY);
@@ -73,7 +73,7 @@ public class FieldDetail {
         this.fieldName = field.getName();
         this.parentClass = parentClass;
         this.type = FieldDetailType.SINGLE;
-        this.nullCheck = false;
+        this.checkColumn = false;
         this.model = ExcelReadType.EQUALS;
         this.values = Arrays.asList(field.getName());
         this.methods = null;
@@ -85,7 +85,7 @@ public class FieldDetail {
     }
 
     @Setter
-    private boolean nullCheck;
+    private boolean checkColumn;
     private final Field field;
     private final Class<?> parentClass;
     private JsonFormat jsonFormat;

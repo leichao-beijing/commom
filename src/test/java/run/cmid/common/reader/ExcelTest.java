@@ -1,5 +1,10 @@
 package run.cmid.common.reader;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -39,10 +44,12 @@ public class ExcelTest {
         PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
 
         poi.clone(poi1,"Sheet1","Sheet122222");
-
-//        File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
+        File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
+        ras= new FileInputStream(bigTable);
+        ExcelReaderSheetBuilder cc = EasyExcel.read(ras).sheet(0);
+//      System.err.println(cc.doReadSync());
 //
-//        ras= new FileInputStream(bigTable);
+
 //
 //        poi = PoiReader.build(ras, null, readerPoiConfig, null);
 //

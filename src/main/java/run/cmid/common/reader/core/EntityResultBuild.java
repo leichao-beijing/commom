@@ -11,6 +11,7 @@ import cn.hutool.core.util.StrUtil;
 import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
+import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.annotations.Method;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.exception.ConverterExcelException;
@@ -129,13 +130,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             String name = next.getKey();
             DataArray<Object, FieldDetail> value = next.getValue();
             String methodName = "set" + ReflectLcUtils.upperCase(name);
-            if (value.getInfo().isNullCheck() && value.getValue() == null) {
-                tag.getFiledNull().add(name);
-                CellAddressAndMessage message = new CellAddressAndMessage(rowInfo.getRownum(),
-                        value.getInfo().getColumn(), ExcelExceptionType.NOT_FIND_CHECK_VALUE);
-                checkErrorList.add(message);
-                continue;
-            }
             Method[] methods = value.getInfo().getMethods();
             ArrayList<CellAddressAndMessage> megs = null;
             if (methods != null && methods.length != 0) {
@@ -181,28 +175,39 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
      * Method.value 为 空 时，srcValue等于任何值都会执行做后续比较判断。<br>
      *
      * @param srcValue 使用 {@linkplain Method} 所在field的信息
-     * @param desValue 使用 {@linkplain Method} {@code fieldName()} 得到的信息
+     * @param desValue 使用 {@linkplain Method} {@code fieldName()} 得到的信息。
      * @param method
      * @param address
      */
     public CellAddressAndMessage rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
-        if (desValue.getValue() == null)
+        if (srcValue.getInfo() == null)
+            if (StringUtils.isEmpty(desValue.getValue()))//不对desValue=null的对象进行判断
+                return null;
+        if (StringUtils.isEmpty(desValue.getValue()))
+            if (method.check())
+                return new CellAddressAndMessage(address.getRow(), address.getColumn(),
+                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, desValue.getInfo().getMatchValue() + " 列不能没有数据");
+            else
+                return null;
+        if (StringUtils.isEmpty(srcValue.getValue()))
+            return null;
+        if (!method.value().equals("") && !srcValue.getValue().equals(method.value()))
             return null;
         if (method.compareValue().length == 0)
-            throw new ConverterExcelConfigException(ConfigErrorType.METHOD_VALUES_IS_EMPTY);
-        if (!method.value().equals("") && !srcValue.getValue().equals(method.value()))
             return null;
         List<String> list = Arrays.asList(method.compareValue());
         switch (method.model()) {
             case EQUALS:
-                if (desValue.getValue() != null && list.contains(desValue.getValue()))
+                if (list.contains(desValue.getValue()))
                     return null;
-                else
-                    break;
+                if (list.contains(""))
+                    return null;
+                break;
             case INCLUDE:
                 for (String val : list) {
-                    if (desValue.getValue().toString().indexOf(val) != -1)
+                    if (desValue.getValue().toString().indexOf(val) != -1) {
                         return null;
+                    }
                 }
                 break;
             case NO_EQUALS:
@@ -237,7 +242,8 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
         } else {
             mgs = "当 " + srcValue.getInfo().getMatchValue() + " 列的值等于 " + method.value() + " 时，" + desValue.getInfo().getMatchValue() +
-                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
+                    " 列的值 不能为：" + desValue.getValue() + ",在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
+
         }
         CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);

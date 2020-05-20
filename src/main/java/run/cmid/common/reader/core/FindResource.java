@@ -110,7 +110,7 @@ public class FindResource{
                     FieldDetail detail = s.getValue();
                     return getBoolean(d, detail);
                 }, (e) -> {
-                    if (e.getValue().getValue().isNullCheck()) {
+                    if (e.getValue().getValue().isCheckColumn()) {
                         return new ConverterExcelException(ExcelExceptionType.NOT_FIND_CHECK_COLUMN)
                                 .setMessage(e.getValue().getValue().getValues().toString());
                     }

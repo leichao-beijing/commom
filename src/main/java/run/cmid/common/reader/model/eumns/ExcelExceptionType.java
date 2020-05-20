@@ -27,7 +27,7 @@ public enum ExcelExceptionType implements EnumTypeName {
 
     NOT_FIND_CHECK_COLUMN("必选列不存在"),
 
-    NOT_FIND_CHECK_VALUE("必选列内值不存在"),
+    NOT_FIND_CHECK_VALUE("该位置不允许空数据"),
 
     READER_HEAD_EMPTY("头sheet是空的"),
 

@@ -38,7 +38,7 @@ public class ConverterFieldDetail {
             if (converterProperty != null) {
                 fieldDetail = new FieldDetail(field, classes, jsonFormat, converterProperty);
                 if (check)
-                    fieldDetail.setNullCheck(true);
+                    fieldDetail.setCheckColumn(true);
                 list.add(fieldDetail);
                 continue;
             }
@@ -51,7 +51,7 @@ public class ConverterFieldDetail {
                 for (int i = 0; i < values.length; i++) {
                     fieldDetail = new FieldDetail(field, classes, jsonFormat, values[i], i);
                     if (check)
-                        fieldDetail.setNullCheck(true);
+                        fieldDetail.setCheckColumn(true);
                     list.add(fieldDetail);
                 }
                 continue;
@@ -60,7 +60,7 @@ public class ConverterFieldDetail {
                 continue;
             fieldDetail = new FieldDetail(field, classes, jsonFormat);
             if (check)
-                fieldDetail.setNullCheck(true);
+                fieldDetail.setCheckColumn(true);
             list.add(fieldDetail);
         }
         return list;

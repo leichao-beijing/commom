@@ -5,12 +5,15 @@ import run.cmid.common.validator.eumns.ValueType;
 
 /**
  * 根据如果Method.value 等于@Method所在field的值时， 执行 Method.fieldName从对象中取到值，与Method.compareValue 使用  Method.model进行比较
+ *
  * @author leichao
  * @date 2020-05-12 03:27:46
  */
 public @interface Method {
     /**
-     * 为空时将使用@Method所在的fieldName
+     * 为空时将使用@Method所在的fieldName<br>
+     * 当取到的值等于nullOr""时，本配置失效。<br>
+     * 对nullOr""敏感，请使用compareValue()={} and check()=true
      */
     String fieldName() default "";
 
@@ -20,9 +23,9 @@ public @interface Method {
     String value() default "";
 
     /**
-     * 不允许空
+     * 空值时，不进行mode判断直接通过 。该field进行 model.EQUALS和model.NO_EQUALS。其他匹配方法直接返回false。<br>
      */
-    String[] compareValue();
+    String[] compareValue() default {};
 
     ExcelReadType model() default ExcelReadType.EQUALS;
 
@@ -35,4 +38,10 @@ public @interface Method {
      * 错误提示消息
      */
     String message() default "";
+
+    /**
+     * true时，满足fieldName 取值该条件的数据为空时，将会抛出异常<br>
+     * 当compareValue() 等于{} 时，该条配置生效。
+     */
+    boolean check() default false;
 }

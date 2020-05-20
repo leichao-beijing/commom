@@ -87,7 +87,7 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
                 return cell.toString();
             case FORMULA:
                 CellType formulaType = cell.getCachedFormulaResultType();
-                if (formulaType == CellType.FORMULA) {
+                if (formulaType != CellType.FORMULA) {
                     return getCellValue(cell, formulaType);
                 }
                 return null;

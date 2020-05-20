@@ -23,51 +23,51 @@ public class ProduceTable {
     @ConverterProperty(value = "序号")
     private Long id;
 
-    @ConverterProperty(value = "工程分类", checkNull = true)
+    @ConverterProperty(value = "工程分类", checkColumn = true)
     private String engineeringSort;
 
-    @ConverterProperty(value = "项目类型", enumGetValueMethodName = "getTypeName", checkNull = true)
+    @ConverterProperty(value = "项目类型", enumGetValueMethodName = "getTypeName", checkColumn = true)
     private ProjectType projectType;
 
-    @ConverterProperty(value = "需求号", checkNull = true,methods={@Method(compareValue = {"TDL"} ,model = ExcelReadType.NO_INCLUDE)})
+    @ConverterProperty(value = "需求号", checkColumn = true,methods={@Method(compareValue = {"TDL"} ,model = ExcelReadType.NO_INCLUDE)})
     private String demandId;
 
-    @ConverterProperty(value = "站名", checkNull = true)
+    @ConverterProperty(value = "站名", checkColumn = true)
     private String siteName;
 
-    @ConverterProperty(value = "建设单位", checkNull = true)
+    @ConverterProperty(value = "建设单位", checkColumn = true)
     private String provider;
 
-    @ConverterProperty(value = "项目负责人", checkNull = true)
+    @ConverterProperty(value = "项目负责人", checkColumn = true)
     private String head;
 
-    @ConverterProperty(value = "设计人员", checkNull = true)
+    @ConverterProperty(value = "设计人员", checkColumn = true)
     private String designer;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ConverterProperty(value = "勘察完成", checkNull = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "勘察完成", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Date checkDoneDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ConverterProperty(value = "设计完成", checkNull = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "设计完成", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Date designerDoneDate;
 
-    @ConverterProperty(value = "勘察费", checkNull = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "勘察费", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Double checkCost;
 
-    @ConverterProperty(value = "设计费", checkNull = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "设计费", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Double designerCost;
 
-    @ConverterProperty(value = "勘察设计费", checkNull = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "勘察设计费", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Double checkDesignerCost;
 
-    @ConverterProperty(value = "合作类型", enumGetValueMethodName = "getTypeName", checkNull = true)
+    @ConverterProperty(value = "合作类型", enumGetValueMethodName = "getTypeName", checkColumn = true)
     private CooperateType cooperateType;
 
-    @ConverterProperty(value = "合作单位", checkNull = true ,methods={@Method(value ="/",fieldName = "cooperateType",compareValue = {"自有"})})
+    @ConverterProperty(value = "合作单位", checkColumn = true ,methods={@Method(value ="/",fieldName = "cooperateType",compareValue = {"自有"})})
     private String cooperateProvider;
 
-    @ConverterProperty(value = "合作内容", enumGetValueMethodName = "getTypeName", checkNull = true)
+    @ConverterProperty(value = "合作内容", enumGetValueMethodName = "getTypeName", checkColumn = true)
     private CooperateContent cooperateContent;
 
     @ConverterProperty(value = "天线数量", model = ExcelReadType.INCLUDE)
@@ -79,26 +79,26 @@ public class ProduceTable {
     @ConverterProperty(value = "合作成本预估", model = ExcelReadType.INCLUDE)
     private Double cooperateCost;
 
-    @ConverterProperty(value = "需求是否已确认核销", checkNull = true)
+    @ConverterProperty(value = "需求是否已确认核销", checkColumn = true)
     private String demandConfirmation;
 
-    @ConverterProperty(value = "内部立项编号", checkNull = true)
+    @ConverterProperty(value = "内部立项编号", checkColumn = true)
     private String insideProjectId;
 
-    @ConverterProperty(value = "内部立项名称", checkNull = true)
+    @ConverterProperty(value = "内部立项名称", checkColumn = true)
     private String insideProjectName;
 
-    @ConverterProperty(value = "甲方项目mis号", checkNull = true)
+    @ConverterProperty(value = "甲方项目mis号", checkColumn = true)
     private String misIdPartyA;
 
-    @ConverterProperty(value = "所入甲方项目名称", checkNull = true)
+    @ConverterProperty(value = "所入甲方项目名称", checkColumn = true)
     private String projectNamePartyA;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ConverterProperty(value = "产值上报时间", checkNull = true)
+    @ConverterProperty(value = "产值上报时间", checkColumn = true)
     private Date productionReportDate;
 
-    @ConverterProperty(value = "标签", enumGetValueMethodName = "getTypeName", checkNull = true)
+    @ConverterProperty(value = "标签", enumGetValueMethodName = "getTypeName", checkColumn = true)
     private TagState tag;
 
     @ConverterProperty(value = "备注1")

@@ -32,7 +32,7 @@ public class StringUtils {
 
     /**
      * 获取指定字符串的后半部分
-     * 
+     *
      * @param value 需要截取的字符串
      * @param tag   标记值
      */
@@ -49,7 +49,7 @@ public class StringUtils {
 
     /**
      * 获取指定字符串的前半部分 没有找到tag时返回"";
-     * 
+     *
      * @param value 需要截取的字符串
      * @param tag   标记值
      */
@@ -93,6 +93,15 @@ public class StringUtils {
         if (target == null || target.length() == 0)
             return true;
         return target.trim().length() == 0;
+    }
+
+    /**
+     * 验证对象是否为空，或者toString().length()=0
+     */
+    public static boolean isEmpty(final Object obj) {
+        if (obj == null || obj.toString().length() == 0)
+            return true;
+        return false;
     }
 
     /**
