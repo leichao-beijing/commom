@@ -20,7 +20,7 @@ public enum FileType implements EnumTypeName {
 
     COOPERATE_PROVIDER_TABLE("合作单位简称对应表");
 
-    private FileType(String typeName) {
+    FileType(String typeName) {
         this.typeName = typeName;
     }
 
