@@ -18,6 +18,7 @@ import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.DemandTable;
 import run.cmid.common.reader.model.ProduceTable;
+import run.cmid.common.reader.model.Project;
 import run.cmid.common.reader.model.entity.EntityResult;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
 
@@ -32,6 +33,28 @@ import java.io.InputStream;
  */
 
 public class ExcelTest {
+
+    @Test
+    public void testProject() throws IOException, ConverterExcelException {
+        //InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
+        InputStream ras =  new FileInputStream("C:\\Users\\leichao\\Desktop\\产值工具\\app\\错误数据\\to雷超-项目表.xlsx") ;
+        ExcelEntityBuildings<Project> ee = new ExcelEntityBuildings<Project>(Project.class);
+        Workbook workbook = new XSSFWorkbook(ras);
+        EntityBuild<Project> e = ee.find(workbook);
+        EntityResult<Project> result = e.build();
+
+        result.getErrorType().forEach((ss) -> {
+            System.err.println(ss);
+        });
+        result.getCellErrorList().forEach((value) -> {
+            System.err.println(value + ">>" + value.getMessage());
+
+        });
+        result.getResultList().forEach((var) -> {
+            System.err.println(var);
+        });
+    }
+
     @Test
     public void poiReaderClone() throws IOException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");

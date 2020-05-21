@@ -44,4 +44,9 @@ public @interface Method {
      * 当compareValue() 等于{} 时，该条配置生效。
      */
     boolean check() default false;
+
+    /**
+     * 转换异常是否触发。
+     */
+    boolean converterException() default true;
 }

@@ -116,8 +116,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
 
     /**
      * 当所有内容均未匹配时，返回null;
-     *
-     * @throws ConverterExcelException
      */
     private ExcelResult<T> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
@@ -128,7 +126,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
             String name = next.getKey();
             DataArray<Object, FieldDetail> value = next.getValue();
-            String methodName = "set" + ReflectLcUtils.upperCase(name);
+            // value.getInfo().setConverterException(true);//重置转换异常触发状态为true
             Method[] methods = value.getInfo().getMethods();
             ArrayList<CellAddressAndMessage> megs = null;
             if (methods != null && methods.length != 0) {
@@ -147,6 +145,13 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     continue;
                 }
             }
+        }
+        it = rowInfo.getData().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
+            String name = next.getKey();
+            DataArray<Object, FieldDetail> value = next.getValue();
+            String methodName = "set" + ReflectLcUtils.upperCase(name);
             if (value.getValue() != null && value.getValue().toString().length() > value.getInfo().getMax()) {
                 tag.getFiledNull().add(name);
                 CellAddressAndMessage message = new CellAddressAndMessage(rowInfo.getRownum(),
@@ -158,6 +163,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             }
             CellAddressAndMessage message = cellValueToClass(value.getValue(), out, methodName, value.getInfo(),
                     new CellAddress(rowInfo.getRownum(), value.getInfo().getColumn()));
+            value.getInfo().setConverterException(true);//初始化异常状态
             if (message.getEx() != ExcelExceptionType.SUCCESS) {
                 tag.getFiledNull().add(name);
                 checkErrorList.add(message);
@@ -196,24 +202,31 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
         switch (method.model()) {
             case EQUALS:
                 if (list.contains(desValue.getValue()))
-                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+                        if (desValue.getInfo().isConverterException())
+                            desValue.getInfo().setConverterException(method.converterException());
                         return null;
-                    else
+                    } else
                         break;
                 break;
             case INCLUDE:
                 for (String val : list) {
                     if (desValue.getValue().toString().indexOf(val) != -1) {
-                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+                            if (desValue.getInfo().isConverterException())
+                                desValue.getInfo().setConverterException(method.converterException());
                             return null;
-                        else
+                        } else
                             break;
                     }
                 }
                 break;
             case NO_EQUALS:
-                if (!list.contains(desValue.getValue()))
+                if (!list.contains(desValue.getValue())) {
+                    if (desValue.getInfo().isConverterException())
+                        desValue.getInfo().setConverterException(method.converterException());
                     return null;
+                }
                 break;
             case NO_INCLUDE:
                 boolean state = false;
@@ -224,9 +237,11 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     }
                 }
                 if (state)
-                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue())))
+                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+                        if (desValue.getInfo().isConverterException())
+                            desValue.getInfo().setConverterException(method.converterException());
                         return null;
-                    else
+                    } else
                         break;
                 break;
             default:
@@ -234,15 +249,16 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
         }
         switch (method.exceptionType()) {
             case NUMBER:
-                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString()))
+                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString())) {
+                    if (desValue.getInfo().isConverterException())
+                        desValue.getInfo().setConverterException(method.converterException());
                     return null;
+                }
                 break;
             default:
                 break;
         }
-        if (method.value().equals("006"))
-            System.err.println("11");
-        String mgs = null;
+        String mgs;
         if (method.check() && StringUtils.isEmpty(srcValue.getValue()))
             mgs = "当<" + desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
                     "],在" + list + "的范围内满足判断条件 " + method.model().getTypeName() +
@@ -254,13 +270,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
                     "]时,在" + list + "的范围内不满足判断条件 " + method.model().getTypeName() +
                     ((method.exceptionType() == ValueType.NONE) ? "." : ".例外数据类型：" + method.exceptionType().getTypeName());
-//        if (desValue.equals(srcValue)) {
-//            mgs = desValue.getInfo().getMatchValue() +
-//                    " 列的值不能为: " + desValue.getValue() + " ,在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
-//        } else {
-//            mgs = "当 " + srcValue.getInfo().getMatchValue() + " 列的值等于 " + method.value() + " 时，" + desValue.getInfo().getMatchValue() +
-//                    " 列的值 不能为：" + desValue.getValue() + ",在 " + list + " 的范围内不满足 " + method.model().getTypeName() + " 的判断条件";
-//        }
         CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
                 ExcelExceptionType.ENUM_ERROR, mgs);
         return message;
@@ -278,7 +287,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     public CellAddressAndMessage cellValueToClass(Object value, Object out, String setFunctionValue,
                                                   FieldDetail fieldDetail, CellAddress cellAddress) {
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
-        if (value == null && fieldDetail.getType() != FieldDetailType.LIST)
+        if (StringUtils.isEmpty(value)  && fieldDetail.getType() != FieldDetailType.LIST)
             return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
         if (fieldDetail.getType() != FieldDetailType.LIST)
             try {
@@ -296,7 +305,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
 
                 if (!value.getClass().equals(parameterClasses)) {
                     Object data = converterRegistry.convert(parameterClasses, value);
-                    if (data == null)
+                    if (data == null && fieldDetail.isConverterException())
                         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
                                 ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。");
                     else {
@@ -306,8 +315,9 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                 } else
                     ReflectUtil.invoke(out, setFunctionValue, value);
             } catch (Exception e) {
-                return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                        ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
+                if (fieldDetail.isConverterException())
+                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
+                            ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
             }
         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
     }

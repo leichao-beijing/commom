@@ -109,4 +109,9 @@ public class FieldDetail {
     private final Method[] methods;
     @Setter
     private int column = -1;
+    /**
+     * 是否触发转换异常。
+     */
+    @Setter
+    private boolean converterException = true;
 }
