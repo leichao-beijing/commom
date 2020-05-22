@@ -1,52 +1,97 @@
 package run.cmid.common.reader.annotations;
 
+import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.model.eumns.ExcelReadType;
 import run.cmid.common.validator.eumns.ValueType;
 
+import java.lang.annotation.*;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * 根据如果Method.value 等于@Method所在field的值时， 执行 Method.fieldName从对象中取到值，与Method.compareValue 使用  Method.model进行比较
+ * 当filedName 取得值使用fieldNameModel()与computeValue匹配满足时，<br>
+ * 对Master.value 使用mode()匹配满足时Method.value()满足时，结束流程。<br>
+ * 规则1：当filename与master.filedName一样时，必须先满足filedName与master 的匹配规则。
+ * 规则2：当filedName 取得值等于 "" or NULL 时，不进行fieldNameModel()比较判断通过，进行Mater比较判断。NULL拦截请使用Master.check 进行校验
+ * 规则3：Master.value 等于 "" or NULL 时， check()==true时，抛出异常。反之不对 "" or NULL 进行比较判断。
+ * 规则4：compareValue and  value == {}  时，不进行逻辑判断直接基于通过。
  *
  * @author leichao
  * @date 2020-05-12 03:27:46
  */
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Method {
+
     /**
-     * 为空时将使用@Method所在的fieldName<br>
-     * 当取到的值等于nullOr""时，本配置失效。<br>
-     * 对nullOr""敏感，请使用compareValue()={} and check()=true
+     * 默认值：Master.filedName
      */
     String fieldName() default "";
 
-    /**
-     * 等于null时，@Method所在的field为任何值时，都会与Method.compareValue进行比较
-     */
-    String value() default "";
-
-    /**
-     * 空值时，不进行mode判断直接通过 。该field进行 model.EQUALS和model.NO_EQUALS。其他匹配方法直接返回false。<br>
-     */
     String[] compareValue() default {};
+
+    ExcelReadType fieldNameModel() default ExcelReadType.EQUALS;
+
+    String[] value() default {};
 
     ExcelReadType model() default ExcelReadType.EQUALS;
 
-    /**
-     * 当数据匹配失败时，将会对数据类型进行校验符合类型时。该条false状态，可以转置为true<br>
-     */
+    boolean check() default false;
+
     ValueType exceptionType() default ValueType.NONE;
 
-    /**
-     * 错误提示消息
-     */
     String message() default "";
 
     /**
-     * true时，满足fieldName 取值该条件的数据为空时，将会抛出异常<br>
-     * 当compareValue() 等于{} 时，该条配置生效。
-     */
-    boolean check() default false;
-
-    /**
-     * 转换异常是否触发。
+     * 是否忽略转换异常，默认throw转换异常
      */
     boolean converterException() default true;
+
+    class Validator {
+        public static String headMessage(String tagName, Object value) {
+            return "<" + tagName + ">的值[" + value + "]";
+        }
+
+        public static String message(ExcelReadType mode, String[] values, boolean state) {
+            String no = "";
+            if (!state)
+                no = "不";
+            return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getTypeName() + " 条件";
+        }
+
+        /**
+         * @param value
+         * @param values
+         * @param mode
+         * @return value== NULL or "" 时不进行判断返回null  , values.length==0返回true
+         */
+        public static boolean mode(Object value, String[] values, ExcelReadType mode) {
+            if (StringUtils.isEmpty(value))
+                return false;
+            if (values.length == 0)
+                return true;
+            List<String> list = Arrays.asList(values);
+            switch (mode) {
+                case EQUALS:
+                    return list.contains(value);
+                case INCLUDE:
+                    for (String val : list) {
+                        if (value.toString().indexOf(val) != -1)
+                            return true;
+                    }
+                    return false;
+                case NO_EQUALS:
+                    return !list.contains(value);
+                case NO_INCLUDE:
+                    for (String val : list) {
+                        if (value.toString().indexOf(val) != -1)
+                            return false;
+                    }
+                    return true;
+                default:
+                    throw new IllegalArgumentException("Unexpected value: " + mode);
+            }
+        }
+    }
 }

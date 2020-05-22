@@ -45,7 +45,7 @@ public class ProduceTable {
     private String designer;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @ConverterProperty(value = "勘察完成", checkColumn = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "勘察完成", checkColumn = true, model = ExcelReadType.INCLUDE,methods = {@Method(converterException = true)})
     private Date checkDoneDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

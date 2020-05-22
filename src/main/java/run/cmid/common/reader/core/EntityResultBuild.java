@@ -138,6 +138,9 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                             new CellAddress(rowInfo.getRownum(), desValues.getInfo().getColumn()));
                     if (mess != null)
                         megs.add(mess);
+                    else if (value.getInfo().isConverterException()){//对转换异常进行响应配置
+                        value.getInfo().setConverterException(method.converterException());
+                    }
                 }
                 if (megs.size() != 0) {
                     tag.getFiledNull().add(name);
@@ -187,92 +190,126 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     public CellAddressAndMessage rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
         //当{des}列的值{desValue}满足在{method.computeValue}范围内满足{method.mode}条件时，
         //{src}列的值[不能没有数据]or[不能是{srcValue}]
-        if (srcValue.getInfo().getFieldName().equals(desValue.getInfo().getFieldName()))
-            if (StringUtils.isEmpty(srcValue.getValue()) && method.check())
+        //new StringBuffer()
+        boolean equalState = true;
+        if (!desValue.getInfo().getFieldName().equals(srcValue.getInfo().getFieldName())) {
+            equalState = false;
+            if (!Method.Validator.mode(desValue.getValue(), method.compareValue(), method.fieldNameModel())) {//通过des条件时，不进行判断，单空des可以通过
+                return null;
+            }
+        }
+        String equalMgs = "";
+        if (!equalState) {
+            equalMgs = ((!StringUtils.isEmpty(desValue.getValue())) ? (Method.Validator.headMessage(desValue.getInfo().getMatchValue(), desValue.getValue()) +
+                    Method.Validator.message(method.fieldNameModel(), method.compareValue(), true)) + "时，" : "");
+        }
+        boolean state = Method.Validator.mode(srcValue.getValue(), method.value(), method.model());
+        if (!state || (method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+            if (StringUtils.isEmpty(srcValue.getValue()))
                 return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, srcValue.getInfo().getMatchValue() + " 列不能没有数据");
+                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, equalMgs + "<" + srcValue.getInfo().getMatchValue() + "> 不能没有数据");
 
-        if (StringUtils.isEmpty(desValue.getValue()))
-            return null;
-        if (!method.value().equals("") && !StringUtils.isEmpty(srcValue.getValue()) && !srcValue.getValue().equals(method.value()))
-            return null;
-        if (method.compareValue().length == 0)
-            return null;
-        List<String> list = Arrays.asList(method.compareValue());
-        switch (method.model()) {
-            case EQUALS:
-                if (list.contains(desValue.getValue()))
-                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-                        if (desValue.getInfo().isConverterException())
-                            desValue.getInfo().setConverterException(method.converterException());
-                        return null;
-                    } else
-                        break;
-                break;
-            case INCLUDE:
-                for (String val : list) {
-                    if (desValue.getValue().toString().indexOf(val) != -1) {
-                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-                            if (desValue.getInfo().isConverterException())
-                                desValue.getInfo().setConverterException(method.converterException());
-                            return null;
-                        } else
-                            break;
-                    }
-                }
-                break;
-            case NO_EQUALS:
-                if (!list.contains(desValue.getValue())) {
-                    if (desValue.getInfo().isConverterException())
-                        desValue.getInfo().setConverterException(method.converterException());
-                    return null;
-                }
-                break;
-            case NO_INCLUDE:
-                boolean state = false;
-                for (String val : list) {
-                    if (desValue.getValue().toString().indexOf(val) == -1) {
-                        state = true;
-                        break;
-                    }
-                }
-                if (state)
-                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-                        if (desValue.getInfo().isConverterException())
-                            desValue.getInfo().setConverterException(method.converterException());
-                        return null;
-                    } else
-                        break;
-                break;
-            default:
-                throw new IllegalArgumentException("Unexpected value: " + mode);
+            String mgs;
+            if (equalState) {
+                mgs = Method.Validator.headMessage(srcValue.getInfo().getMatchValue(), method.fieldNameModel()) +
+                        Method.Validator.message(method.fieldNameModel(), method.compareValue(), true) + " 和 " +
+                        Method.Validator.message(method.model(), method.value(), false);
+            } else {
+                mgs = equalMgs + "时，" +
+                        Method.Validator.headMessage(srcValue.getInfo().getMatchValue(), srcValue.getValue()) +
+                        Method.Validator.message(method.model(), method.value(), false);
+            }
+            return new CellAddressAndMessage(address.getRow(), address.getColumn(),
+                    ExcelExceptionType.NOT_FIND_CHECK_VALUE, mgs);
         }
-        switch (method.exceptionType()) {
-            case NUMBER:
-                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString())) {
-                    if (desValue.getInfo().isConverterException())
-                        desValue.getInfo().setConverterException(method.converterException());
-                    return null;
-                }
-                break;
-            default:
-                break;
-        }
-        String mgs;
-        if (method.check() && StringUtils.isEmpty(srcValue.getValue()))
-            mgs = "当<" + desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
-                    "],在" + list + "的范围内满足判断条件 " + method.model().getTypeName() +
-                    " 时,<" + srcValue.getInfo().getMatchValue() + ">的值不能为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) +
-                    ((method.exceptionType() == ValueType.NONE) ? "]." : ".例外数据类型：" + method.exceptionType().getTypeName());
-        else
-            mgs = "在<" +
-                    (StringUtils.isEmpty(method.value()) ? "" : (srcValue.getInfo().getMatchValue() + ">的值为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) + "]和<")) +
-                    desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
-                    "]时,在" + list + "的范围内不满足判断条件 " + method.model().getTypeName() +
-                    ((method.exceptionType() == ValueType.NONE) ? "." : ".例外数据类型：" + method.exceptionType().getTypeName());
-        CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                ExcelExceptionType.ENUM_ERROR, mgs);
-        return message;
+        return null;
+//        return null;
+//        if (srcValue.getInfo().getFieldName().equals(desValue.getInfo().getFieldName()))
+//            if (StringUtils.isEmpty(srcValue.getValue()) && method.check())
+//                return new CellAddressAndMessage(address.getRow(), address.getColumn(),
+//                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, srcValue.getInfo().getMatchValue() + " 列不能没有数据");
+//
+//        if (StringUtils.isEmpty(desValue.getValue()))
+//            return null;
+//        if (!method.value().equals("") && !StringUtils.isEmpty(srcValue.getValue()) && !srcValue.getValue().equals(method.value()))
+//            return null;
+//        if (method.compareValue().length == 0)
+//            return null;
+//        List<String> list = Arrays.asList(method.compareValue());
+//        switch (method.model()) {
+//            case EQUALS:
+//                if (list.contains(desValue.getValue()))
+//                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+//                        if (desValue.getInfo().isConverterException())
+//                            desValue.getInfo().setConverterException(method.converterException());
+//                        return null;
+//                    } else
+//                        break;
+//                break;
+//            case INCLUDE:
+//                for (String val : list) {
+//                    if (desValue.getValue().toString().indexOf(val) != -1) {
+//                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+//                            if (desValue.getInfo().isConverterException())
+//                                desValue.getInfo().setConverterException(method.converterException());
+//                            return null;
+//                        } else
+//                            break;
+//                    }
+//                }
+//                break;
+//            case NO_EQUALS:
+//                if (!list.contains(desValue.getValue())) {
+//                    if (desValue.getInfo().isConverterException())
+//                        desValue.getInfo().setConverterException(method.converterException());
+//                    return null;
+//                }
+//                break;
+//            case NO_INCLUDE:
+//                boolean state = false;
+//                for (String val : list) {
+//                    if (desValue.getValue().toString().indexOf(val) == -1) {
+//                        state = true;
+//                        break;
+//                    }
+//                }
+//                if (state)
+//                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
+//                        if (desValue.getInfo().isConverterException())
+//                            desValue.getInfo().setConverterException(method.converterException());
+//                        return null;
+//                    } else
+//                        break;
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Unexpected value: " + mode);
+//        }
+//        switch (method.exceptionType()) {
+//            case NUMBER:
+//                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString())) {
+//                    if (desValue.getInfo().isConverterException())
+//                        desValue.getInfo().setConverterException(method.converterException());
+//                    return null;
+//                }
+//                break;
+//            default:
+//                break;
+//        }
+//        String mgs;
+//        if (method.check() && StringUtils.isEmpty(srcValue.getValue()))
+//            mgs = "当<" + desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
+//                    "],在" + list + "的范围内满足判断条件 " + method.model().getTypeName() +
+//                    " 时,<" + srcValue.getInfo().getMatchValue() + ">的值不能为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) +
+//                    ((method.exceptionType() == ValueType.NONE) ? "]." : ".例外数据类型：" + method.exceptionType().getTypeName());
+//        else
+//            mgs = "在<" +
+//                    (StringUtils.isEmpty(method.value()) ? "" : (srcValue.getInfo().getMatchValue() + ">的值为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) + "]和<")) +
+//                    desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
+//                    "]时,在" + list + "的范围内不满足判断条件 " + method.model().getTypeName() +
+//                    ((method.exceptionType() == ValueType.NONE) ? "." : ".例外数据类型：" + method.exceptionType().getTypeName());
+//        CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
+//                ExcelExceptionType.ENUM_ERROR, mgs);
+//        return message;
     }
 
     /**
@@ -287,7 +324,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     public CellAddressAndMessage cellValueToClass(Object value, Object out, String setFunctionValue,
                                                   FieldDetail fieldDetail, CellAddress cellAddress) {
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
-        if (StringUtils.isEmpty(value)  && fieldDetail.getType() != FieldDetailType.LIST)
+        if (StringUtils.isEmpty(value) && fieldDetail.getType() != FieldDetailType.LIST)
             return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
         if (fieldDetail.getType() != FieldDetailType.LIST)
             try {

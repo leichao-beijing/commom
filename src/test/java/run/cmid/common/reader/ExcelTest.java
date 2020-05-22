@@ -27,17 +27,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * @author leichao
  */
 
 public class ExcelTest {
-
     @Test
     public void testProject() throws IOException, ConverterExcelException {
         //InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
-        InputStream ras =  new FileInputStream("C:\\Users\\leichao\\Desktop\\产值工具\\app\\错误数据\\to雷超-项目表.xlsx") ;
+        InputStream ras = new FileInputStream("C:\\Users\\leichao\\Desktop\\产值工具\\app\\错误数据\\to雷超-项目表.xlsx");
         ExcelEntityBuildings<Project> ee = new ExcelEntityBuildings<Project>(Project.class);
         Workbook workbook = new XSSFWorkbook(ras);
         EntityBuild<Project> e = ee.find(workbook);
@@ -47,7 +47,7 @@ public class ExcelTest {
             System.err.println(ss);
         });
         result.getCellErrorList().forEach((value) -> {
-            System.err.println(value + ">>" + value.getMessage());
+            System.err.println(value + ":" + value.getMessage());
 
         });
         result.getResultList().forEach((var) -> {
@@ -66,10 +66,10 @@ public class ExcelTest {
         ReaderPoiConfig readerPoiConfig1 = new ReaderPoiConfig();
         PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
 
-        poi.clone(poi1,"Sheet1","Sheet122222");
-        File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
-        ras= new FileInputStream(bigTable);
-        ExcelReaderSheetBuilder cc = EasyExcel.read(ras).sheet(0);
+        //       poi.clone(poi1,"Sheet1","Sheet122222");
+        //       File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
+//        ras= new FileInputStream(bigTable);
+//        ExcelReaderSheetBuilder cc = EasyExcel.read(ras).sheet(0);
 //      System.err.println(cc.doReadSync());
 //
 
@@ -82,7 +82,6 @@ public class ExcelTest {
 //            System.err.println(book.readRowList(i));
 //        }
     }
-
 
 
     @Test
