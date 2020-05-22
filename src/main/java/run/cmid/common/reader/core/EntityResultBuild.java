@@ -138,7 +138,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                             new CellAddress(rowInfo.getRownum(), desValues.getInfo().getColumn()));
                     if (mess != null)
                         megs.add(mess);
-                    else if (value.getInfo().isConverterException()){//对转换异常进行响应配置
+                    else if (value.getInfo().isConverterException()) {//对转换异常进行响应配置
                         value.getInfo().setConverterException(method.converterException());
                     }
                 }

@@ -1,18 +1,19 @@
 package run.cmid.common.reader.model;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import run.cmid.common.reader.annotations.*;
+import run.cmid.common.reader.annotations.Index;
 import run.cmid.common.reader.enums.CooperateContent;
 import run.cmid.common.reader.enums.CooperateType;
 import run.cmid.common.reader.enums.TableState;
 import run.cmid.common.reader.enums.TagState;
 import run.cmid.common.reader.model.eumns.ExcelReadType;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * 项目信息表
@@ -24,7 +25,6 @@ import java.util.Date;
 @Setter
 @ConverterHead(maxWrongCount = 1, indexes = {
         @Index({"cooperateType", "cooperateProvider", "misIdPartyA", "insideProjectId"})})
-@ToString
 public class Project {
     @ConverterProperty("序号")
     private Long id;
@@ -57,13 +57,13 @@ public class Project {
     @ConverterProperty(value = "内部立项名称", checkColumn = true, methods = {@Method(check = true)})
     private String insideProjectName;
 
-    @ConverterProperty(value = "项目负责人", checkColumn = true)
+    @ConverterProperty(value = "项目负责人", checkColumn = true, methods = {@Method(check = true)})
     private String head;
 
     @ConverterProperty(value = "立项(计划)总投资", checkColumn = true, model = ExcelReadType.INCLUDE)
     private Double costTotal;
 
-    @ConverterProperty(value = "建设规模", checkColumn = true)
+    @ConverterProperty(value = "建设规模", checkColumn = true, methods = {@Method(check = true)})
     private String size;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -77,51 +77,66 @@ public class Project {
     @ConverterProperty(value = "修正设计批复通过日期")
     private Date replaceAdoptTime;
 
-    @ConverterProperty(value = "勘察设计费", checkColumn = true, model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "勘察设计费", checkColumn = true, model = ExcelReadType.INCLUDE, methods = {@Method(check = true)})
     private Double checkDesignerCost;
 
-    @ConverterProperty(value = "合作类型", enumGetValueMethodName = "getTypeName", checkColumn = true,
-            methods = {
-                    @Method(fieldName = "cooperateProvider", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作单位
-                    @Method(fieldName = "cooperateContent", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作内容
-                    @Method(fieldName = "discount", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作单位入围折扣
-                    @Method(fieldName = "cooperateCostRatio", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作成本占比
-                    @Method(fieldName = "cooperateWorkRatio", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作工作量比例
-                    @Method(fieldName = "cooperateTime", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作工时
-                    @Method(fieldName = "cooperateCostAssess", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作成本预估
-                    @Method(fieldName = "cooperateCost", value = "自有", compareValue = "/", model = ExcelReadType.EQUALS, converterException = false),//合作成本预估
-            })
+    @ConverterProperty(value = "合作类型", enumGetValueMethodName = "getTypeName", checkColumn = true, methods = {@Method(check = true)})
     private CooperateType cooperateType;
 
-    @ConverterProperty(value = "合作单位")
+    @ConverterProperty(value = "合作单位", methods = {
+            @Method(check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"工时定额", "单项目合作", "多项目合作"}),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", converterException = false),
+    })
     private String cooperateProvider;
 
-    @ConverterProperty(value = "合作内容", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @ConverterProperty(value = "合作内容", enumGetValueMethodName = "getTypeName", checkColumn = true, methods = {
+            @Method(check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"工时定额", "单项目合作", "多项目合作"}),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", converterException = false),
+    })
     private CooperateContent cooperateContent;
 
     @ConverterProperty(value = "合作工作量", model = ExcelReadType.INCLUDE, methods = {
-            @Method(fieldName = "cooperateType", compareValue = {"多项目合作"}, check = true)})
+            @Method(fieldName = "cooperateType", compareValue = {"单项目合作"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false),
+    })
     private Double cooperateCost;
 
-    @ConverterProperty(value = "合作单位入围折扣")
+    @ConverterProperty(value = "合作单位入围折扣", methods = {
+            @Method(fieldName = "cooperateType", compareValue = {"单项目合作", "工时定额"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false),
+    })
     private Double discount;
 
-    @ConverterProperty(value = "合作工作量比例")
+    @ConverterProperty(value = "合作工作量比例", methods = {
+            @Method(fieldName = "cooperateType", compareValue = {"单项目合作"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false)
+    })
     private Double cooperateWorkRatio;
 
-    @ConverterProperty(value = "合作成本占比")
+    @ConverterProperty(value = "合作成本占比", methods = {
+            @Method(fieldName = "cooperateType", compareValue = {"单项目合作", "工时定额"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false),
+    })
     private Double cooperateCostRatio;
 
-    @ConverterProperty(value = "合作工时")
+    @ConverterProperty(value = "合作工时", methods = {
+            @Method(fieldName = "cooperateType", compareValue = {"工时定额"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false),
+    })
     private Double cooperateTime;
 
-    @ConverterProperty(value = "合作成本预估", model = ExcelReadType.INCLUDE)
+    @ConverterProperty(value = "合作成本预估", model = ExcelReadType.INCLUDE, methods = {
+            @Method(fieldName = "cooperateType", compareValue = {"单项目合作", "工时定额"}, check = true),
+            @Method(fieldName = "cooperateType", compareValue = {"自有"}, value = "/", check = true, converterException = false),
+    })
     private Double cooperateCostAssess;
 
-    @ConverterProperty(value = "工作量完成年度", checkColumn = true)
+    @ConverterProperty(value = "工作量完成年度", checkColumn = true, methods = {@Method(check = true)})
     private int workYear;
 
-    @ConverterProperty(value = "项目是否已确认核销", checkColumn = true)
+    @ConverterProperty(value = "项目是否已确认核销", checkColumn = true, methods = {@Method(check = true)})
     private String destructionState;
 
     @ConverterProperty(value = "订单状态", enumGetValueMethodName = "getTypeName")
@@ -134,10 +149,10 @@ public class Project {
     @ConverterProperty(value = "错误信息")
     private String errorMessage;
 
-    @ConverterProperty(value = "计算当年产值年份", checkColumn = true)
+    @ConverterProperty(value = "计算当年产值年份", checkColumn = true, methods = {@Method(check = true)})
     private int produceYear;
 
-    @ConverterProperty(value = "标签", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @ConverterProperty(value = "标签", enumGetValueMethodName = "getTypeName", checkColumn = true, methods = {@Method(check = true)})
     private TagState tag;
 
     @ConverterPropertyList({@ConverterProperty("我院合同编号"), @ConverterProperty("是否已工作量确认"), @ConverterProperty("工作量确认内部立项号"),
@@ -165,4 +180,8 @@ public class Project {
 
     @ConverterProperty(value = "当年单项目合作成本")
     private Double countCost;
+
+    public Project() {
+    }
+
 }
