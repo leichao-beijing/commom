@@ -218,7 +218,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                         Method.Validator.message(method.model(), method.value(), false);
             }
             return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                    ExcelExceptionType.NOT_FIND_CHECK_VALUE, mgs);
+                    ExcelExceptionType.VALIDATOR_ERROR, mgs);
         }
         return null;
     }

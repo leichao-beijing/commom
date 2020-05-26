@@ -3,7 +3,6 @@ package run.cmid.common.reader.model.eumns;
 import run.cmid.common.io.EnumTypeName;
 
 /**
- * 
  * @author leichao
  */
 public enum ExcelExceptionType implements EnumTypeName {
@@ -12,9 +11,9 @@ public enum ExcelExceptionType implements EnumTypeName {
     CUSTOM("自定义错误"),
 
     SHEET_NAME_NO_EXISTS("sheetName不存在"),
-    
+
     CONVERT_ERROR("转换失败"),
-    
+
     NUMBER_CONVERT_TYPE_ERROR("数字类型转换错误"),
 
     DATE_CONVERT_TYPE_ERROR("时间类型转换错误"),
@@ -34,12 +33,13 @@ public enum ExcelExceptionType implements EnumTypeName {
     INDEX_ERROR("行唯一性验证失败"),
 
     ENUM_ERROR("数据不再范围内"),
-    
+
     INDEX_EMPTY("索引值不能为空"),
 
     HEAD_IS_EMPTY("头所在行，没有读取到数据"),
     //NO_FIND_METHOD("可执行方法为找到"),
 
+    VALIDATOR_ERROR("逻辑验证失败"),
     //LIST_STRING_ERROR1("ExcelConverterStringList 对应字符串没有匹配到"),
 
     STRING_OUT_BOUNDS("字符串长度超出限制");
