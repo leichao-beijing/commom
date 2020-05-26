@@ -143,6 +143,9 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                         System.err.println(mess.getMessage());
                         value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
                         break;
+                    } else {
+                        if (value.getInfo().isConverterException())
+                            value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
                     }
                 }
             }
