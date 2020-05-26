@@ -1,7 +1,10 @@
 package run.cmid.common.reader.core;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import org.apache.poi.ss.util.CellAddress;
 
 import cn.hutool.core.convert.ConverterRegistry;
@@ -130,22 +133,17 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
             Method[] methods = value.getInfo().getMethods();
             ArrayList<CellAddressAndMessage> megs = null;
             if (methods != null && methods.length != 0) {
-                megs = new ArrayList<>();
                 for (Method method : methods) {
                     DataArray<Object, FieldDetail> desValues = method.fieldName().equals("") ? value
                             : rowInfo.getData().get(method.fieldName());
                     CellAddressAndMessage mess = rangeValue(value, desValues, method,
                             new CellAddress(rowInfo.getRownum(), desValues.getInfo().getColumn()));
-                    if (mess != null)
-                        megs.add(mess);
-                    else if (value.getInfo().isConverterException()) {//对转换异常进行响应配置
-                        value.getInfo().setConverterException(method.converterException());
+                    if (mess != null) {
+                        checkErrorList.add(mess);
+                        System.err.println(mess.getMessage());
+                        value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
+                        break;
                     }
-                }
-                if (megs.size() != 0) {
-                    tag.getFiledNull().add(name);
-                    checkErrorList.addAll(megs);
-                    continue;
                 }
             }
         }
@@ -223,93 +221,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                     ExcelExceptionType.NOT_FIND_CHECK_VALUE, mgs);
         }
         return null;
-//        return null;
-//        if (srcValue.getInfo().getFieldName().equals(desValue.getInfo().getFieldName()))
-//            if (StringUtils.isEmpty(srcValue.getValue()) && method.check())
-//                return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-//                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, srcValue.getInfo().getMatchValue() + " 列不能没有数据");
-//
-//        if (StringUtils.isEmpty(desValue.getValue()))
-//            return null;
-//        if (!method.value().equals("") && !StringUtils.isEmpty(srcValue.getValue()) && !srcValue.getValue().equals(method.value()))
-//            return null;
-//        if (method.compareValue().length == 0)
-//            return null;
-//        List<String> list = Arrays.asList(method.compareValue());
-//        switch (method.model()) {
-//            case EQUALS:
-//                if (list.contains(desValue.getValue()))
-//                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-//                        if (desValue.getInfo().isConverterException())
-//                            desValue.getInfo().setConverterException(method.converterException());
-//                        return null;
-//                    } else
-//                        break;
-//                break;
-//            case INCLUDE:
-//                for (String val : list) {
-//                    if (desValue.getValue().toString().indexOf(val) != -1) {
-//                        if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-//                            if (desValue.getInfo().isConverterException())
-//                                desValue.getInfo().setConverterException(method.converterException());
-//                            return null;
-//                        } else
-//                            break;
-//                    }
-//                }
-//                break;
-//            case NO_EQUALS:
-//                if (!list.contains(desValue.getValue())) {
-//                    if (desValue.getInfo().isConverterException())
-//                        desValue.getInfo().setConverterException(method.converterException());
-//                    return null;
-//                }
-//                break;
-//            case NO_INCLUDE:
-//                boolean state = false;
-//                for (String val : list) {
-//                    if (desValue.getValue().toString().indexOf(val) == -1) {
-//                        state = true;
-//                        break;
-//                    }
-//                }
-//                if (state)
-//                    if (!(method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-//                        if (desValue.getInfo().isConverterException())
-//                            desValue.getInfo().setConverterException(method.converterException());
-//                        return null;
-//                    } else
-//                        break;
-//                break;
-//            default:
-//                throw new IllegalArgumentException("Unexpected value: " + mode);
-//        }
-//        switch (method.exceptionType()) {
-//            case NUMBER:
-//                if (!StringUtils.isEmpty(srcValue.getValue()) && Validator.isNumber(srcValue.getValue().toString())) {
-//                    if (desValue.getInfo().isConverterException())
-//                        desValue.getInfo().setConverterException(method.converterException());
-//                    return null;
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//        String mgs;
-//        if (method.check() && StringUtils.isEmpty(srcValue.getValue()))
-//            mgs = "当<" + desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
-//                    "],在" + list + "的范围内满足判断条件 " + method.model().getTypeName() +
-//                    " 时,<" + srcValue.getInfo().getMatchValue() + ">的值不能为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) +
-//                    ((method.exceptionType() == ValueType.NONE) ? "]." : ".例外数据类型：" + method.exceptionType().getTypeName());
-//        else
-//            mgs = "在<" +
-//                    (StringUtils.isEmpty(method.value()) ? "" : (srcValue.getInfo().getMatchValue() + ">的值为[" + (StringUtils.isEmpty(srcValue.getValue()) ? null : srcValue.getValue()) + "]和<")) +
-//                    desValue.getInfo().getMatchValue() + ">的值为[" + desValue.getValue() +
-//                    "]时,在" + list + "的范围内不满足判断条件 " + method.model().getTypeName() +
-//                    ((method.exceptionType() == ValueType.NONE) ? "." : ".例外数据类型：" + method.exceptionType().getTypeName());
-//        CellAddressAndMessage message = new CellAddressAndMessage(address.getRow(), address.getColumn(),
-//                ExcelExceptionType.ENUM_ERROR, mgs);
-//        return message;
     }
 
     /**
@@ -341,10 +252,19 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                 }
 
                 if (!value.getClass().equals(parameterClasses)) {
-                    Object data = converterRegistry.convert(parameterClasses, value);
+                    Object data = null;
+                    if (ConverterFieldDetail.IsInterface(parameterClasses, Date.class)) {
+                        if (fieldDetail.getFormat() == null)
+                            data = DateUtil.parse(value.toString());
+                        else
+                            data = DateUtil.parse(value.toString(), fieldDetail.getFormat().value());
+                    } else
+                        data = converterRegistry.convert(parameterClasses, value);
+
                     if (data == null && fieldDetail.isConverterException())
                         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。");
+                                ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
+                                ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
                     else {
                         ReflectUtil.invoke(out, setFunctionValue, data);
                         return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);

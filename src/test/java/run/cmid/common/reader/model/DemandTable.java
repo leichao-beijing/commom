@@ -20,10 +20,10 @@ import run.cmid.common.validator.eumns.ValueType;
 public class DemandTable {
 
     @ConverterProperty(value = {"需求序号"}, methods = {
-            //@Method(compareValue = "\\", exceptionType = ValueType.NUMBER,model = ExcelReadType.NO_EQUALS),
-            //@Method(compareValue = { "001" }, model = ExcelReadType.NO_EQUALS),
+            @Method(compareValue = "\\", exceptionType = ValueType.NUMBER,model = ExcelReadType.NO_EQUALS),
+            @Method(compareValue = { "001" }, model = ExcelReadType.NO_EQUALS),
             //needNumber 不允许出现"\\"
-            //@Method(value = "003",fieldName = "needName",  compareValue= { "E报表需求" }, model = ExcelReadType.NO_EQUALS),
+            @Method(value = "003",fieldName = "needName",  compareValue= { "E报表需求" }, model = ExcelReadType.NO_EQUALS),
 
             //当 needName = 报表1 时，这个单元格不允许 出现空数据
             @Method(fieldName = "needName", compareValue = {"报表1"}, check = true),
@@ -35,7 +35,7 @@ public class DemandTable {
             //当 needName = \ 时 判断 needNumber != \
             @Method(fieldName = "needName", compareValue = "\\", value = "\\", model = ExcelReadType.NO_EQUALS),
 
-            //@Method(fieldName = "needName",value = "006",compareValue = "\\",check = true),
+            @Method(fieldName = "needName",value = "006",compareValue = "\\",check = true),
     })
     private String needNumber;// 需求序号
 

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import run.cmid.common.reader.annotations.ConverterProperty;
+import run.cmid.common.reader.annotations.FormatDate;
 import run.cmid.common.reader.annotations.Method;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.model.eumns.ConfigErrorType;
@@ -24,8 +25,8 @@ import run.cmid.common.utils.ReflectLcUtils;
 @Getter
 @ToString
 public class FieldDetail {
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat, ConverterProperty converterProperty) {
-        this.jsonFormat = jsonFormat;
+    public FieldDetail(Field field, Class<?> parentClass, FormatDate format, ConverterProperty converterProperty) {
+        this.format = format;
         this.field = field;
         this.fieldName = field.getName();
         this.values = (converterProperty.value().length != 0) ? Arrays.asList(converterProperty.value())
@@ -44,9 +45,9 @@ public class FieldDetail {
         }
     }
 
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat,
+    public FieldDetail(Field field, Class<?> parentClass, FormatDate format,
                        ConverterProperty converterProperty, int index) {
-        this.jsonFormat = jsonFormat;
+        this.format = format;
         this.field = field;
         this.fieldName = field.getName();
         this.parentClass = parentClass;
@@ -67,8 +68,8 @@ public class FieldDetail {
         }
     }
 
-    public FieldDetail(Field field, Class<?> parentClass, JsonFormat jsonFormat) {
-        this.jsonFormat = jsonFormat;
+    public FieldDetail(Field field, Class<?> parentClass, FormatDate format) {
+        this.format = format;
         this.field = field;
         this.fieldName = field.getName();
         this.parentClass = parentClass;
@@ -88,7 +89,7 @@ public class FieldDetail {
     private boolean checkColumn;
     private final Field field;
     private final Class<?> parentClass;
-    private JsonFormat jsonFormat;
+    FormatDate format;
     private int index = -1;
     private FieldDetailType type;
     @Setter

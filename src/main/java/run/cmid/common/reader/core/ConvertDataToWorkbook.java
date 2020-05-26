@@ -78,9 +78,9 @@ public class ConvertDataToWorkbook<T> extends EntityBuildings<T> implements Data
 
     private void createCellStyle(Sheet sheet) {
         for (FieldDetail tt : getList()) {
-            if (tt.getJsonFormat() != null) {
+            if (tt.getFormat() != null) {
                 CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
-                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(tt.getJsonFormat().pattern()));
+                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(tt.getFormat().value()));
                 cellStyleMap.put(tt.getFieldName(), cellStyle);
             }
         }

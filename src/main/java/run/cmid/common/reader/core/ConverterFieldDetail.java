@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmid.common.reader.annotations.ConverterProperty;
 import run.cmid.common.reader.annotations.ConverterPropertyList;
+import run.cmid.common.reader.annotations.FormatDate;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 import run.cmid.common.reader.model.to.FindSheetModel;
@@ -20,7 +21,7 @@ import run.cmid.common.reader.model.to.FindSheetModel;
  * @author leichao
  */
 public class ConverterFieldDetail {
-    public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
+     public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
                                                List<String> indexes) {
         LinkedList<FieldDetail> list = new LinkedList<FieldDetail>();
         Field[] fields = ReflectUtil.getFields(classes);
@@ -30,13 +31,13 @@ public class ConverterFieldDetail {
             check = false;
             if (indexes!=null&&indexes.contains(field.getName()))
                 check = true;
-            JsonFormat jsonFormat = field.getAnnotation(JsonFormat.class);
+            FormatDate format = field.getAnnotation(FormatDate.class);
             ConverterProperty converterProperty = field.getAnnotation(ConverterProperty.class);
             ConverterPropertyList excelConverterStringList = field.getAnnotation(ConverterPropertyList.class);
             if (converterProperty != null && excelConverterStringList != null)
                 throw new NullPointerException("@ExcelConverter and @ExcelConverterList Override");
             if (converterProperty != null) {
-                fieldDetail = new FieldDetail(field, classes, jsonFormat, converterProperty);
+                fieldDetail = new FieldDetail(field, classes, format, converterProperty);
                 if (check)
                     fieldDetail.setCheckColumn(true);
                 list.add(fieldDetail);
@@ -49,7 +50,7 @@ public class ConverterFieldDetail {
                     throw new NullPointerException("ExcelConverterList no data");
                 }
                 for (int i = 0; i < values.length; i++) {
-                    fieldDetail = new FieldDetail(field, classes, jsonFormat, values[i], i);
+                    fieldDetail = new FieldDetail(field, classes, format, values[i], i);
                     if (check)
                         fieldDetail.setCheckColumn(true);
                     list.add(fieldDetail);
@@ -58,7 +59,7 @@ public class ConverterFieldDetail {
             }
             if (excelHeadModel.isSkipNoAnnotationField())
                 continue;
-            fieldDetail = new FieldDetail(field, classes, jsonFormat);
+            fieldDetail = new FieldDetail(field, classes, format);
             if (check)
                 fieldDetail.setCheckColumn(true);
             list.add(fieldDetail);

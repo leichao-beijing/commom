@@ -52,4 +52,5 @@ public class ExcelEntityBuildings<T> extends EntityBuildings<T> {
         PoiReader resource = PoiReader.build(workbook, readerPoiConfig, null);
         return find(readHeadRownum, resource);
     }
+
 }

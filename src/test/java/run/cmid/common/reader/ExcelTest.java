@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author leichao
@@ -54,6 +55,14 @@ public class ExcelTest {
             System.err.println(var);
         });
     }
+    @Test
+    public void easyExcelTest(){
+        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
+        ExcelReader work = EasyExcel.read(ras).build();
+        //work.
+        //work.read(EasyExcel.readSheet(0).build());
+        //work.finish();
+    }
 
     @Test
     public void poiReaderClone() throws IOException {
@@ -63,6 +72,7 @@ public class ExcelTest {
         poi.saveAndClose(new File("D:\\xxx.xls"));
 
         InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
+
         ReaderPoiConfig readerPoiConfig1 = new ReaderPoiConfig();
         PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
 
