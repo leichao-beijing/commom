@@ -140,7 +140,6 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                             new CellAddress(rowInfo.getRownum(), desValues.getInfo().getColumn()));
                     if (mess != null) {
                         checkErrorList.add(mess);
-                        System.err.println(mess.getMessage());
                         value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
                         break;
                     } else {
