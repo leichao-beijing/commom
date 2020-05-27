@@ -1,10 +1,11 @@
 package run.cmid.common.poi.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 public class ReaderPoiConfig {
-  private  boolean cellRangeState;
+  private  boolean cellRangeState=false;
 }

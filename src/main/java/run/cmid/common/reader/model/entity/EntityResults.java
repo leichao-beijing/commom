@@ -1,30 +1,28 @@
 package run.cmid.common.reader.model.entity;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
 import lombok.Getter;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.eumns.ExcelExceptionType;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 /**
- * 当行数据
+ * 多行数据
  *
  * @author leichao
  */
 @Getter
-public class EntityResult<T, PAGE, UNIT> {
-    public EntityResult(int readHeadRownum, int rownum, HeadInfo<PAGE, UNIT> mode, LocationTag<T> result, List<CellAddressAndMessage> cellErrorList) {
+public class EntityResults<T, PAGE, UNIT> {
+    public EntityResults(int readHeadRownum, int sheetMaxRow, ReaderPage readerPage, HeadInfo<PAGE, UNIT> mode) {
         this.readHeadRownum = readHeadRownum;
-        this.rownum = rownum;
-        this.readerPage = mode.getReaderPage();
+        this.sheetMaxRow = sheetMaxRow;
+        this.readerPage = readerPage;
         this.mode = mode;
-        this.result = result;
-        this.cellErrorList = cellErrorList;
     }
 
     private Set<ExcelExceptionType> errorType = EnumSet.noneOf(ExcelExceptionType.class);
@@ -39,20 +37,18 @@ public class EntityResult<T, PAGE, UNIT> {
      */
     private final ReaderPage<PAGE, UNIT> readerPage;
     /***
-     * 读取的当前行号
+     * sheet最大有效行数
      */
-    private final int rownum;
+    private final int sheetMaxRow;
     /**
      * check Error CellAddress Map
      */
-    private final List<CellAddressAndMessage> cellErrorList;
+    private final List<CellAddressAndMessage> cellErrorList = new ArrayList<CellAddressAndMessage>();
 
     /**
      * 返回结果List
      */
-    @Getter
-    private final LocationTag<T> result;
-
+    private final List<LocationTag<T>> resultList = new ArrayList<LocationTag<T>>();
 
     public void upDateErrorType() {
         if (cellErrorList.size() != 0) {
@@ -60,5 +56,15 @@ public class EntityResult<T, PAGE, UNIT> {
                 errorType.add(message.getEx());
             }
         }
+    }
+
+    public void addResult(EntityResult<T, PAGE, UNIT> result) {
+        if (result.getCellErrorList() != null){
+            result.upDateErrorType();
+            cellErrorList.addAll(result.getCellErrorList());
+        }
+        if (result.getErrorType() != null)
+            errorType.addAll(result.getErrorType());
+        resultList.add(result.getResult());
     }
 }

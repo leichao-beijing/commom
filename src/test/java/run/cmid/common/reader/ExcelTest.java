@@ -2,9 +2,6 @@ package run.cmid.common.reader;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
-import com.alibaba.excel.read.metadata.ReadSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,12 +11,11 @@ import run.cmid.common.poi.core.SheetComment;
 import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.poi.model.StyleInfo;
 import run.cmid.common.reader.core.EntityBuild;
-import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.DemandTable;
 import run.cmid.common.reader.model.ProduceTable;
 import run.cmid.common.reader.model.Project;
-import run.cmid.common.reader.model.entity.EntityResult;
+import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
 
 import java.awt.Color;
@@ -27,8 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author leichao
@@ -41,8 +35,8 @@ public class ExcelTest {
         InputStream ras = new FileInputStream("C:\\Users\\leichao\\Desktop\\产值工具\\app\\错误数据\\to雷超-项目表.xlsx");
         ExcelEntityBuildings<Project> ee = new ExcelEntityBuildings<Project>(Project.class);
         Workbook workbook = new XSSFWorkbook(ras);
-        EntityBuild<Project> e = ee.find(workbook);
-        EntityResult<Project> result = e.build();
+        EntityBuild<Project, Sheet, Cell> e = ee.find(workbook);
+        EntityResults<Project, Sheet, Cell> result = e.build();
 
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);
@@ -129,8 +123,8 @@ public class ExcelTest {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         ExcelEntityBuildings<DemandTable> ee = new ExcelEntityBuildings<DemandTable>(DemandTable.class);
         Workbook workbook = new HSSFWorkbook(ras);
-        EntityBuild<DemandTable> e = ee.find(workbook);
-        EntityResult<DemandTable> result = e.build();
+        EntityBuild<DemandTable, Sheet, Cell> e = ee.find(workbook);
+        EntityResults<DemandTable, Sheet, Cell> result = e.build();
 
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);
@@ -150,8 +144,8 @@ public class ExcelTest {
         ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
 
         Workbook workbook = new XSSFWorkbook(ras);
-        EntityBuild<ProduceTable> e = ee.find(workbook);
-        EntityResult<ProduceTable> result = e.build();
+        EntityBuild<ProduceTable, Sheet, Cell> e = ee.find(workbook);
+        EntityResults<ProduceTable, Sheet, Cell> result = e.build();
 
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);

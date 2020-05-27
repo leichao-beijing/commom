@@ -3,6 +3,7 @@ package run.cmid.common.poi.core;
 import cn.hutool.core.io.IoUtil;
 import lombok.Getter;
 
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.reader.core.BookPage;
@@ -22,9 +23,20 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
     private final ReaderPoiConfig readerPoiConfig;
     private final File outFile;
 
+    public static PoiReader build(InputStream is, ReaderPoiConfig readerPoiConfig) throws IOException {
+        Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is));
+        PoiReader poiReader = new PoiReader(workbook, readerPoiConfig, null);
+        return poiReader;
+    }
+
+    public static PoiReader build(InputStream is) throws IOException {
+        Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is));
+        PoiReader poiReader = new PoiReader(workbook, new ReaderPoiConfig(), null);
+        return poiReader;
+    }
+
     public static PoiReader build(InputStream is, String password, ReaderPoiConfig readerPoiConfig, File outFile) throws IOException {
         Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is), password);
-        new String("");
         return new PoiReader(workbook, readerPoiConfig, outFile);
     }
 
@@ -91,6 +103,14 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
         workbook.write(fos);
         workbook.close();
         fos.close();
+    }
+
+    public void close() {
+        try {
+            workbook.close();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

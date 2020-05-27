@@ -29,7 +29,7 @@ import run.cmid.common.poi.core.SheetUtils;
  * @author leichao
  */
 
-public class ConvertDataToWorkbook<T> extends EntityBuildings<T> implements DataConvertInterface<T> {
+public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAGE, UNIT> implements DataConvertInterface<T> {
 
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
     private final ArrayList<String> headNames = new ArrayList<String>();
@@ -57,7 +57,7 @@ public class ConvertDataToWorkbook<T> extends EntityBuildings<T> implements Data
                                  Class<T> clazz) {
         super(clazz);
         this.workbookInfo = workbookInfo;
-        this.sheetName=sheetName;
+        this.sheetName = sheetName;
         headAndFieldDataList();
     }
 
@@ -100,7 +100,7 @@ public class ConvertDataToWorkbook<T> extends EntityBuildings<T> implements Data
      */
     private void headAndFieldDataList() {
         for (FieldDetail t : getList()) {
-            headNames.add((t.getMatchValue()==null)?t.getValues().get(0):t.getMatchValue());
+            headNames.add((t.getMatchValue() == null) ? t.getValues().get(0) : t.getMatchValue());
         }
     }
 

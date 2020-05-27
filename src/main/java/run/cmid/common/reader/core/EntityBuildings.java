@@ -24,7 +24,7 @@ import run.cmid.common.utils.ReflectLcUtils;
  * @author leichao
  */
 @Getter
-public class EntityBuildings<T> {
+public class EntityBuildings<T, PAGE, UNIT> {
 
     @Getter
     private final Class<T> clazz;
@@ -66,10 +66,10 @@ public class EntityBuildings<T> {
      * @param resource       实现 BookResources 接口的方法。
      * @throws ConverterExcelException
      */
-    public EntityBuild<T> find(int readHeadRownum, BookPage<Workbook,Sheet,Cell> resource)
+    public EntityBuild<T, Sheet,Cell> find(int readHeadRownum, BookPage<Workbook,Sheet,Cell> resource)
             throws ConverterExcelException {
-        HeadInfo mode = new FindResource(list, headModel, readHeadRownum).find(resource);
-        return new EntityResultBuild<T>(clazz, mode, indexes, readHeadRownum);
+        HeadInfo<Sheet,Cell> mode = new FindResource(list, headModel, readHeadRownum).find(resource);
+        return new EntityResultBuild<T,Sheet,Cell>(clazz, mode, indexes, readHeadRownum);
     }
 
     protected static <T> void isIndexMethod(Index[] indexes, Class<T> clazz) {

@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author leichao
  */
-public class FindResource{
+public class FindResource<RESOURCES, PAGE, UNIT>{
 
     private final List<LocationTag<FieldDetail>> findList;
     private int readHeadRownum = 0;
@@ -47,17 +47,17 @@ public class FindResource{
         this.readHeadRownum = readHeadRownum;
     }
 
-    public HeadInfo find(@SuppressWarnings("rawtypes") BookPage bookResources) throws ConverterExcelException {
+    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources) throws ConverterExcelException {
         return find(bookResources, headModel.getBookTagName());
     }
 
 
     
     @SuppressWarnings("rawtypes")
-    public HeadInfo find(BookPage bookResources, String name) throws ConverterExcelException {
+    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources, String name) throws ConverterExcelException {
         List<HeadInfo> list = new ArrayList<HeadInfo>();
         @SuppressWarnings("unchecked")
-        List<ReaderPage> resource = bookResources.bookList();
+        List<ReaderPage<PAGE, UNIT>> resource = bookResources.bookList();
         //List<LocationTag<String>> vales = null;
         //List<Object> tmp = null;
         if (!name.equals(""))
@@ -83,7 +83,7 @@ public class FindResource{
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public HeadInfo find(ReaderPage readerPage) throws ConverterExcelException {
+    public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) throws ConverterExcelException {
         try {
             List<LocationTag<String>> vales = new ArrayList<>();
             List tmp = readerPage.readRowList(readHeadRownum);

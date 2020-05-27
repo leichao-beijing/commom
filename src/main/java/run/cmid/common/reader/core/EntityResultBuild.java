@@ -1,46 +1,39 @@
 package run.cmid.common.reader.core;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import org.apache.poi.ss.util.CellAddress;
-
 import cn.hutool.core.convert.ConverterRegistry;
-import cn.hutool.core.lang.Validator;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import org.apache.poi.ss.util.CellAddress;
 import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.annotations.Method;
-import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CellAddressAndMessage;
 import run.cmid.common.reader.model.entity.EntityResult;
-import run.cmid.common.reader.model.entity.ExcelResult;
-import run.cmid.common.reader.model.eumns.ConfigErrorType;
+import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.model.eumns.ExcelExceptionType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
-import run.cmid.common.validator.eumns.ValueType;
+
+import java.util.*;
 
 /**
  * @author leichao
  */
-public class EntityResultBuild<T> implements EntityBuild<T> {
+public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UNIT> {
     private final Class<T> classes;
-    private final HeadInfo mode;
+    private final HeadInfo<PAGE, UNIT> mode;
     private final List<LocationTagError<FieldDetail, ConverterExcelException>> columnErrorList;
     private final List<List<String>> indexes;
     private final int readHeadRownum;
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
 
-    public EntityResultBuild(Class<T> classes, HeadInfo mode, List<List<String>> indexes, int readHeadRownum) {
+    public EntityResultBuild(Class<T> classes, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) {
         this.classes = classes;
         this.mode = mode;
         this.columnErrorList = mode.getResponse().getErrorList();
@@ -51,7 +44,8 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     /**
      * @param rownum 等于头读取行时返回bull
      */
-    public ExcelResult<T> build(int rownum) {
+    @Override
+    public EntityResult<T, PAGE, UNIT> build(int rownum) {
         if (readHeadRownum == rownum)
             return null;
         RowInfo rowInfo = readRow(rownum, mode.getReaderPage());
@@ -64,31 +58,33 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
     /**
      * 构建表内全部内容
      */
-    public EntityResult<T> build() {
-        return buildList(0, mode.getReaderPage().length());
+    @Override
+    public EntityResults<T, PAGE, UNIT> build() {
+        return build(0, mode.getReaderPage().length());
     }
 
-    public EntityResult<T> buildList(int start, int end) {
+    @Override
+    public EntityResults<T, PAGE, UNIT> build(int start, int end) {
         //columnErrorList.size();
         end = Math.min(end, mode.getReaderPage().length());
         start = Math.max(0, start);
-        EntityResult<T> entityResult = new EntityResult<T>(start, end, mode.getReaderPage(), mode);
+        EntityResults<T, PAGE, UNIT> entityResults = new EntityResults<T, PAGE, UNIT>(start, end, mode.getReaderPage(), mode);
         for (int i = 0; i < end; i++) {
-            ExcelResult<T> t = build(i);
+            EntityResult<T, PAGE, UNIT> t = build(i);
             if (t != null) {
-                entityResult.addResult(t);
+                entityResults.addResult(t);
             }
         }
-        entityResult.upDateErrorType();
-        verificationIndex(entityResult);
-        return entityResult;
+        entityResults.upDateErrorType();
+        verificationIndex(entityResults);
+        return entityResults;
     }
 
-    private void verificationIndex(EntityResult<T> entityResult) {
+    private void verificationIndex(EntityResults<T, PAGE, UNIT> entityResults) {
         ArrayList<CellAddressAndMessage> list = new ArrayList<CellAddressAndMessage>();
-        List<LocationTag<T>> list1 = entityResult.getResultList();
+        List<LocationTag<T>> list1 = entityResults.getResultList();
         for (List<String> index : indexes) {
-            List<QepeatResponse> qepeats = Compares.repeatDataAll(entityResult.getResultList(), (s) -> {
+            List<QepeatResponse> qepeats = Compares.repeatDataAll(entityResults.getResultList(), (s) -> {
                 String value = "";
                 for (String string : index) {
                     if (s.getFiledNull().contains(string))
@@ -107,20 +103,20 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                         ExcelExceptionType.INDEX_ERROR,
                         (qepeat.getQepeatIndex() != -1)
                                 ? " 冲突的行号"
-                                + (entityResult.getResultList().get(qepeat.getQepeatIndex()).getPosition() + 1)
+                                + (entityResults.getResultList().get(qepeat.getQepeatIndex()).getPosition() + 1)
                                 : "冲突行"));
             }
         }
         if (list.size() != 0)
-            entityResult.getErrorType().add(ExcelExceptionType.INDEX_ERROR);
-        entityResult.getCellErrorList().addAll(list);
+            entityResults.getErrorType().add(ExcelExceptionType.INDEX_ERROR);
+        entityResults.getCellErrorList().addAll(list);
     }
 
 
     /**
      * 当所有内容均未匹配时，返回null;
      */
-    private ExcelResult<T> build(RowInfo rowInfo, Class<T> classes) {
+    private EntityResult<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
@@ -173,7 +169,7 @@ public class EntityResultBuild<T> implements EntityBuild<T> {
                 continue;
             }
         }
-        return new ExcelResult<T>(rowInfo.getRownum(), tag, checkErrorList);// size == 0 ? null : tag;
+        return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.rownum, mode, tag,checkErrorList);// size == 0 ? null : tag;
     }
 
 

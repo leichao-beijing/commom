@@ -13,8 +13,8 @@ import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
  */
 @Getter
 @Setter
-public class HeadInfo implements Comparable<HeadInfo> {
-    public HeadInfo(CompareResponseAndErrorList<FieldDetail, String,ConverterExcelException> response, ReaderPage readerPage) throws ConverterExcelException {
+public class HeadInfo<PAGE, UNIT> implements Comparable<HeadInfo> {
+    public HeadInfo(CompareResponseAndErrorList<FieldDetail, String,ConverterExcelException> response, ReaderPage<PAGE, UNIT> readerPage) throws ConverterExcelException {
         this.response = response;
         size = response.getList().size();
         this.readerPage = readerPage;
@@ -23,7 +23,7 @@ public class HeadInfo implements Comparable<HeadInfo> {
     public HeadInfo(ConverterExcelException ex) {
         this.ex = ex;
     }
-    private ReaderPage readerPage;
+    private ReaderPage<PAGE, UNIT>  readerPage;
     private ConverterExcelException ex;
     private int size;
     private CompareResponseAndErrorList<FieldDetail, String,ConverterExcelException> response;

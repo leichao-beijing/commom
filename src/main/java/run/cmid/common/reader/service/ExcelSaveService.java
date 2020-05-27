@@ -20,17 +20,17 @@ public class ExcelSaveService implements WorkbookInfo {
     private File outFile;
     private FileOutputStream out;
     private Workbook workbook;
-    private final List<ConvertDataToWorkbook<?>> list = new ArrayList<ConvertDataToWorkbook<?>>();
+    private final List<ConvertDataToWorkbook> list = new ArrayList<ConvertDataToWorkbook>();
 
-    public <T> ConvertDataToWorkbook<T> buildConvert(String sheetName, Class<T> t) throws IOException {
-        ConvertDataToWorkbook<T> convert = new ConvertDataToWorkbook<T>(this, sheetName, t);
+    public <T> ConvertDataToWorkbook buildConvert(String sheetName, Class<T> t) throws IOException {
+        ConvertDataToWorkbook convert = new ConvertDataToWorkbook(this, sheetName, t);
         list.add(convert);
         return convert;
     }
 
     public void save() throws IOException {
         boolean state = false;
-        for (ConvertDataToWorkbook<?> convertDataToWorkbook : list) {
+        for (ConvertDataToWorkbook convertDataToWorkbook : list) {
             if (convertDataToWorkbook.isState()) {
                 state = true;
                 break;
