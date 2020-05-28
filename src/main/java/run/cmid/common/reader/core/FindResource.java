@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author leichao
  */
-public class FindResource<RESOURCES, PAGE, UNIT>{
+public class FindResource<RESOURCES, PAGE, UNIT> {
 
     private final List<LocationTag<FieldDetail>> findList;
     private int readHeadRownum = 0;
@@ -52,7 +52,6 @@ public class FindResource<RESOURCES, PAGE, UNIT>{
     }
 
 
-    
     @SuppressWarnings("rawtypes")
     public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources, String name) throws ConverterExcelException {
         List<HeadInfo> list = new ArrayList<HeadInfo>();
@@ -64,7 +63,12 @@ public class FindResource<RESOURCES, PAGE, UNIT>{
             list.add(find(bookResources.book(name)));
         else
             for (ReaderPage readerPage : resource) {
-                list.add(find(readerPage));
+                try {
+                    list.add(find(readerPage));
+                } catch ( Exception e) {
+                    e.printStackTrace();
+                    //ConverterExcelException
+                }
             }
         Collections.sort(list);
         if (list.size() == 0) {
@@ -82,15 +86,15 @@ public class FindResource<RESOURCES, PAGE, UNIT>{
         return model;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) throws ConverterExcelException {
         try {
             List<LocationTag<String>> vales = new ArrayList<>();
             List tmp = readerPage.readRowList(readHeadRownum);
-            if(tmp==null)
-                throw new ConverterExcelException(ExcelExceptionType.HEAD_IS_EMPTY,"读取行号："+readHeadRownum);
+            if (tmp == null)
+                throw new ConverterExcelException(ExcelExceptionType.HEAD_IS_EMPTY, "读取行号：" + readHeadRownum);
             for (int i = 0; i < tmp.size(); i++) {
-                vales.add(new LocationTag(i, tmp.get(i).toString()));
+                vales.add(new LocationTag(i, (tmp.get(i)==null)?"":tmp.get(i).toString()));
             }
             CompareResponseAndErrorList<FieldDetail, String, ConverterExcelException> response = matchCompare(findList, vales);
             return new HeadInfo(response, readerPage);
