@@ -11,8 +11,8 @@ public interface EntityBuild<T, PAGE, UNIT> {
 
     public EntityResults<T, PAGE, UNIT> build() throws ConverterExcelException;
 
-    public EntityResult<T, PAGE, UNIT> build(int rownum);
+    public EntityResult<T, PAGE, UNIT> build(int rownum) throws ConverterExcelException;
 
-    public EntityResults<T, PAGE, UNIT> build(int start, int end);
+    public EntityResults<T, PAGE, UNIT> build(int start, int end) throws ConverterExcelException;
 
 }

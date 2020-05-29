@@ -28,7 +28,7 @@ public @interface ConverterProperty {
     /**
      * 当读取内容为字符串时，最大字符串长度限制
      */
-    int max() default 100;
+    int max() default 255;
 
     /**
      * 只有满足fields内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置

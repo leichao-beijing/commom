@@ -44,7 +44,7 @@ public class ConverterExcelException extends Exception {
     @Override
     public String getMessage() {
         if (errorType != null) {
-            String value = "errorList：";
+            String value = "";
             Iterator<Entry<ExcelExceptionType, String>> it = errorType.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<ExcelExceptionType, String> next = it.next();
