@@ -100,7 +100,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
      */
     private void headAndFieldDataList() {
         for (FieldDetail t : getList()) {
-            headNames.add((t.getMatchValue() == null) ? t.getValues().get(0) : t.getMatchValue());
+            headNames.add((t.getMatchValue().equals(t.getFieldName())) ? t.getValues().get(0) : t.getMatchValue());
         }
     }
 

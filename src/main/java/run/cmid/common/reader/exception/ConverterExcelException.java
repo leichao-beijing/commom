@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 /**
  * 
@@ -14,21 +14,21 @@ import run.cmid.common.reader.model.eumns.ExcelExceptionType;
 public class ConverterExcelException extends Exception {
     private static final long serialVersionUID = 1L;
     @Getter
-    private final ExcelExceptionType type;
+    private final ConverterErrorType type;
 
     @Getter
-    private Map<ExcelExceptionType, String> errorType;
+    private Map<ConverterErrorType, String> errorType;
 
-    public ConverterExcelException(Map<ExcelExceptionType, String> errorType) {
+    public ConverterExcelException(Map<ConverterErrorType, String> errorType) {
         type = null;
         this.errorType = errorType;
     }
 
-    public ConverterExcelException(ExcelExceptionType type) {
+    public ConverterExcelException(ConverterErrorType type) {
         this.type = type;
     }
 
-    public ConverterExcelException(ExcelExceptionType type, String message) {
+    public ConverterExcelException(ConverterErrorType type, String message) {
         this.type = type;
         this.messageValue = message;
     }
@@ -45,15 +45,15 @@ public class ConverterExcelException extends Exception {
     public String getMessage() {
         if (errorType != null) {
             String value = "";
-            Iterator<Entry<ExcelExceptionType, String>> it = errorType.entrySet().iterator();
+            Iterator<Entry<ConverterErrorType, String>> it = errorType.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<ExcelExceptionType, String> next = it.next();
+                Entry<ConverterErrorType, String> next = it.next();
                 value = value + " [" + next.getValue() + "] ";
             }
             return value;
         }
         if (messageValue == null)
-            return type.getTypeName();
-        return "错误类型: " + type.getTypeName() + "，错误描述: " + messageValue;
+            return type.getEnumName();
+        return "错误类型: " + type.getEnumName() + "，错误描述: " + messageValue;
     }
 }

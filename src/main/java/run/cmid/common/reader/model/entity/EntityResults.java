@@ -9,7 +9,7 @@ import lombok.Getter;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.model.HeadInfo;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 /**
  * 多行数据
@@ -25,7 +25,7 @@ public class EntityResults<T, PAGE, UNIT> {
         this.mode = mode;
     }
 
-    private Set<ExcelExceptionType> errorType = EnumSet.noneOf(ExcelExceptionType.class);
+    private Set<ConverterErrorType> errorType = EnumSet.noneOf(ConverterErrorType.class);
 
     private final HeadInfo<PAGE, UNIT> mode;
     /**

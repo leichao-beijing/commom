@@ -1,6 +1,6 @@
 package run.cmid.common.reader.exception;
 
-import run.cmid.common.reader.model.eumns.FieldExceptionType;
+import run.cmid.common.reader.model.eumns.FieldException;
 
 /**
  * 
@@ -8,9 +8,9 @@ import run.cmid.common.reader.model.eumns.FieldExceptionType;
  */
 public class ConverterFieldException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    private final FieldExceptionType type;
+    private final FieldException type;
 
-    public ConverterFieldException(FieldExceptionType type) {
+    public ConverterFieldException(FieldException type) {
         this.type = type;
     }
 
@@ -24,7 +24,7 @@ public class ConverterFieldException extends RuntimeException {
     @Override
     public String getMessage() {
         if (message == null)
-            return type.getTypeName();
-        return "type: " + type.getTypeName() + ",message: " + message;
+            return type.getEnumName();
+        return "type: " + type.getEnumName() + ",message: " + message;
     }
 }

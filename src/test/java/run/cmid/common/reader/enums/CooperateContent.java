@@ -2,7 +2,7 @@ package run.cmid.common.reader.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmid.common.io.EnumTypeName;
+import run.cmid.common.io.EnumName;
 
 /**
  * 合作内容
@@ -10,7 +10,7 @@ import run.cmid.common.io.EnumTypeName;
  * @author leichao
  */
 @Getter
-public enum CooperateContent implements EnumTypeName {
+public enum CooperateContent implements EnumName {
     NONE("/"),
 
     SCHEME("方案"),
@@ -39,10 +39,10 @@ public enum CooperateContent implements EnumTypeName {
 
     CHECK_DESIGNER("勘察+设计");
 
-    CooperateContent(String typeName) {
-        this.typeName = typeName;
+    CooperateContent(String enumName) {
+        this.enumName = enumName;
     }
 
     @JsonValue
-    private String typeName;
+    private String enumName;
 }

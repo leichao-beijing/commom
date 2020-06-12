@@ -5,7 +5,7 @@ import org.apache.poi.ss.util.CellAddress;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmid.common.reader.model.FieldDetail;
-import run.cmid.common.reader.model.eumns.ExcelConverterExceptionType;
+import run.cmid.common.reader.model.eumns.ExcelConverterException;
 
 /**
  * 
@@ -19,12 +19,12 @@ public class ExcelReadRuntimeException extends RuntimeException {
     @Getter
     private final FieldDetail fieldDetail;
     @Getter
-    private final ExcelConverterExceptionType errorType;
+    private final ExcelConverterException errorType;
     private CellAddress cellAddress;
     private int row;
 
     public ExcelReadRuntimeException(@SuppressWarnings("rawtypes") FieldDetail fieldDetail,
-                                     ExcelConverterExceptionType errorType, CellAddress cellAddress) {
+                                     ExcelConverterException errorType, CellAddress cellAddress) {
         this.fieldDetail = fieldDetail;
         this.errorType = errorType;
         this.cellAddress = cellAddress;
@@ -32,7 +32,7 @@ public class ExcelReadRuntimeException extends RuntimeException {
     }
 
     public ExcelReadRuntimeException(@SuppressWarnings("rawtypes") FieldDetail fieldDetail,
-                                     ExcelConverterExceptionType errorType, int row) {
+                                     ExcelConverterException errorType, int row) {
         this.fieldDetail = fieldDetail;
         this.errorType = errorType;
         this.row = row;
@@ -40,9 +40,9 @@ public class ExcelReadRuntimeException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        if (errorType == ExcelConverterExceptionType.StringIndexOutBounds) {
-            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
+        if (errorType == ExcelConverterException.StringIndexOutBounds) {
+            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getEnumName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
         }
-        return "第" + row + "行，出现了" + errorType.getTypeName() + " 错误";
+        return "第" + row + "行，出现了" + errorType.getEnumName() + " 错误";
     }
 }

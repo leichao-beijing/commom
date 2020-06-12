@@ -4,9 +4,8 @@ import lombok.Getter;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.model.HeadInfo;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class EntityResult<T, PAGE, UNIT> {
         this.cellErrorList = cellErrorList;
     }
 
-    private Set<ExcelExceptionType> errorType = EnumSet.noneOf(ExcelExceptionType.class);
+    private Set<ConverterErrorType> errorType = EnumSet.noneOf(ConverterErrorType.class);
 
     private final HeadInfo<PAGE, UNIT> mode;
     /**

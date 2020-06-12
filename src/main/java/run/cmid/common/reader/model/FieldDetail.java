@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Getter;
@@ -12,10 +11,10 @@ import lombok.Setter;
 import lombok.ToString;
 import run.cmid.common.reader.annotations.ConverterProperty;
 import run.cmid.common.reader.annotations.FormatDate;
-import run.cmid.common.reader.annotations.Method;
+import run.cmid.common.reader.annotations.Match;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
-import run.cmid.common.reader.model.eumns.ConfigErrorType;
-import run.cmid.common.reader.model.eumns.ExcelReadType;
+import run.cmid.common.reader.model.eumns.ConfigError;
+import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
 
@@ -36,7 +35,7 @@ public class FieldDetail {
         this.type = FieldDetailType.SINGLE;
         this.model = converterProperty.model();
         this.max = converterProperty.max();
-        this.methods = converterProperty.methods();
+        this.match = converterProperty.matches();
         this.checkColumn = converterProperty.checkColumn();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
@@ -56,11 +55,11 @@ public class FieldDetail {
         this.checkColumn = converterProperty.checkColumn();
         this.model = converterProperty.model();
         if (converterProperty.value().length == 0) {
-            throw new ConverterExcelConfigException(ConfigErrorType.LIST_ERROR_VALUE_IS_EMPTY);
+            throw new ConverterExcelConfigException(ConfigError.LIST_ERROR_VALUE_IS_EMPTY);
         }
         this.values = Arrays.asList(converterProperty.value());
         this.max = converterProperty.max();
-        this.methods = converterProperty.methods();
+        this.match = converterProperty.matches();
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -75,9 +74,9 @@ public class FieldDetail {
         this.parentClass = parentClass;
         this.type = FieldDetailType.SINGLE;
         this.checkColumn = false;
-        this.model = ExcelReadType.EQUALS;
+        this.model = ExcelRead.EQUALS;
         this.values = Arrays.asList(field.getName());
-        this.methods = null;
+        this.match = null;
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -105,9 +104,9 @@ public class FieldDetail {
     private String enumFileName = "";
     private String enumTypeNameFiledValue;
     private final List<String> values;
-    private final ExcelReadType model;
+    private final ExcelRead model;
     private int max = 100;
-    private final Method[] methods;
+    private final Match[] match;
     @Setter
     private int column = -1;
     /**

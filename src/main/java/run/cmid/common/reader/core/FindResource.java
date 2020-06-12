@@ -8,9 +8,9 @@ import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
-import run.cmid.common.reader.model.eumns.ConfigErrorType;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
-import run.cmid.common.reader.model.eumns.ExcelReadType;
+import run.cmid.common.reader.model.eumns.ConfigError;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
+import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
             }
         Collections.sort(list);
         if (list.size() == 0) {
-            throw new ConverterExcelException(ExcelExceptionType.NOT_FINDS_SHEET);
+            throw new ConverterExcelException(ConverterErrorType.NOT_FINDS_SHEET);
         }
         HeadInfo model = list.get(list.size() - 1);
         if (model.getEx() != null) {
@@ -80,7 +80,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
         }
         int size = model.getResponse().getList().size();
         if (size < wrongCount)
-            throw new ConverterExcelException(ExcelExceptionType.FIND_FIELD_COUNT_WRONG)
+            throw new ConverterExcelException(ConverterErrorType.FIND_FIELD_COUNT_WRONG)
                     .setMessage("最少匹配到" + wrongCount + "列数据，当前匹配到了" + size);
         model.getReaderPage().info(model);
         return model;
@@ -92,7 +92,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
             List<LocationTag<String>> vales = new ArrayList<>();
             List tmp = readerPage.readRowList(readHeadRownum);
             if (tmp == null)
-                throw new ConverterExcelException(ExcelExceptionType.HEAD_IS_EMPTY, "读取行号：" + readHeadRownum);
+                throw new ConverterExcelException(ConverterErrorType.HEAD_IS_EMPTY, "读取行号：" + readHeadRownum);
             for (int i = 0; i < tmp.size(); i++) {
                 vales.add(new LocationTag(i, (tmp.get(i)==null)?"":tmp.get(i).toString()));
             }
@@ -115,7 +115,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                     return getBoolean(d, detail);
                 }, (e) -> {
                     if (e.getValue().getValue().isCheckColumn()) {
-                        return new ConverterExcelException(ExcelExceptionType.NOT_FIND_CHECK_COLUMN)
+                        return new ConverterExcelException(ConverterErrorType.NOT_FIND_CHECK_COLUMN)
                                 .setMessage(e.getValue().getValue().getValues().toString());
                     }
                     return null;
@@ -125,7 +125,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
 
     private static Boolean getBoolean(LocationTag<String> d, FieldDetail detail) {
         CompareResponse<String, String> response = null;
-        if (detail.getModel() == ExcelReadType.EQUALS) {
+        if (detail.getModel() == ExcelRead.EQUALS) {
             response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().equals(value)) {
@@ -136,7 +136,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                         return false;
                     });
         }
-        if (detail.getModel() == ExcelReadType.INCLUDE) {
+        if (detail.getModel() == ExcelRead.INCLUDE) {
             response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().indexOf(value) != -1) {
@@ -147,8 +147,8 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                         return false;
                     });
         }
-        if (detail.getModel() == ExcelReadType.NO_EQUALS || detail.getModel() == ExcelReadType.NO_INCLUDE) {
-            throw new ConverterExcelConfigException(ConfigErrorType.NO_SUPPORT_ENUM_CONFIG).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
+        if (detail.getModel() == ExcelRead.NO_EQUALS || detail.getModel() == ExcelRead.NO_INCLUDE) {
+            throw new ConverterExcelConfigException(ConfigError.NO_SUPPORT_ENUM_CONFIG).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
         }
         if (response != null) {
             return true;

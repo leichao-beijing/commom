@@ -70,21 +70,6 @@ public class ExcelTest {
         ReaderPoiConfig readerPoiConfig1 = new ReaderPoiConfig();
         PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
 
-        //       poi.clone(poi1,"Sheet1","Sheet122222");
-        //       File bigTable = new File("C:\\Users\\leichao\\Desktop\\产值工具\\大表测试.xlsx");
-//        ras= new FileInputStream(bigTable);
-//        ExcelReaderSheetBuilder cc = EasyExcel.read(ras).sheet(0);
-//      System.err.println(cc.doReadSync());
-//
-
-//
-//        poi = PoiReader.build(ras, null, readerPoiConfig, null);
-//
-//        ReaderPage<Sheet, Cell> book = poi.book(0);
-//
-//        for (int i = 0; i <book.length() ; i++) {
-//            System.err.println(book.readRowList(i));
-//        }
     }
 
 

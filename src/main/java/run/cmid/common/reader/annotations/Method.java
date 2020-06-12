@@ -1,12 +1,9 @@
 package run.cmid.common.reader.annotations;
 
-import run.cmid.common.io.StringUtils;
-import run.cmid.common.reader.model.eumns.ExcelReadType;
-import run.cmid.common.validator.eumns.ValueType;
+import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.Value;
 
 import java.lang.annotation.*;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 当filedName 取得值使用fieldNameModel()与computeValue匹配满足时，<br>
@@ -31,15 +28,23 @@ public @interface Method {
 
     String[] compareValue() default {};
 
-    ExcelReadType fieldNameModel() default ExcelReadType.EQUALS;
+    ExcelRead fieldNameModel() default ExcelRead.EQUALS;//regex
+
+    /**
+     * filedName 符合正则时生效。不存在时忽略
+     */
+    String fieldRegex() default "";
+
+    String regex() default "";
+
 
     String[] value() default {};
 
-    ExcelReadType model() default ExcelReadType.EQUALS;
+    ExcelRead model() default ExcelRead.EQUALS;
 
     boolean check() default false;
 
-    ValueType exceptionType() default ValueType.NONE;
+    Value exceptionType() default Value.NONE;
 
     String message() default "";
 
@@ -47,51 +52,4 @@ public @interface Method {
      * 是否忽略转换异常，默认throw转换异常
      */
     boolean converterException() default true;
-
-    class Validator {
-        public static String headMessage(String tagName, Object value) {
-            return "<" + tagName + ">的值[" + value + "]";
-        }
-
-        public static String message(ExcelReadType mode, String[] values, boolean state) {
-            String no = "";
-            if (!state)
-                no = "不";
-            return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getTypeName() + " 条件";
-        }
-
-        /**
-         * @param value
-         * @param values
-         * @param mode
-         * @return value== NULL or "" 时不进行判断返回null  , values.length==0返回true
-         */
-        public static boolean mode(Object value, String[] values, ExcelReadType mode) {
-            if (StringUtils.isEmpty(value))
-                return false;
-            if (values.length == 0)
-                return true;
-            List<String> list = Arrays.asList(values);
-            switch (mode) {
-                case EQUALS:
-                    return list.contains(value);
-                case INCLUDE:
-                    for (String val : list) {
-                        if (value.toString().indexOf(val) != -1)
-                            return true;
-                    }
-                    return false;
-                case NO_EQUALS:
-                    return !list.contains(value);
-                case NO_INCLUDE:
-                    for (String val : list) {
-                        if (value.toString().indexOf(val) != -1)
-                            return false;
-                    }
-                    return true;
-                default:
-                    throw new IllegalArgumentException("Unexpected value: " + mode);
-            }
-        }
-    }
 }

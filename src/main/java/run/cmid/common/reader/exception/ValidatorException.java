@@ -1,0 +1,20 @@
+package run.cmid.common.reader.exception;
+
+import lombok.Getter;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
+
+public class ValidatorException extends RuntimeException {
+
+    @Getter
+    private ConverterErrorType type;
+
+    public ValidatorException(ConverterErrorType type) {
+        super(type.getEnumName());
+        this.type = type;
+    }
+
+    public ValidatorException(ConverterErrorType type, String messages) {
+        super(messages);
+        this.type = type;
+    }
+}

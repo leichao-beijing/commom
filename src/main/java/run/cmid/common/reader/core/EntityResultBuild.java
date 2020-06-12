@@ -9,16 +9,19 @@ import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
+import run.cmid.common.reader.annotations.Match;
 import run.cmid.common.reader.annotations.Method;
 import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ValidatorException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CellAddressAndMessage;
 import run.cmid.common.reader.model.entity.EntityResult;
 import run.cmid.common.reader.model.entity.EntityResults;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
+import run.cmid.common.validator.FiledValidator;
 
 import java.util.*;
 
@@ -65,7 +68,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
 
     @Override
     public EntityResults<T, PAGE, UNIT> build(int start, int end) {
-        //columnErrorList.size();
         end = Math.min(end, mode.getReaderPage().length());
         start = Math.max(0, start);
         EntityResults<T, PAGE, UNIT> entityResults = new EntityResults<T, PAGE, UNIT>(start, end, mode.getReaderPage(), mode);
@@ -100,7 +102,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
 
             for (QepeatResponse qepeat : qepeats) {
                 list.add(new CellAddressAndMessage(list1.get(qepeat.getIndex()).getPosition(), 0,
-                        ExcelExceptionType.INDEX_ERROR,
+                        ConverterErrorType.INDEX_ERROR,
                         (qepeat.getQepeatIndex() != -1)
                                 ? " 冲突的行号"
                                 + (entityResults.getResultList().get(qepeat.getQepeatIndex()).getPosition() + 1)
@@ -108,7 +110,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             }
         }
         if (list.size() != 0)
-            entityResults.getErrorType().add(ExcelExceptionType.INDEX_ERROR);
+            entityResults.getErrorType().add(ConverterErrorType.INDEX_ERROR);
         entityResults.getCellErrorList().addAll(list);
     }
 
@@ -123,25 +125,26 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         Iterator<Map.Entry<String, DataArray<Object, FieldDetail>>> it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
-            String name = next.getKey();
             DataArray<Object, FieldDetail> value = next.getValue();
-            // value.getInfo().setConverterException(true);//重置转换异常触发状态为true
-            Method[] methods = value.getInfo().getMethods();
-            ArrayList<CellAddressAndMessage> megs = null;
-            if (methods != null && methods.length != 0) {
-                for (Method method : methods) {
-                    DataArray<Object, FieldDetail> desValues = method.fieldName().equals("") ? value
-                            : rowInfo.getData().get(method.fieldName());
-                    CellAddressAndMessage mess = rangeValue(value, desValues, method,
-                            new CellAddress(rowInfo.getRownum(), desValues.getInfo().getColumn()));
-                    if (mess != null) {
-                        checkErrorList.add(mess);
-                        value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
-                        break;
-                    } else {
-                        if (value.getInfo().isConverterException())
-                            value.getInfo().setConverterException(method.converterException());//对转换异常进行响应配置
+            Match[] matches = value.getInfo().getMatch();
+            if (matches.length != 0) {
+                for (Match match : matches) {
+                    try {
+                        List<String> list = MatchValidator.validatorFiledMatches(match.filedMatches(), rowInfo);
+                        if (list != null && list.size() == 0) {
+                            if (value.getInfo().isConverterException())
+                                value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
+                            continue;
+                        }
+                        MatchValidator.validatorFiledCompares(value, match.filedCompares(), rowInfo, (list == null) ? "" : list.toString());
+                        MatchValidator.validatorMatch(value, match, rowInfo, (list == null) ? "" : list.toString());
+                    } catch (ValidatorException e) {
+                        if (!match.check() && e.getType() == ConverterErrorType.EMPTY)
+                            break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
+                        checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
                     }
+                    if (value.getInfo().isConverterException())
+                        value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
                 }
             }
         }
@@ -154,22 +157,22 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             if (value.getValue() != null && value.getValue().toString().length() > value.getInfo().getMax()) {
                 tag.getFiledNull().add(name);
                 CellAddressAndMessage message = new CellAddressAndMessage(rowInfo.getRownum(),
-                        value.getInfo().getColumn(), ExcelExceptionType.STRING_OUT_BOUNDS,
+                        value.getInfo().getColumn(), ConverterErrorType.STRING_OUT_BOUNDS,
                         value.getInfo().getMax() + "");
                 tag.getFiledNull().add(name);
                 checkErrorList.add(message);
                 continue;
             }
-            CellAddressAndMessage message = cellValueToClass(value.getValue(), out, methodName, value.getInfo(),
-                    new CellAddress(rowInfo.getRownum(), value.getInfo().getColumn()));
-            value.getInfo().setConverterException(true);//初始化异常状态
-            if (message.getEx() != ExcelExceptionType.SUCCESS) {
+            try {
+                cellValueToClass(value.getValue(), out, methodName, value.getInfo(),
+                        new CellAddress(rowInfo.getRownum(), value.getInfo().getColumn()));
+            } catch (ValidatorException e) {
+                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
                 tag.getFiledNull().add(name);
-                checkErrorList.add(message);
-                continue;
             }
+            value.getInfo().setConverterException(true);//初始化异常状态
         }
-        return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.rownum, mode, tag,checkErrorList);// size == 0 ? null : tag;
+        return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.rownum, mode, tag, checkErrorList);// size == 0 ? null : tag;
     }
 
 
@@ -183,42 +186,38 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
      * @param method
      * @param address
      */
-    public CellAddressAndMessage rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
+    public void rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
         //当{des}列的值{desValue}满足在{method.computeValue}范围内满足{method.mode}条件时，
         //{src}列的值[不能没有数据]or[不能是{srcValue}]
         //new StringBuffer()
         boolean equalState = true;
         if (!desValue.getInfo().getFieldName().equals(srcValue.getInfo().getFieldName())) {
             equalState = false;
-            if (!Method.Validator.mode(desValue.getValue(), method.compareValue(), method.fieldNameModel())) {//通过des条件时，不进行判断，单空des可以通过
-                return null;
+            if (!FiledValidator.mode(desValue.getValue(), method.compareValue(), method.fieldNameModel())) {//通过des条件时，不进行判断，单空des可以通过
+                return;
             }
         }
         String equalMgs = "";
         if (!equalState) {
-            equalMgs = ((!StringUtils.isEmpty(desValue.getValue())) ? (Method.Validator.headMessage(desValue.getInfo().getMatchValue(), desValue.getValue()) +
-                    Method.Validator.message(method.fieldNameModel(), method.compareValue(), true)) + "时，" : "");
+            equalMgs = ((!StringUtils.isEmpty(desValue.getValue())) ? (FiledValidator.headMessage(desValue.getInfo().getMatchValue(), desValue.getValue()) +
+                    FiledValidator.message(method.fieldNameModel(), method.compareValue(), true)) + "时，" : "");
         }
-        boolean state = Method.Validator.mode(srcValue.getValue(), method.value(), method.model());
+        boolean state = FiledValidator.mode(srcValue.getValue(), method.value(), method.model());
         if (!state || (method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
             if (StringUtils.isEmpty(srcValue.getValue()))
-                return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                        ExcelExceptionType.NOT_FIND_CHECK_VALUE, equalMgs + "<" + srcValue.getInfo().getMatchValue() + "> 不能没有数据");
-
+                throw new ValidatorException(ConverterErrorType.NOT_FIND_CHECK_VALUE, equalMgs + "<" + srcValue.getInfo().getMatchValue() + "> 不能没有数据");
             String mgs;
             if (equalState) {
-                mgs = Method.Validator.headMessage(srcValue.getInfo().getMatchValue(), method.fieldNameModel()) +
-                        Method.Validator.message(method.fieldNameModel(), method.compareValue(), true) + " 和 " +
-                        Method.Validator.message(method.model(), method.value(), false);
+                mgs = FiledValidator.headMessage(srcValue.getInfo().getMatchValue(), method.fieldNameModel()) +
+                        FiledValidator.message(method.fieldNameModel(), method.compareValue(), true) + " 和 " +
+                        FiledValidator.message(method.model(), method.value(), false);
             } else {
                 mgs = equalMgs + "时，" +
-                        Method.Validator.headMessage(srcValue.getInfo().getMatchValue(), srcValue.getValue()) +
-                        Method.Validator.message(method.model(), method.value(), false);
+                        FiledValidator.headMessage(srcValue.getInfo().getMatchValue(), srcValue.getValue()) +
+                        FiledValidator.message(method.model(), method.value(), false);
             }
-            return new CellAddressAndMessage(address.getRow(), address.getColumn(),
-                    ExcelExceptionType.VALIDATOR_ERROR, mgs);
+            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, mgs);
         }
-        return null;
     }
 
     /**
@@ -230,11 +229,11 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
      * @param setFunctionValue set方法的构造名称
      * @param cellAddress
      */
-    public CellAddressAndMessage cellValueToClass(Object value, Object out, String setFunctionValue,
-                                                  FieldDetail fieldDetail, CellAddress cellAddress) {
+    public void cellValueToClass(Object value, Object out, String setFunctionValue,
+                                 FieldDetail fieldDetail, CellAddress cellAddress) {
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
         if (StringUtils.isEmpty(value) && fieldDetail.getType() != FieldDetailType.LIST)
-            return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
+            return;
         if (fieldDetail.getType() != FieldDetailType.LIST)
             try {
                 if (parameterClasses.isEnum()) {
@@ -243,10 +242,9 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                     if (list.contains(value)) {
                         Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
                         ReflectUtil.invoke(out, setFunctionValue, en);
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
+                        return;
                     } else
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.ENUM_ERROR, list.toString());
+                        throw new ValidatorException(ConverterErrorType.ENUM_ERROR, list.toString());
                 }
 
                 if (!value.getClass().equals(parameterClasses)) {
@@ -260,21 +258,18 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                         data = converterRegistry.convert(parameterClasses, value);
 
                     if (data == null && fieldDetail.isConverterException())
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                                ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
+                        throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
                                 ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
                     else {
                         ReflectUtil.invoke(out, setFunctionValue, data);
-                        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
+                        return;
                     }
                 } else
                     ReflectUtil.invoke(out, setFunctionValue, value);
             } catch (Exception e) {
                 if (fieldDetail.isConverterException())
-                    return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(),
-                            ExcelExceptionType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
+                    throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
             }
-        return new CellAddressAndMessage(cellAddress.getRow(), cellAddress.getColumn(), ExcelExceptionType.SUCCESS);
     }
 
     private RowInfo readRow(int rownum, ReaderPage readerPage) {

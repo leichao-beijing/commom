@@ -3,25 +3,26 @@ package run.cmid.common.reader.model.entity;
 import org.apache.poi.ss.util.CellAddress;
 
 import lombok.Getter;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.exception.ValidatorException;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 /**
- * 
  * @author leichao
  */
 @Getter
 public class CellAddressAndMessage extends CellAddress {
-    public CellAddressAndMessage(int row, int column, ExcelExceptionType ex) {
+    public CellAddressAndMessage(int row, int column, ValidatorException ex) {
         super(row, column);
-        this.ex = ex;
+        this.ex = ex.getType();
+        this.message = ex.getMessage();
     }
 
-    public CellAddressAndMessage(int row, int column, ExcelExceptionType ex, String message) {
+    public CellAddressAndMessage(int row, int column, ConverterErrorType ex, String message) {
         super(row, column);
         this.ex = ex;
         this.message = message;
     }
 
-    private final ExcelExceptionType ex;
+    private final ConverterErrorType ex;
     private String message;
 }

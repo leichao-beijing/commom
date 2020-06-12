@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Getter;
-import run.cmid.common.reader.model.eumns.ConfigErrorType;
+import run.cmid.common.reader.model.eumns.ConfigError;
 
 /**
  * 
@@ -14,21 +14,21 @@ import run.cmid.common.reader.model.eumns.ConfigErrorType;
 public class ConverterExcelConfigException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     @Getter
-    private final ConfigErrorType type;
+    private final ConfigError type;
 
     @Getter
-    private Map<ConfigErrorType, String> errorType;
+    private Map<ConfigError, String> errorType;
 
-    public ConverterExcelConfigException(Map<ConfigErrorType, String> errorType) {
+    public ConverterExcelConfigException(Map<ConfigError, String> errorType) {
         type = null;
         this.errorType = errorType;
     }
 
-    public ConverterExcelConfigException(ConfigErrorType type) {
+    public ConverterExcelConfigException(ConfigError type) {
         this.type = type;
     }
 
-    public ConverterExcelConfigException(ConfigErrorType type, String message) {
+    public ConverterExcelConfigException(ConfigError type, String message) {
         this.type = type;
         this.messageValue = message;
     }
@@ -45,15 +45,15 @@ public class ConverterExcelConfigException extends RuntimeException {
     public String getMessage() {
         if (errorType != null) {
             String value = "errorList：";
-            Iterator<Entry<ConfigErrorType, String>> it = errorType.entrySet().iterator();
+            Iterator<Entry<ConfigError, String>> it = errorType.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<ConfigErrorType, String> next = it.next();
+                Entry<ConfigError, String> next = it.next();
                 value = value + " [" + next.getValue() + "] ";
             }
             return value;
         }
         if (messageValue == null)
-            return type.getTypeName();
-        return "错误类型: " + type.getTypeName() + "，错误描述: " + messageValue;
+            return type.getEnumName();
+        return "错误类型: " + type.getEnumName() + "，错误描述: " + messageValue;
     }
 }

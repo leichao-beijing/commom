@@ -11,7 +11,7 @@ import run.cmid.common.reader.core.ReaderPage;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
-import run.cmid.common.reader.model.eumns.ExcelExceptionType;
+import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -122,7 +122,7 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
     @Override
     public void info(HeadInfo headInfo) throws ConverterExcelException {
         this.length = SheetUtils.sheetCount(sheet, headInfo.getResponse().getList());// 获取最大行
-        Map<ExcelExceptionType, String> errorType = computeErrorType(headInfo.getResponse().getErrorList());
+        Map<ConverterErrorType, String> errorType = computeErrorType(headInfo.getResponse().getErrorList());
         if (errorType.size() != 0)
             throw new ConverterExcelException(errorType);
         this.headInfo = headInfo;
@@ -136,10 +136,10 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
         return length;
     }
 
-    private Map<ExcelExceptionType, String> computeErrorType(
+    private Map<ConverterErrorType, String> computeErrorType(
             List<LocationTagError<FieldDetail, ConverterExcelException>> columnErrorList) {
-        EnumMap<ExcelExceptionType, String> errorTypeMap = new EnumMap<ExcelExceptionType, String>(
-                ExcelExceptionType.class);
+        EnumMap<ConverterErrorType, String> errorTypeMap = new EnumMap<ConverterErrorType, String>(
+                ConverterErrorType.class);
         for (LocationTagError<FieldDetail, ConverterExcelException> locationTagError : columnErrorList) {
             if (errorTypeMap.get(locationTagError.getEx().getType()) == null) {
                 errorTypeMap.put(locationTagError.getEx().getType(), locationTagError.getEx().getMessage());

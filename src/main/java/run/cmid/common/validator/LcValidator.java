@@ -1,5 +1,6 @@
 package run.cmid.common.validator;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -51,4 +52,7 @@ public class LcValidator implements Validator {
         return null;
     }
 
+    public static void main(String[] args) {
+        
+    }
 }

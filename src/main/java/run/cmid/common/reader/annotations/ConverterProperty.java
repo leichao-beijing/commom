@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import run.cmid.common.reader.model.eumns.ExcelReadType;
+import run.cmid.common.reader.model.eumns.ExcelRead;
 
 /**
  * @author leichao
@@ -23,7 +23,7 @@ public @interface ConverterProperty {
      */
     String enumGetValueMethodName() default "";
 
-    ExcelReadType model() default ExcelReadType.EQUALS;
+    ExcelRead model() default ExcelRead.EQUALS;
 
     /**
      * 当读取内容为字符串时，最大字符串长度限制
@@ -33,7 +33,7 @@ public @interface ConverterProperty {
     /**
      * 只有满足fields内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置
      */
-    Method[] methods() default {};
+    Match[] matches() default {};
 
     /**
      * true时，找不到这列时将抛出异常

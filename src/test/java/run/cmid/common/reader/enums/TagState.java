@@ -2,14 +2,14 @@ package run.cmid.common.reader.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmid.common.io.EnumTypeName;
+import run.cmid.common.io.EnumName;
 
 /**
  * 
  * @author leichao
  */
 @Getter
-public enum TagState implements EnumTypeName {
+public enum TagState implements EnumName {
     ADD("新增"),
 
     DELETE("删除"),
@@ -24,11 +24,11 @@ public enum TagState implements EnumTypeName {
 
     UPDATE("更新");
 
-    TagState(String typeName) {
-        this.typeName = typeName;
+    TagState(String enumName) {
+        this.enumName = enumName;
     }
     @JsonValue
-    private String typeName;
+    private String enumName;
 
 //    public static List<String> getTypeNameList() {
 //        ArrayList<String> list = new ArrayList<String>();

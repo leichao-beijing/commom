@@ -11,10 +11,10 @@ import cn.hutool.core.util.ReflectUtil;
  */
 public class EnumUtil {
 
-    public static <T extends EnumTypeName> List<String> getTypeNameList(Class<T> classEnum) {
+    public static <T extends EnumName> List<String> getTypeNameList(Class<T> classEnum) {
         ArrayList<String> list = new ArrayList<String>();
-        for (EnumTypeName enumTypeName : values(classEnum)) {
-            list.add(enumTypeName.getTypeName());
+        for (EnumName enumName : values(classEnum)) {
+            list.add(enumName.getEnumName());
         }
 
         return list;
@@ -71,13 +71,13 @@ public class EnumUtil {
         return null;
     }
 
-    public static <T extends EnumTypeName> T isTypeName(Class<T> classEnum, String typeName) {
+    public static <T extends EnumName> T isTypeName(Class<T> classEnum, String typeName) {
         T[] enums = values(classEnum);
         if (enums == null || enums.length == 0) {
             return null;
         }
         for (T t : enums) {
-            if (t.getTypeName().equals(typeName)) {
+            if (t.getEnumName().equals(typeName)) {
                 return t;
             }
         }

@@ -92,7 +92,18 @@ public class StringUtils {
     public static boolean isEmpty(final String target) {
         if (target == null || target.length() == 0)
             return true;
-        return target.trim().length() == 0;
+        return false;
+    }
+
+    /**
+     * 空字符串验证
+     */
+    public static boolean isBlack(final String val) {
+        return isEmpty(val) ? true : (val.trim().length() == 0) ? true : false;
+    }
+
+    public static boolean isBlack(final Object val) {
+        return isEmpty(val) ? true : (val.toString().trim().length() == 0) ? true : false;
     }
 
     /**
