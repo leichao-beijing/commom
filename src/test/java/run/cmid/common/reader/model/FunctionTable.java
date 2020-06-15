@@ -24,7 +24,7 @@ public class FunctionTable {
 //    @ExcelConverter(value = { "功能过程" })
 //    private String functionProcessDescription;// 功能过程
 //
-//    @ExcelConverter(value = { "子过程描述" }, check = true)
+//    @ExcelConverter(value = { "子过程描述" })
 //    private String subprocessDescription;// 子过程描述
 //
 //    @ExcelConverter(value = { "数据移动类型" })

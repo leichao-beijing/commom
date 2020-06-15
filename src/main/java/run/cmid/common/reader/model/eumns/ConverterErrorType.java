@@ -8,7 +8,7 @@ import run.cmid.common.io.EnumName;
 public enum ConverterErrorType implements EnumName {
     SUCCESS("成功"),
 
-    COMPARE_IS_EMPTY("当mode!=ExcelRead.EXISTS时，比较的内容是不允许为空。"),
+    COMPARE_IS_EMPTY("当mode!=ExcelRead.EXISTS EMPTY时，比较的内容是不允许为空。"),
 
     CUSTOM("自定义错误"),
 
@@ -44,9 +44,15 @@ public enum ConverterErrorType implements EnumName {
     VALIDATOR_ERROR("逻辑验证失败"),
     //LIST_STRING_ERROR1("ExcelConverterStringList 对应字符串没有匹配到"),
 
+    SIZE_ERROR("数量不在范围内"),
+
+    LENGTH_ERROR("长度不在范围内"),
+
     NO_NUMBER("不是数字"),
 
-    EMPTY("这是空值"),
+    ON_EMPTY("不能是空值"),
+
+    EMPTY("不能存在值"),
 
     NUMBER_NULL("数字不能是null"),
 

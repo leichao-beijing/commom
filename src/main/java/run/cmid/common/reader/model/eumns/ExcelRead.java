@@ -11,6 +11,7 @@ import java.io.File;
  * @author leichao
  */
 public enum ExcelRead implements EnumName {
+    NONE(""),
 
     LESS_THAN("小于"),
 
@@ -33,7 +34,7 @@ public enum ExcelRead implements EnumName {
     NO_EQUALS("不等于");
 
 
-    private ExcelRead(String typeName) {
+    ExcelRead(String typeName) {
         this.typeName = typeName;
     }
 

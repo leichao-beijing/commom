@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConverterPropertyList {
-    ConverterProperty[] value();
+public @interface FindColumns {
+    FindColumn[] value();
 }

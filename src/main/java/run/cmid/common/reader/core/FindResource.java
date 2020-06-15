@@ -11,6 +11,7 @@ import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
 import run.cmid.common.reader.model.eumns.ConfigError;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.reader.model.eumns.FindModel;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
 
     private static Boolean getBoolean(LocationTag<String> d, FieldDetail detail) {
         CompareResponse<String, String> response = null;
-        if (detail.getModel() == ExcelRead.EQUALS) {
+        if (detail.getModel() == FindModel.EQUALS ) {
             response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().equals(value)) {
@@ -136,7 +137,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                         return false;
                     });
         }
-        if (detail.getModel() == ExcelRead.INCLUDE) {
+        if (detail.getModel() == FindModel.INCLUDE) {
             response = Compares.toList(d.getValue(), d.getPosition().intValue(), detail.getValues(),
                     (tag, value) -> {
                         if (d.getValue().indexOf(value) != -1) {
@@ -146,9 +147,6 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                         }
                         return false;
                     });
-        }
-        if (detail.getModel() == ExcelRead.NO_EQUALS || detail.getModel() == ExcelRead.NO_INCLUDE) {
-            throw new ConverterExcelConfigException(ConfigError.NO_SUPPORT_ENUM_CONFIG).setMessage("SUPPORT ExcelReadType.EQUALS or ExcelReadType.INCLUDE");
         }
         if (response != null) {
             return true;

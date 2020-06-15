@@ -9,7 +9,6 @@ import run.cmid.common.reader.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.CompareType;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.ExcelRead;
-import run.cmid.common.validator.eumns.Value;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -30,7 +29,10 @@ public class FiledValidator {
         String no = "";
         if (!state)
             no = "不";
-        return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getEnumName() + " 条件";
+        if (mode == ExcelRead.EMPTY || mode == ExcelRead.EXISTS) {
+            return no + "满足 " + mode.getEnumName() + " 的条件";
+        }
+        return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getEnumName() + " 的条件";
     }
 
     /**
@@ -41,9 +43,12 @@ public class FiledValidator {
      */
     public static boolean mode(Object value, String[] values, ExcelRead mode) {
         if (StringUtils.isBlack(value))
-            throw new ValidatorException(ConverterErrorType.EMPTY);
+            throw new ValidatorException(ConverterErrorType.ON_EMPTY);
         else if (mode == ExcelRead.EXISTS) {
             return true;
+        }
+        if (mode == ExcelRead.EMPTY) {
+            return false;
         }
         List<String> list = Arrays.asList(values);
         switch (mode) {

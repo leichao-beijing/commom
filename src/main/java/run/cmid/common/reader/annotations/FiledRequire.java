@@ -4,10 +4,13 @@ import run.cmid.common.reader.model.eumns.ExcelRead;
 
 import java.lang.annotation.*;
 
+/**
+ * 生效field的条件
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FiledMatches {
+public @interface FiledRequire {
     /**
      * 默认值：Master.filedName
      */

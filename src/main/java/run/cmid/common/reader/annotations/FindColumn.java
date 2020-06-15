@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.reader.model.eumns.FindModel;
 
 /**
  * @author leichao
@@ -14,8 +15,8 @@ import run.cmid.common.reader.model.eumns.ExcelRead;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConverterProperty {
-
+public @interface FindColumn {
+    //FindColumn
     String[] value() default {};
 
     /**
@@ -23,12 +24,11 @@ public @interface ConverterProperty {
      */
     String enumGetValueMethodName() default "";
 
-    ExcelRead model() default ExcelRead.EQUALS;
+    FindModel model() default FindModel.EQUALS;
 
-    /**
-     * 当读取内容为字符串时，最大字符串长度限制
-     */
-    int max() default 255;
+    int max() default -1;
+
+    int min() default -1;
 
     /**
      * 只有满足fields内的条件后，该条ExcelConverter 配置的后续才会生效。否则不生效。null时，直接生效配置

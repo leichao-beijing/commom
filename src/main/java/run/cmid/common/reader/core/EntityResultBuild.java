@@ -10,7 +10,6 @@ import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.annotations.Match;
-import run.cmid.common.reader.annotations.Method;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.exception.ValidatorException;
 import run.cmid.common.reader.model.FieldDetail;
@@ -21,7 +20,6 @@ import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
-import run.cmid.common.validator.FiledValidator;
 
 import java.util.*;
 
@@ -128,9 +126,10 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             DataArray<Object, FieldDetail> value = next.getValue();
             Match[] matches = value.getInfo().getMatch();
             if (matches.length != 0) {
+                List<String> list = null;
                 for (Match match : matches) {
                     try {
-                        List<String> list = MatchValidator.validatorFiledMatches(match.filedMatches(), rowInfo);
+                        list = MatchValidator.validatorFiledRequire(match.require(), rowInfo);
                         if (list != null && list.size() == 0) {
                             if (value.getInfo().isConverterException())
                                 value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
@@ -138,9 +137,17 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                         }
                         MatchValidator.validatorFiledCompares(value, match.filedCompares(), rowInfo, (list == null) ? "" : list.toString());
                         MatchValidator.validatorMatch(value, match, rowInfo, (list == null) ? "" : list.toString());
+                        MatchValidator.validatorSize(value);
                     } catch (ValidatorException e) {
-                        if (!match.check() && e.getType() == ConverterErrorType.EMPTY)
+                        if (!match.check() && e.getType() == ConverterErrorType.ON_EMPTY)
                             break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
+                        if (e.getType() == ConverterErrorType.ON_EMPTY) {
+                            if (list != null && list.size() != 0) {
+                                String msg = list.toString() + " " + e.getMessage();
+                                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e, msg));
+                                break;
+                            }
+                        }
                         checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
                     }
                     if (value.getInfo().isConverterException())
@@ -148,21 +155,13 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 }
             }
         }
+
         it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
             String name = next.getKey();
             DataArray<Object, FieldDetail> value = next.getValue();
             String methodName = "set" + ReflectLcUtils.upperCase(name);
-            if (value.getValue() != null && value.getValue().toString().length() > value.getInfo().getMax()) {
-                tag.getFiledNull().add(name);
-                CellAddressAndMessage message = new CellAddressAndMessage(rowInfo.getRownum(),
-                        value.getInfo().getColumn(), ConverterErrorType.STRING_OUT_BOUNDS,
-                        value.getInfo().getMax() + "");
-                tag.getFiledNull().add(name);
-                checkErrorList.add(message);
-                continue;
-            }
             try {
                 cellValueToClass(value.getValue(), out, methodName, value.getInfo(),
                         new CellAddress(rowInfo.getRownum(), value.getInfo().getColumn()));
@@ -173,51 +172,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             value.getInfo().setConverterException(true);//初始化异常状态
         }
         return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.rownum, mode, tag, checkErrorList);// size == 0 ? null : tag;
-    }
-
-
-    /**
-     * 当满足 Method.value 等于 srcValue 时 ， 执行 从 Method.fieldName对象中取到值 = desValue，与Method.compareValue 使用  Method.model进行比较。<br>
-     * Method.fieldName 为 空 时，Method.fieldName= srcValue=desValue<br>
-     * Method.value 为 空 时，srcValue等于任何值都会执行做后续比较判断。<br>
-     *
-     * @param srcValue 使用 {@linkplain Method} 所在field的信息
-     * @param desValue 使用 {@linkplain Method} {@code fieldName()} 得到的信息。
-     * @param method
-     * @param address
-     */
-    public void rangeValue(DataArray<Object, FieldDetail> srcValue, DataArray<Object, FieldDetail> desValue, Method method, CellAddress address) {
-        //当{des}列的值{desValue}满足在{method.computeValue}范围内满足{method.mode}条件时，
-        //{src}列的值[不能没有数据]or[不能是{srcValue}]
-        //new StringBuffer()
-        boolean equalState = true;
-        if (!desValue.getInfo().getFieldName().equals(srcValue.getInfo().getFieldName())) {
-            equalState = false;
-            if (!FiledValidator.mode(desValue.getValue(), method.compareValue(), method.fieldNameModel())) {//通过des条件时，不进行判断，单空des可以通过
-                return;
-            }
-        }
-        String equalMgs = "";
-        if (!equalState) {
-            equalMgs = ((!StringUtils.isEmpty(desValue.getValue())) ? (FiledValidator.headMessage(desValue.getInfo().getMatchValue(), desValue.getValue()) +
-                    FiledValidator.message(method.fieldNameModel(), method.compareValue(), true)) + "时，" : "");
-        }
-        boolean state = FiledValidator.mode(srcValue.getValue(), method.value(), method.model());
-        if (!state || (method.check() && StringUtils.isEmpty(srcValue.getValue()))) {
-            if (StringUtils.isEmpty(srcValue.getValue()))
-                throw new ValidatorException(ConverterErrorType.NOT_FIND_CHECK_VALUE, equalMgs + "<" + srcValue.getInfo().getMatchValue() + "> 不能没有数据");
-            String mgs;
-            if (equalState) {
-                mgs = FiledValidator.headMessage(srcValue.getInfo().getMatchValue(), method.fieldNameModel()) +
-                        FiledValidator.message(method.fieldNameModel(), method.compareValue(), true) + " 和 " +
-                        FiledValidator.message(method.model(), method.value(), false);
-            } else {
-                mgs = equalMgs + "时，" +
-                        FiledValidator.headMessage(srcValue.getInfo().getMatchValue(), srcValue.getValue()) +
-                        FiledValidator.message(method.model(), method.value(), false);
-            }
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, mgs);
-        }
     }
 
     /**
@@ -234,42 +188,41 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
         if (StringUtils.isEmpty(value) && fieldDetail.getType() != FieldDetailType.LIST)
             return;
-        if (fieldDetail.getType() != FieldDetailType.LIST)
-            try {
-                if (parameterClasses.isEnum()) {
-                    String methodName = (fieldDetail.getEnumTypeNameFiledValue() != null) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumTypeNameFiledValue()) : null;
-                    List<String> list = EnumUtil.getEnumNames(parameterClasses, methodName);
-                    if (list.contains(value)) {
-                        Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
-                        ReflectUtil.invoke(out, setFunctionValue, en);
-                        return;
-                    } else
-                        throw new ValidatorException(ConverterErrorType.ENUM_ERROR, list.toString());
-                }
-
-                if (!value.getClass().equals(parameterClasses)) {
-                    Object data = null;
-                    if (ConverterFieldDetail.IsInterface(parameterClasses, Date.class)) {
-                        if (fieldDetail.getFormat() == null)
-                            data = DateUtil.parse(value.toString());
-                        else
-                            data = DateUtil.parse(value.toString(), fieldDetail.getFormat().value());
-                    } else
-                        data = converterRegistry.convert(parameterClasses, value);
-
-                    if (data == null && fieldDetail.isConverterException())
-                        throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
-                                ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
-                    else {
-                        ReflectUtil.invoke(out, setFunctionValue, data);
-                        return;
-                    }
+        try {
+            if (parameterClasses.isEnum()) {
+                String methodName = (fieldDetail.getEnumTypeNameFiledValue() != null) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumTypeNameFiledValue()) : null;
+                List<String> list = EnumUtil.getEnumNames(parameterClasses, methodName);
+                if (list.contains(value)) {
+                    Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
+                    ReflectUtil.invoke(out, setFunctionValue, en);
+                    return;
                 } else
-                    ReflectUtil.invoke(out, setFunctionValue, value);
-            } catch (Exception e) {
-                if (fieldDetail.isConverterException())
-                    throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
+                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR, list.toString());
             }
+
+            if (!value.getClass().equals(parameterClasses)) {
+                Object data = null;
+                if (ConverterFieldDetail.IsInterface(parameterClasses, Date.class)) {
+                    if (fieldDetail.getFormat() == null)
+                        data = DateUtil.parse(value.toString());
+                    else
+                        data = DateUtil.parse(value.toString(), fieldDetail.getFormat().value());
+                } else
+                    data = converterRegistry.convert(parameterClasses, value);
+
+                if (data == null && fieldDetail.isConverterException())
+                    throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
+                            ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
+                else {
+                    ReflectUtil.invoke(out, setFunctionValue, data);
+                    return;
+                }
+            } else
+                ReflectUtil.invoke(out, setFunctionValue, value);
+        } catch (Exception e) {
+            if (fieldDetail.isConverterException())
+                throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
+        }
     }
 
     private RowInfo readRow(int rownum, ReaderPage readerPage) {
@@ -291,11 +244,12 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             Object value = null;
             try {
                 value = row.get(compareResponse.getDesIndex());
+                value = value == null ? "" : value;
             } catch (IndexOutOfBoundsException e) {
 
             }
-            if (value == null)
-                map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(null, detail));
+            if (detail.getType() == FieldDetailType.SINGLE)
+                map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(value, detail));
             else {
                 DataArray<Object, FieldDetail> arrays = map.get(detail.getFieldName());
                 if (arrays == null) {

@@ -7,11 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import cn.hutool.core.util.ReflectUtil;
-import run.cmid.common.reader.annotations.ConverterProperty;
-import run.cmid.common.reader.annotations.ConverterPropertyList;
+import run.cmid.common.reader.annotations.FindColumn;
+import run.cmid.common.reader.annotations.FindColumns;
 import run.cmid.common.reader.annotations.FormatDate;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
@@ -21,7 +19,7 @@ import run.cmid.common.reader.model.to.FindSheetModel;
  * @author leichao
  */
 public class ConverterFieldDetail {
-     public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
+    public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
                                                List<String> indexes) {
         LinkedList<FieldDetail> list = new LinkedList<FieldDetail>();
         Field[] fields = ReflectUtil.getFields(classes);
@@ -29,23 +27,27 @@ public class ConverterFieldDetail {
         boolean check = false;
         for (Field field : fields) {
             check = false;
-            if (indexes!=null&&indexes.contains(field.getName()))
+            if (indexes != null && indexes.contains(field.getName()))
                 check = true;
-            FormatDate format = field.getAnnotation(FormatDate.class);
-            ConverterProperty converterProperty = field.getAnnotation(ConverterProperty.class);
-            ConverterPropertyList excelConverterStringList = field.getAnnotation(ConverterPropertyList.class);
-            if (converterProperty != null && excelConverterStringList != null)
+            FindColumn findColumn = field.getAnnotation(FindColumn.class);
+            FindColumns findColumns = field.getAnnotation(FindColumns.class);
+            if (findColumn != null && findColumns != null)
                 throw new NullPointerException("@ExcelConverter and @ExcelConverterList Override");
-            if (converterProperty != null) {
-                fieldDetail = new FieldDetail(field, classes, format, converterProperty);
-                if (check)
+            if (findColumn == null && findColumns == null)
+                continue;
+
+            FormatDate format = field.getAnnotation(FormatDate.class);
+
+            if (findColumn != null) {
+                fieldDetail = new FieldDetail(field, classes, format, findColumn);
+                if (check)//将 具有唯一性验证的列 添加列空检查
                     fieldDetail.setCheckColumn(true);
                 list.add(fieldDetail);
                 continue;
             }
 
-            if (excelConverterStringList != null) {
-                ConverterProperty[] values = excelConverterStringList.value();
+            if (findColumns != null) {
+                FindColumn[] values = findColumns.value();
                 if (values.length == 0) {
                     throw new NullPointerException("ExcelConverterList no data");
                 }
@@ -57,12 +59,6 @@ public class ConverterFieldDetail {
                 }
                 continue;
             }
-            if (excelHeadModel.isSkipNoAnnotationField())
-                continue;
-            fieldDetail = new FieldDetail(field, classes, format);
-            if (check)
-                fieldDetail.setCheckColumn(true);
-            list.add(fieldDetail);
         }
         return list;
 

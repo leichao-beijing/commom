@@ -23,6 +23,16 @@ public class CellAddressAndMessage extends CellAddress {
         this.message = message;
     }
 
+    public CellAddressAndMessage(int row, int column, ValidatorException ex, String message) {
+        super(row, column);
+        this.ex = ex.getType();
+        if (message != null)
+            this.message = message;
+        else
+            this.message = ex.getMessage();
+
+    }
+
     private final ConverterErrorType ex;
     private String message;
 }

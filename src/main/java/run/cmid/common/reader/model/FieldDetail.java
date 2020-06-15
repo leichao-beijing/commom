@@ -9,13 +9,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmid.common.reader.annotations.ConverterProperty;
+import run.cmid.common.reader.annotations.FindColumn;
 import run.cmid.common.reader.annotations.FormatDate;
 import run.cmid.common.reader.annotations.Match;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.model.eumns.ConfigError;
 import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
+import run.cmid.common.reader.model.eumns.FindModel;
 import run.cmid.common.utils.ReflectLcUtils;
 
 /**
@@ -24,19 +25,21 @@ import run.cmid.common.utils.ReflectLcUtils;
 @Getter
 @ToString
 public class FieldDetail {
-    public FieldDetail(Field field, Class<?> parentClass, FormatDate format, ConverterProperty converterProperty) {
+    public FieldDetail(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn) {
         this.format = format;
         this.field = field;
         this.fieldName = field.getName();
-        this.values = (converterProperty.value().length != 0) ? Arrays.asList(converterProperty.value())
-                : Arrays.asList(field.getName());
         this.parentClass = parentClass;
-        this.index = 0;
         this.type = FieldDetailType.SINGLE;
-        this.model = converterProperty.model();
-        this.max = converterProperty.max();
-        this.match = converterProperty.matches();
-        this.checkColumn = converterProperty.checkColumn();
+        this.model = findColumn.model();
+        this.match = findColumn.matches();
+        this.checkColumn = findColumn.checkColumn();
+
+        this.max = findColumn.max();
+        this.min = findColumn.min();
+
+        this.values = (findColumn.value().length != 0) ? Arrays.asList(findColumn.value())
+                : Arrays.asList(field.getName());
         if (field.getType().isEnum()) {
             List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
             if (list.size() != 0)
@@ -45,43 +48,15 @@ public class FieldDetail {
     }
 
     public FieldDetail(Field field, Class<?> parentClass, FormatDate format,
-                       ConverterProperty converterProperty, int index) {
-        this.format = format;
-        this.field = field;
-        this.fieldName = field.getName();
-        this.parentClass = parentClass;
-        this.index = index;
-        this.type = FieldDetailType.LIST;
-        this.checkColumn = converterProperty.checkColumn();
-        this.model = converterProperty.model();
-        if (converterProperty.value().length == 0) {
+                       FindColumn findColumn, int index) {
+        this(field, parentClass, format, findColumn);
+
+        if (findColumn.value().length == 0) {
             throw new ConverterExcelConfigException(ConfigError.LIST_ERROR_VALUE_IS_EMPTY);
         }
-        this.values = Arrays.asList(converterProperty.value());
-        this.max = converterProperty.max();
-        this.match = converterProperty.matches();
-        if (field.getType().isEnum()) {
-            List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
-            if (list.size() != 0)
-                enumTypeNameFiledValue = list.get(0).getName();
-        }
-    }
-
-    public FieldDetail(Field field, Class<?> parentClass, FormatDate format) {
-        this.format = format;
-        this.field = field;
-        this.fieldName = field.getName();
-        this.parentClass = parentClass;
-        this.type = FieldDetailType.SINGLE;
-        this.checkColumn = false;
-        this.model = ExcelRead.EQUALS;
-        this.values = Arrays.asList(field.getName());
-        this.match = null;
-        if (field.getType().isEnum()) {
-            List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
-            if (list.size() != 0)
-                enumTypeNameFiledValue = list.get(0).getName();
-        }
+        this.type = FieldDetailType.LIST;
+        this.index = index;
+        this.values = Arrays.asList(findColumn.value());
     }
 
     @Setter
@@ -103,9 +78,12 @@ public class FieldDetail {
     private final String fieldName;
     private String enumFileName = "";
     private String enumTypeNameFiledValue;
-    private final List<String> values;
-    private final ExcelRead model;
-    private int max = 100;
+    private List<String> values;
+    private final FindModel model;
+
+    private final int max;
+    private final int min;
+
     private final Match[] match;
     @Setter
     private int column = -1;

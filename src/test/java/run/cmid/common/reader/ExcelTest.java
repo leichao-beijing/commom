@@ -46,7 +46,7 @@ public class ExcelTest {
 
         });
         result.getResultList().forEach((var) -> {
-            System.err.println(var);
+            System.err.println(var.getValue());
         });
     }
     @Test
