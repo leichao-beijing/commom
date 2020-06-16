@@ -9,7 +9,7 @@ public class ValidatorException extends RuntimeException {
     private ConverterErrorType type;
 
     public ValidatorException(ConverterErrorType type) {
-        super(type.getEnumName());
+        super(type.getTypeName());
         this.type = type;
     }
 

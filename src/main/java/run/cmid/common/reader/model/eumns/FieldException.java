@@ -1,12 +1,12 @@
 package run.cmid.common.reader.model.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * 
  * @author leichao
  */
-public enum FieldException implements EnumName {
+public enum FieldException implements TypeName {
     NOT_SUPPORT_FIELD_TYPE("不支持这个Field对象"),
 
     FIELD_TYPE_OVERRIDE("注解重复"),
@@ -19,7 +19,7 @@ public enum FieldException implements EnumName {
 
     String typeName;
 
-    public String getEnumName() {
+    public String getTypeName() {
         return typeName;
     }
 

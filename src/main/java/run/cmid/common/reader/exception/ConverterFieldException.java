@@ -24,7 +24,7 @@ public class ConverterFieldException extends RuntimeException {
     @Override
     public String getMessage() {
         if (message == null)
-            return type.getEnumName();
-        return "type: " + type.getEnumName() + ",message: " + message;
+            return type.getTypeName();
+        return "type: " + type.getTypeName() + ",message: " + message;
     }
 }

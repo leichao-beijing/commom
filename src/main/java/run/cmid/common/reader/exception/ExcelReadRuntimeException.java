@@ -41,8 +41,8 @@ public class ExcelReadRuntimeException extends RuntimeException {
     @Override
     public String getMessage() {
         if (errorType == ExcelConverterException.StringIndexOutBounds) {
-            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getEnumName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
+            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
         }
-        return "第" + row + "行，出现了" + errorType.getEnumName() + " 错误";
+        return "第" + row + "行，出现了" + errorType.getTypeName() + " 错误";
     }
 }

@@ -53,7 +53,7 @@ public class ConverterExcelException extends Exception {
             return value;
         }
         if (messageValue == null)
-            return type.getEnumName();
-        return "错误类型: " + type.getEnumName() + "，错误描述: " + messageValue;
+            return type.getTypeName();
+        return "错误类型: " + type.getTypeName() + "，错误描述: " + messageValue;
     }
 }

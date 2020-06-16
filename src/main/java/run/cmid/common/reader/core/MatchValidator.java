@@ -99,13 +99,13 @@ public class MatchValidator {
 
     public static void validatorMatch(DataArray<Object, FieldDetail> value, Match match, RowInfo rowInfo, String frontMassages) {
         if (StringUtils.isBlack(value.getValue())) {
-            throw new ValidatorException(ConverterErrorType.ON_EMPTY, value.getInfo().getMatchValue() + " " + ConverterErrorType.ON_EMPTY.getEnumName());
+            throw new ValidatorException(ConverterErrorType.ON_EMPTY, value.getInfo().getMatchValue() + " " + ConverterErrorType.ON_EMPTY.getTypeName());
         }
         if (match.model() == ExcelRead.NONE) return;//none 比较配置跳过
         if (match.value().length == 0 && match.model() == ExcelRead.EXISTS) {
             return;
         } else if (match.value().length == 0 && !(match.model() == ExcelRead.EXISTS || match.model() == ExcelRead.EMPTY)) {
-            throw new ValidatorException(ConverterErrorType.COMPARE_IS_EMPTY, value.getInfo().getMatchValue() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getEnumName());
+            throw new ValidatorException(ConverterErrorType.COMPARE_IS_EMPTY, value.getInfo().getMatchValue() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
         }
 
         String mgs = null;

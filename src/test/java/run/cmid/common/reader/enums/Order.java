@@ -1,7 +1,7 @@
 package run.cmid.common.reader.enums;
 
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  *
@@ -9,7 +9,7 @@ import run.cmid.common.io.EnumName;
  * @date 2020-04-04 04:17:01
  */
 @Getter
-public enum Order implements EnumName {
+public enum Order implements TypeName {
 
     FILE("输入的完整XLSX文件目录地址"),
 
@@ -25,9 +25,9 @@ public enum Order implements EnumName {
 
     // DOWNLOAD_DATA_ALL("导出所有数据");
 
-    Order(String enumName) {
-        this.enumName = enumName;
+    Order(String typeName) {
+        this.typeName = typeName;
     }
 
-    String enumName;
+    String typeName;
 }

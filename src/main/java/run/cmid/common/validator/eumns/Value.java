@@ -1,12 +1,12 @@
 package run.cmid.common.validator.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * @author leichao
  * @date 2020-05-15 01:04:11
  */
-public enum Value implements EnumName {
+public enum Value implements TypeName {
 
     NONE(""), NUMBER("数字类型");
 
@@ -17,7 +17,7 @@ public enum Value implements EnumName {
     }
 
     @Override
-    public String getEnumName() {
+    public String getTypeName() {
         return typeName;
     }
 }

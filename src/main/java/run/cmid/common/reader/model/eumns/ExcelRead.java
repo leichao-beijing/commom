@@ -1,6 +1,6 @@
 package run.cmid.common.reader.model.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 import java.io.File;
 
@@ -10,7 +10,7 @@ import java.io.File;
  *
  * @author leichao
  */
-public enum ExcelRead implements EnumName {
+public enum ExcelRead implements TypeName {
     NONE(""),
 
     LESS_THAN("小于"),
@@ -40,7 +40,7 @@ public enum ExcelRead implements EnumName {
 
     String typeName;
 
-    public String getEnumName() {
+    public String getTypeName() {
         new File("").exists();
         return typeName;
     }

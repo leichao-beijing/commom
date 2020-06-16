@@ -1,9 +1,9 @@
 package run.cmid.common.reader.model.eumns;
 
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
-public enum CompareType implements EnumName {
+public enum CompareType implements TypeName {
     EQUALS("等于"),
 
     LESS_THAN("小于"),
@@ -16,9 +16,9 @@ public enum CompareType implements EnumName {
 
     ;
     @Getter
-    String enumName;
+    String typeName;
 
-    CompareType(String enumName) {
-        this.enumName = enumName;
+    CompareType(String typeName) {
+        this.typeName = typeName;
     }
 }

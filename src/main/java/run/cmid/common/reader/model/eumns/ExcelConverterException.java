@@ -1,20 +1,20 @@
 package run.cmid.common.reader.model.eumns;
 
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * @author leichao
  */
-public enum ExcelConverterException implements EnumName {
+public enum ExcelConverterException implements TypeName {
 
     StringIndexOutBounds("字符串长度超出限制。");
 
-    ExcelConverterException(String enumName) {
-        this.enumName = enumName;
+    ExcelConverterException(String typeName) {
+        this.typeName = typeName;
     }
 
     @Getter
-    private String enumName;
+    private String typeName;
 
 }

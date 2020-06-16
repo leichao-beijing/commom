@@ -1,11 +1,11 @@
 package run.cmid.common.reader.model.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * @author leichao
  */
-public enum ConverterErrorType implements EnumName {
+public enum ConverterErrorType implements TypeName {
     SUCCESS("成功"),
 
     COMPARE_IS_EMPTY("当mode!=ExcelRead.EXISTS EMPTY时，比较的内容是不允许为空。"),
@@ -64,7 +64,7 @@ public enum ConverterErrorType implements EnumName {
 
     String typeName;
 
-    public String getEnumName() {
+    public String getTypeName() {
         return typeName;
     }
 

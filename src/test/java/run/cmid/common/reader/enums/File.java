@@ -2,13 +2,13 @@ package run.cmid.common.reader.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * @author leichao
  */
 @Getter
-public enum File implements EnumName {
+public enum File implements TypeName {
     PRODUCE_TABLE("产值表"),
 
     ORDER_TABLE("订单信息表"),
@@ -20,11 +20,11 @@ public enum File implements EnumName {
 
     COOPERATE_PROVIDER_TABLE("合作单位简称对应表");
 
-    File(String enumName) {
-        this.enumName = enumName;
+    File(String typeName) {
+        this.typeName = typeName;
     }
 
     @JsonValue
-    private final String enumName;
+    String typeName;
 
 }

@@ -1,8 +1,8 @@
 package run.cmid.common.reader.model.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
-public enum FindModel implements EnumName {
+public enum FindModel implements TypeName {
     EQUALS("等于"),
 
     INCLUDE("包含"),
@@ -15,7 +15,7 @@ public enum FindModel implements EnumName {
     String typeName;
 
     @Override
-    public String getEnumName() {
+    public String getTypeName() {
         return null;
     }
 }

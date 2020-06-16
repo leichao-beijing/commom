@@ -1,13 +1,13 @@
 package run.cmid.common.reader.model.eumns;
 
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  *
  * @author leichao
  * @date 2020-05-13 10:21:41
  */
-public enum ConfigError implements EnumName {
+public enum ConfigError implements TypeName {
 
     NO_SUPPORT_ENUM_CONFIG("不支持的配置"),
     
@@ -21,7 +21,7 @@ public enum ConfigError implements EnumName {
 
     String typeName;
 
-    public String getEnumName() {
+    public String getTypeName() {
         return typeName;
     }
 }

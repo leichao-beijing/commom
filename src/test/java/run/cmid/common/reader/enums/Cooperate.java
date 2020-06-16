@@ -2,14 +2,14 @@ package run.cmid.common.reader.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * 
  * @author leichao
  */
 @Getter
-public enum Cooperate implements EnumName {
+public enum Cooperate implements TypeName {
 
     SINGLE("单项目合作"),
 
@@ -18,10 +18,10 @@ public enum Cooperate implements EnumName {
     QUOTA("工时定额"),
 
     OWN("自有");
-    Cooperate(String enumName) {
-        this.enumName = enumName;
+    Cooperate(String typeName) {
+        this.typeName = typeName;
     }
     @JsonValue
-    private String enumName;
+    private String typeName;
 
 }

@@ -197,7 +197,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
                 } else
-                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR, list.toString());
+                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR,fieldDetail.getMatchValue()+" 只能输入："+ list.toString());
             }
 
             if (!value.getClass().equals(parameterClasses)) {
@@ -221,7 +221,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 ReflectUtil.invoke(out, setFunctionValue, value);
         } catch (Exception e) {
             if (fieldDetail.isConverterException())
-                throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses + " 类型失败。");
+                throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, e.getMessage());
         }
     }
 

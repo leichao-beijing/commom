@@ -30,9 +30,9 @@ public class FiledValidator {
         if (!state)
             no = "不";
         if (mode == ExcelRead.EMPTY || mode == ExcelRead.EXISTS) {
-            return no + "满足 " + mode.getEnumName() + " 的条件";
+            return no + "满足 " + mode.getTypeName() + " 的条件";
         }
-        return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getEnumName() + " 的条件";
+        return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getTypeName() + " 的条件";
     }
 
     /**

@@ -2,7 +2,7 @@ package run.cmid.common.reader.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmid.common.io.EnumName;
+import run.cmid.common.io.TypeName;
 
 /**
  * 工程类型
@@ -10,7 +10,7 @@ import run.cmid.common.io.EnumName;
  * @author leichao
  */
 @Getter
-public enum EngineeringCost implements EnumName {
+public enum EngineeringCost implements TypeName {
     NEW_SITE_INCLUDE_LOGIC_SITE("新建宏站（含逻辑站）"),
 
     DILATATION_REFORM("扩容或改造宏站"),
@@ -21,11 +21,11 @@ public enum EngineeringCost implements EnumName {
 
     NEW_TECHNIQUE("新技术室分系统（RRU/PRU数）");
 
-    EngineeringCost(String enumName) {
-        this.enumName = enumName;
+    EngineeringCost(String typeName) {
+        this.typeName = typeName;
     }
 
     @JsonValue
-    private String enumName;
+    private String typeName;
 
 }
