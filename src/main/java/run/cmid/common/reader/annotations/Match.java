@@ -20,7 +20,7 @@ public @interface Match {
 
     String[] value() default {};
 
-    ExcelRead model() default ExcelRead.EXISTS;//regex
+    ExcelRead model() default ExcelRead.NONE;//regex
 
     /**
      * filedName 符合正则时生效。不存在时忽略
@@ -33,7 +33,7 @@ public @interface Match {
      * 默认不允许出现 null 值。
      * false时，该值为空时将跳过判断条件直接基于通过
      */
-    boolean check() default true;
+    boolean check() default false;
 
     /**
      * 是否忽略转换异常，默认throw转换异常

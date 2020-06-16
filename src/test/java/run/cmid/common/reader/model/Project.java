@@ -30,10 +30,10 @@ import run.cmid.common.reader.model.eumns.FindModel;
 @ToString
 public class Project {
 
-    @FindColumn("序号")
+    @FindColumn(value = "序号")
     private Long id;
 
-    @FindColumn(value = "生产部门", checkColumn = true, matches = {@Match(check = true, model = ExcelRead.NONE)})
+    @FindColumn(value = "生产部门", checkColumn = true, matches = {@Match(require={@FiledRequire(fieldName = "id",value = "2")},check = true)})
     private String production;
 
     @FindColumn(value = "MIS号", checkColumn = true, matches = {@Match(check = true)})

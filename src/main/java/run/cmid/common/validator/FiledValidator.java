@@ -53,7 +53,19 @@ public class FiledValidator {
         List<String> list = Arrays.asList(values);
         switch (mode) {
             case EQUALS:
-                return list.contains(value);
+                for (String val : list) {
+                    try {
+                        if (compare(value, val, CompareType.EQUALS))
+                            return true;
+                    } catch (ValidatorException e) {
+                        if (e.getType() == ConverterErrorType.NO_NUMBER) {
+                            if (val.equals(value))
+                                return true;
+                        } else
+                            throw e;
+                    }
+                }
+                return false;
             case INCLUDE:
                 for (String val : list) {
                     if (value.toString().indexOf(val) != -1)
@@ -61,7 +73,20 @@ public class FiledValidator {
                 }
                 return false;
             case NO_EQUALS:
-                return !list.contains(value);
+                for (String val : list) {
+                    try {
+                        if (compare(value, val, CompareType.EQUALS))
+                            return false;
+                    } catch (ValidatorException e) {
+                        if (e.getType() == ConverterErrorType.NO_NUMBER) {
+                            if (val.equals(value))
+                                return false;
+                        } else
+                            throw e;
+
+                    }
+                }
+                return true;
             case NO_INCLUDE:
                 for (String val : list) {
                     if (value.toString().indexOf(val) != -1)
@@ -100,7 +125,7 @@ public class FiledValidator {
 
     public static BigDecimal getBigDecimal(Object object) {
         if (object == null)
-            throw new ValidatorException(ConverterErrorType.NO_NUMBER);
+            throw new ValidatorException(ConverterErrorType.ON_EMPTY);
         if (object.getClass().isAssignableFrom(Date.class)) {
             return new BigDecimal(((Date) object).getTime());
         } else {
@@ -132,9 +157,11 @@ public class FiledValidator {
     }
 
     public static Boolean compare(BigDecimal number1, BigDecimal number2, CompareType mode) {
-        switch (mode) {
+         switch (mode) {
             case EQUALS:
-                return number1.equals(number2);
+                return NumberUtil.equals(number1,number2);
+            case NO_EQUALS:
+                return !NumberUtil.equals(number1,number2);
             case LESS_THAN:
                 return NumberUtil.isLess(number1, number2);
             case LESS_THAN_OR_EQUAL:

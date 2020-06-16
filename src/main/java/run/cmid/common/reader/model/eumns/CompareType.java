@@ -6,6 +6,8 @@ import run.cmid.common.io.TypeName;
 public enum CompareType implements TypeName {
     EQUALS("等于"),
 
+    NO_EQUALS("不等于"),
+
     LESS_THAN("小于"),
 
     LESS_THAN_OR_EQUAL("小于等于"),
