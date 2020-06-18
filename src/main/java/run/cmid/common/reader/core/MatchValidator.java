@@ -11,12 +11,22 @@ import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.validator.FiledValidator;
 
+import javax.validation.Validation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MatchValidator {
+    /**
+     * @param regex
+     * @param value == "" 不验证
+     */
+    public static boolean validationRegex(String regex, String value) {
+        if (regex.equals("")) return true;
+        return Pattern.compile(regex).matcher(value).matches();
+    }
 
     public static List<String> validatorFiledRequire(FiledRequire[] filedMatches, RowInfo rowInfo) {
         if (filedMatches.length == 0)
@@ -24,8 +34,15 @@ public class MatchValidator {
         List<String> list = new ArrayList<>();
         String mgs = null;
         for (FiledRequire filedMatch : filedMatches) {
-            if (filedMatch.model() == ExcelRead.NONE) continue;//none时，该条配置无效
             DataArray<Object, FieldDetail> value = rowInfo.getData().get(filedMatch.fieldName());
+
+            if (filedMatch.model() == ExcelRead.NONE) {
+                //ExcelRead.NONE 对正则进行匹配
+                if (validationRegex(filedMatch.regex(), value.getValue().toString())) {
+                    list.add("满足：" + (!filedMatch.message().equals("") ? filedMatch.message() : "正则验证 " + filedMatch.regex()));
+                }
+                continue;//none时，该条配置无效
+            }
             if (!filedMatch.message().equals(""))
                 mgs = filedMatch.message();
 
@@ -101,7 +118,12 @@ public class MatchValidator {
         if (StringUtils.isBlack(value.getValue())) {
             throw new ValidatorException(ConverterErrorType.ON_EMPTY, value.getInfo().getMatchValue() + " " + ConverterErrorType.ON_EMPTY.getTypeName());
         }
-        if (match.model() == ExcelRead.NONE) return;//none 比较配置跳过
+        if (match.model() == ExcelRead.NONE) {
+            if (!validationRegex(match.regex(), value.getValue().toString())) {
+                throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, "不满足：" + (!match.message().equals("") ? match.message() : "正则验证 " + match.regex()));
+            }
+            return;
+        }//none 比较配置跳过
         if (match.value().length == 0 && match.model() == ExcelRead.EXISTS) {
             return;
         } else if (match.value().length == 0 && !(match.model() == ExcelRead.EXISTS || match.model() == ExcelRead.EMPTY)) {

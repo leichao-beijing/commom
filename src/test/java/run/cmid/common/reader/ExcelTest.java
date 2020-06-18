@@ -1,5 +1,7 @@
 package run.cmid.common.reader;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,41 +25,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 
 /**
  * @author leichao
  */
 
 public class ExcelTest {
-    @Test
-    public void testProject() throws IOException, ConverterExcelException {
-        //InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
-        InputStream ras = new FileInputStream("C:\\Users\\leichao\\Desktop\\产值工具\\app\\错误数据\\to雷超-项目表.xlsx");
-        ExcelEntityBuildings<Project> ee = new ExcelEntityBuildings<Project>(Project.class);
-        Workbook workbook = new XSSFWorkbook(ras);
-        EntityBuild<Project, Sheet, Cell> e = ee.find(workbook);
-        EntityResults<Project, Sheet, Cell> result = e.build();
-
-        result.getErrorType().forEach((ss) -> {
-            System.err.println(ss);
-        });
-        result.getCellErrorList().forEach((value) -> {
-            System.err.println(value + ":" + value.getMessage());
-
-        });
-        result.getResultList().forEach((var) -> {
-            System.err.println(var.getValue());
-        });
-    }
-    @Test
-    public void easyExcelTest(){
-        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
-        ExcelReader work = EasyExcel.read(ras).build();
-        //work.
-        //work.read(EasyExcel.readSheet(0).build());
-        //work.finish();
-    }
-
     @Test
     public void poiReaderClone() throws IOException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");

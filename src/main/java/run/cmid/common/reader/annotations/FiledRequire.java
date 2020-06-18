@@ -18,10 +18,11 @@ public @interface FiledRequire {
 
     String[] value();
 
+
     ExcelRead model() default ExcelRead.EQUALS;//regex
 
     /**
-     * filedName 符合正则时生效。不存在时忽略
+     * model== ExcelRead.NONE 时匹配正则 符合正则时生效。不存在时忽略 只验证转换对象的toString类型
      */
     String regex() default "";
 
