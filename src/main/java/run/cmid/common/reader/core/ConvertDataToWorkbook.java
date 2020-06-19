@@ -18,6 +18,7 @@ import cn.hutool.core.convert.ConverterRegistry;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
+import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.annotations.ConverterHead;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.FieldDetail;
@@ -143,6 +144,10 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
                 List<Object> list = (List<Object>) value;
                 try {
                     Object string = list.get(tt.getIndex());
+                    if(StringUtils.isEmpty(string)){
+                        column++;
+                        continue;
+                    }
                     try {
                         cell.setCellValue((Double) converterRegistry.convert(Double.class, string));
                     } catch (NumberFormatException e) {
