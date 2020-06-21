@@ -105,7 +105,7 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
                             else
                                 type = cell.getCellType();
                         }
-                        return getCellValue(cell, cell.getCellType());
+                        return getCellValue(cell, type);
                     }
                 }
                 return null;

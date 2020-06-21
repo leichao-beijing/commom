@@ -186,58 +186,58 @@ public class SheetUtils {
         }
         return map;
     }
+//
+//    /**
+//     * 复制sheet ,同时复制样式
+//     */
+//    public static void copySheet(Sheet srcSheet, Sheet desSheet) {
+//        DataFormat dataFormat = desSheet.getWorkbook().createDataFormat();
+//        CellStyle desStyle = desSheet.getWorkbook().createCellStyle();
+//        int rowCount = SheetUtils.getRowCount(srcSheet);
+//        for (int rownum = 0; rownum < rowCount; rownum++) {// row
+//            int columnCount = SheetUtils.getColumnCount(srcSheet, rownum);
+//            for (int column = 0; column < columnCount; column++) {// column
+//                Optional<Cell> cellOptional = getCell(srcSheet, rownum, column);
+//                if (cellOptional.isEmpty())
+//                    continue;
+//                Cell srcCell = cellOptional.get();
+//                desStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+//                Cell desCell = SheetUtils.getCreateCell(desSheet, rownum, column);
+//                copyCellValue(srcCell, srcCell.getCellType(), desCell, dataFormat);
+//                // desCell.setCellStyle(desCell.getSheet().getWorkbook().createCellStyle());
+//                // BorderMode borderMode =
+//                // SheetStyleUtils.getBorderMode(srcCell.getCellStyle());
+//                // java.awt.Color color = SheetStyleUtils.getColor(srcCell.getCellStyle());
+//                //  SheetStyleUtils.setColor(desCell, color, borderMode);
+//
+//                desCell.getCellStyle().setDataFormat(srcCell.getCellStyle().getDataFormat());
+//            }
+//        }
+//
+//        copyColumnWidth(srcSheet, desSheet);
+//    }
 
-    /**
-     * 复制sheet ,同时复制样式
-     */
-    public static void copySheet(Sheet srcSheet, Sheet desSheet) {
-        DataFormat dataFormat = desSheet.getWorkbook().createDataFormat();
-        CellStyle desStyle = desSheet.getWorkbook().createCellStyle();
-        int rowCount = SheetUtils.getRowCount(srcSheet);
-        for (int rownum = 0; rownum < rowCount; rownum++) {// row
-            int columnCount = SheetUtils.getColumnCount(srcSheet, rownum);
-            for (int column = 0; column < columnCount; column++) {// column
-                Optional<Cell> cellOptional = getCell(srcSheet, rownum, column);
-                if (cellOptional.isEmpty())
-                    continue;
-                Cell srcCell = cellOptional.get();
-                desStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                Cell desCell = SheetUtils.getCreateCell(desSheet, rownum, column);
-                copyCellValue(srcCell, srcCell.getCellType(), desCell, dataFormat);
-                // desCell.setCellStyle(desCell.getSheet().getWorkbook().createCellStyle());
-                // BorderMode borderMode =
-                // SheetStyleUtils.getBorderMode(srcCell.getCellStyle());
-                // java.awt.Color color = SheetStyleUtils.getColor(srcCell.getCellStyle());
-                //  SheetStyleUtils.setColor(desCell, color, borderMode);
-
-                desCell.getCellStyle().setDataFormat(srcCell.getCellStyle().getDataFormat());
-            }
-        }
-
-        copyColumnWidth(srcSheet, desSheet);
-    }
-
-    public static void copyCellValue(Cell srcCell, CellType type, Cell desCell, DataFormat dataFormat) {
-
-        switch (type) {
-            case STRING:
-                desCell.setCellValue(srcCell.getStringCellValue());
-                break;
-            case NUMERIC:
-                desCell.setCellValue(srcCell.getNumericCellValue());
-                break;
-            case BOOLEAN:
-                desCell.setCellValue(srcCell.getBooleanCellValue());
-                break;
-            case FORMULA:
-                copyCellValue(srcCell, srcCell.getCachedFormulaResultType(), desCell, dataFormat);
-                break;
-            case BLANK:
-            case _NONE:
-            case ERROR:
-                break;
-        }
-    }
+//    public static void copyCellValue(Cell srcCell, CellType type, Cell desCell, DataFormat dataFormat) {
+//
+//        switch (type) {
+//            case STRING:
+//                desCell.setCellValue(srcCell.getStringCellValue());
+//                break;
+//            case NUMERIC:
+//                desCell.setCellValue(srcCell.getNumericCellValue());
+//                break;
+//            case BOOLEAN:
+//                desCell.setCellValue(srcCell.getBooleanCellValue());
+//                break;
+//            case FORMULA:
+//                copyCellValue(srcCell, srcCell.getCachedFormulaResultType(), desCell, dataFormat);
+//                break;
+//            case BLANK:
+//            case _NONE:
+//            case ERROR:
+//                break;
+//        }
+//    }
 
     /**
      * 设置Excel单元格颜色
@@ -542,8 +542,7 @@ public class SheetUtils {
                 desCell.setCellValue(srcCell.toString());
                 break;
             case FORMULA:
-                if (desCell.getCachedFormulaResultType() != CellType.FORMULA)
-                    copyCellValue(srcCell, desCell, desCell.getCachedFormulaResultType());
+                copyCellValue(srcCell, desCell, srcCell.getCachedFormulaResultType());
                 break;
             case BOOLEAN:
                 desCell.setCellValue(srcCell.getBooleanCellValue());

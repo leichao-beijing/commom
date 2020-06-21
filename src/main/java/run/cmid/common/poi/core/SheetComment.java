@@ -52,7 +52,7 @@ public class SheetComment {
     }
 
     private Comment commentXssf(HSSFSheet sheet, String maker, String value) {
-        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 1, 1, (short) 0, 0);
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 3, 3, (short) 5, 6);
         HSSFPatriarch patriarch = sheet.getDrawingPatriarch();
         if (patriarch == null)
             patriarch = sheet.createDrawingPatriarch();

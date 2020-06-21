@@ -2,6 +2,7 @@ package run.cmid.common.reader.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,37 +17,35 @@ import run.cmid.common.validator.eumns.Value;
 @ConverterHead(maxWrongCount = 1, indexes = {@Index({"needNumber"})})
 public class DemandTable {
 
-    @FindColumn(value = {"需求序号"}, matches = {
-            @Match(value = "\\", model = ExcelRead.NO_EQUALS),//不能等于\
-            @Match(value = {"001"}, model = ExcelRead.NO_EQUALS),//不能等于 001
-            //needNumber 不允许出现"\\"
-            @Match(require = {
-                    @FiledRequire(fieldName = "needName", value = "E报表需求")
-            }, value = "003", model = ExcelRead.NO_EQUALS),//当 needName ==  E报表需求 时 需求序号 不能等于 003
-            @Match(require = {
-                    @FiledRequire(fieldName = "needName", value = "报表1")
-            },check = true),//当 needName ==  报表1 时 需求序号 不能为空
-
-    })
+    @FindColumn(value = {"需求序号"}, checkColumn = true)
     private String needNumber;// 需求序号
 
-    @FindColumn(value = {"需求名称"})
+    @FindColumn(value = {"需求名称"}, checkColumn = true)
     private String needName;// 需求名称
 
-    @FindColumn(value = {"送审总工作量"}, model = FindModel.INCLUDE)
+    @FindColumn(value = {"送审总工作量"}, model = FindModel.INCLUDE, checkColumn = true)
     private Double auditTotalPerson;// 送审总工作量
 
-    //@ConverterProperty(value = { "送审Cosmic评估工作量" }, model = ExcelReadType.INCLUDE)
-    //private Double auditCosmicPerson;// 送审Cosmic评估工作量
+    @FindColumn(value = {"送审COSMIC评估工作量"}, model = FindModel.INCLUDE, checkColumn = true)
+    private Double auditCosmicPerson;// 送审Cosmic评估工作量
+
+    @FindColumn(value = {"非COSMIC评估工作量"}, model = FindModel.INCLUDE, checkColumn = true)
+    private Double nonCosmic;// 非COSMIC评估工作量
+
+    @FindColumn(value = {"送审COSMIC功能点数量"}, model = FindModel.INCLUDE, checkColumn = true)
+    private Double cosmicFunction;// 送审COSMIC功能点数量
+
+    @FindColumn(value = {"外协人员工作内容"}, checkColumn = true)
+    private String externalWork;// 外协人员工作内容
+
+    @FindColumn(value = {"外协人员工作人天数"}, checkColumn = true)
+    private Double externalWorkDay;
+
+    @FindColumn(value = {"自有人员工作内容"}, checkColumn = true)
+    private String work;// 自有人员工作内容
+
+    @FindColumn(value = {"自有人员工作人天数"}, checkColumn = true)
+    private Double workDay;
 
 
-    //private ArrayList<String> list;
-
-    @FindColumn(value = {"时间"}, model = FindModel.INCLUDE)
-    private Date date;
-
-    @FindColumn(value = {"value1"})
-    private String value1;
-    @FindColumn(value = {"value2"})
-    private String value2;
 }

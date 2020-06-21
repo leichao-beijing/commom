@@ -124,7 +124,11 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
             return;
         }
         ReaderPage<Sheet, Cell> srcBook = book(tag);
-        Sheet sheet = resources.getResources().createSheet(tagNew);
+
+        Sheet sheet = resources.getResources().getSheet(tagNew);
+        if (sheet != null)
+            resources.getResources().removeSheetAt(resources.getResources().getSheetIndex(sheet));
+        sheet = resources.getResources().createSheet(tagNew);
         for (int i = 0; i < srcBook.length(); i++) {
             List<Cell> list = srcBook.readRowUnit(i);
             if (list != null) {

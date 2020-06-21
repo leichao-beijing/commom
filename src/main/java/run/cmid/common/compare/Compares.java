@@ -15,6 +15,7 @@ import run.cmid.common.compare.model.CompareState;
 import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.compare.model.LocationTagError;
 import run.cmid.common.compare.model.QepeatResponse;
+import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
 
 /**
@@ -202,7 +203,7 @@ public class Compares {
      * @param <EX>              自定义异常回调
      * @param srcList           原始数据类型
      * @param desList           目标数据类型
-     * @param biFunction        retrun true添加结果队列 false 跳过
+     * @param biFunction        return true添加结果队列 false 跳过
      * @param exceptionSupplier src与des进行匹配时，当src未能匹配到对应的des数据时。触发该回调函数 返回异常处理函数
      * @return 返回匹配成功的S1数据
      */
@@ -221,6 +222,12 @@ public class Compares {
         CompareState<LocationTag<D1>> desCompareState;
         for (int i = 0; i < srcCompareStateList.size(); i++) {
             srcCompareState = srcCompareStateList.get(i);
+            if(srcCompareState.getValue().getValue().getClass().isAssignableFrom(FieldDetail.class))
+            {
+                FieldDetail f= (FieldDetail)   srcCompareState.getValue().getValue();
+                if(f.getFieldName().equals("externalWorkDay"))
+                    System.err.println("");
+            }
             for (int a = 0; a < desCompareStateList.size(); a++) {
                 desCompareState = desCompareStateList.get(a);
                 if (desCompareState.isState())

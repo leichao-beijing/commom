@@ -45,7 +45,7 @@ public class EntityBuildings<T, PAGE, UNIT> {
         this.clazz = clazz;
         ConverterHead head = clazz.getAnnotation(ConverterHead.class);
         if (head == null)
-            throw new NullPointerException("@ExcelConverterHead not enable");
+            throw new NullPointerException("@ConverterHead not enable");
         isIndexMethod(head.indexes(), clazz);// 验证index内值是否存在于对象中。
         indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
