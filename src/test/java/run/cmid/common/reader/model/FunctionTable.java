@@ -28,7 +28,7 @@ public class FunctionTable {
     @FindColumn(value = {"功能过程"}, checkColumn = true)
     private String functionProcessDescription;// 功能过程
 
-    @FindColumn(value = {"子过程描述"}, checkColumn = true, max = 255)
+    @FindColumn(value = {"子过程描述"}, checkColumn = true)
     private String subprocessDescription;// 子过程描述
 
     @FindColumn(value = {"数据移动类型"}, checkColumn = true)

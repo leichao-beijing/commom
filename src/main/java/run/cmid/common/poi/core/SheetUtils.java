@@ -24,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import run.cmid.common.compare.model.CompareResponse;
 import run.cmid.common.poi.model.StyleInfo;
+import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.BorderMode;
 
 /**
@@ -130,9 +131,9 @@ public class SheetUtils {
     /**
      * 获取sheet内现存最大行数，匹配空白行除外
      */
-    public static <A, B> int sheetCount(Sheet sheet, List<CompareResponse<A, B>> list) {
+    public static <A, B> int sheetCount(Sheet sheet,Map<String, FieldDetail> map) {
         int size = sheet.getLastRowNum();
-        while (isRowAllEmpty(sheet.getRow(size), list)) {
+        while (isRowAllEmpty(sheet.getRow(size), map)) {
             size--;
         }
         return size + 1;
@@ -141,24 +142,27 @@ public class SheetUtils {
     /**
      * 当前行与匹配结果全部为空时，才认为该行为空行
      */
-    public static <A, B> boolean isRowAllEmpty(Function<Integer, String> fun, List<CompareResponse<A, B>> list) {
+    public static <A, B> boolean isRowAllEmpty(Function<Integer, String> fun, Map<String, FieldDetail> map) {
         int size = 0;
-        for (CompareResponse<?, ?> compareResponse : list) {
-            if (compareResponse.getDesIndex() == -1) {
+        Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry<String, FieldDetail> next = it.next();
+            FieldDetail fieldDetail = next.getValue();
+            if(fieldDetail.getPosition()==-1){
                 size++;
                 continue;
             }
-            String val = fun.apply(compareResponse.getDesIndex());
-            if (val == null || val.toString().equals(""))
+            String val = fun.apply(fieldDetail.getPosition());
+            if (val == null || val.equals(""))
                 size++;
         }
-        return list.size() == size ? true : false;
+        return map.size() == size ? true : false;
     }
 
     /**
      * 当前行与匹配结果全部为空时，才认为该行为空行
      */
-    public static <A, B> boolean isRowAllEmpty(Row row, List<CompareResponse<A, B>> list) {
+    public static <A, B> boolean isRowAllEmpty(Row row, Map<String, FieldDetail> map) {
         if (row == null)
             return true;
         return isRowAllEmpty((i) -> {
@@ -166,7 +170,7 @@ public class SheetUtils {
             if (cell == null)
                 return null;
             return cell.toString().trim();
-        }, list);
+        }, map);
     }
 
     /**

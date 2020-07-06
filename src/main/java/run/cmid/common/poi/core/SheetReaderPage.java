@@ -14,9 +14,11 @@ import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
-public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
+public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
     private final Sheet sheet;
     private final HashMap<CellAddress, CellAddress> cellRangeMap;
 
@@ -28,7 +30,7 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
             this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
         else
             this.cellRangeMap = null;
-        this.length=sheet.getLastRowNum();
+        this.length = sheet.getLastRowNum();
     }
 
     @Override
@@ -57,32 +59,10 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
     private Object getCellValue(Cell cell, CellType type) {
         switch (type) {
             case NUMERIC:
-                short formatIndex = cell.getCellStyle().getDataFormat();
-               //int i = cell.getColumnIndex();
-                if(headInfo==null)
-                    return  cell.getNumericCellValue();
-                List<CompareResponse<FieldDetail, String>> list = headInfo.getResponse().getList();
-                FieldDetail detail = null;
-                for (CompareResponse<FieldDetail, String> fieldDetailStringCompareResponse : list) {
-                    if (fieldDetailStringCompareResponse.getDesIndex() == cell.getColumnIndex()) {
-                        detail = fieldDetailStringCompareResponse.getSrcData();
-                        break;
-                    }
-                }
-                if (detail == null)
-                    return null;
-                Class<?> classType = detail.getField().getType();
-                if (!classType.getName().startsWith("java.time") && !classType.equals(Date.class))
+                if (DateUtil.isCellDateFormatted(cell))
+                    return cell.getDateCellValue();
+                else
                     return cell.getNumericCellValue();
-                String da = sheet.getWorkbook().createDataFormat().getFormat(formatIndex);
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat(da);
-                    DateTime dateTime = new DateTime(DateUtil.getJavaDate(cell.getNumericCellValue(), sdf.getTimeZone()));
-                    return dateTime;
-                } catch (IllegalArgumentException e) {
-                    return cell.getNumericCellValue();
-                }
-
             case STRING:
                 return cell.toString();
             case FORMULA:
@@ -121,10 +101,10 @@ public class SheetReaderPage implements ReaderPage<Sheet,Cell> {
 
     @Override
     public void info(HeadInfo headInfo) throws ConverterExcelException {
-        this.length = SheetUtils.sheetCount(sheet, headInfo.getResponse().getList());// 获取最大行
-        Map<ConverterErrorType, String> errorType = computeErrorType(headInfo.getResponse().getErrorList());
-        if (errorType.size() != 0)
-            throw new ConverterExcelException(errorType);
+        this.length = SheetUtils.sheetCount(sheet, headInfo.getMap());// 获取最大行
+//        Map<ConverterErrorType, String> errorType = computeErrorType(headInfo.getResponse().getErrorList());
+//        if (errorType.size() != 0)
+//            throw new ConverterExcelException(errorType);
         this.headInfo = headInfo;
     }
 

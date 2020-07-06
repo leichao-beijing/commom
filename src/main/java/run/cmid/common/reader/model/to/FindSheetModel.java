@@ -1,6 +1,8 @@
 package run.cmid.common.reader.model.to;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -9,17 +11,15 @@ import lombok.Setter;
 import run.cmid.common.reader.model.FieldDetail;
 
 /**
- * 
  * @author leichao
  */
 @Getter
 @Setter
 public class FindSheetModel<T> {
-    public FindSheetModel(List<FieldDetail> findHeadField) {
-        this.findHeadField = findHeadField;
+    public FindSheetModel(Map<String, FieldDetail> map) {
+        this.map = map;
     }
 
     private Sheet findSheet;
-    private final List<FieldDetail> findHeadField;
-
+    private final Map<String, FieldDetail> map;
 }

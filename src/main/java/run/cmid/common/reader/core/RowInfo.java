@@ -1,17 +1,16 @@
 package run.cmid.common.reader.core;
 
 import lombok.Getter;
-import run.cmid.common.compare.model.DataArray;
-import run.cmid.common.reader.model.FieldDetail;
 
-import java.util.Map;
+import java.util.HashMap;
 
 @Getter
 public class RowInfo {
-    public  RowInfo(int rownum, Map<String,DataArray<Object, FieldDetail>> data){
-        this.rownum=rownum;
-        this.data=data;
+    public RowInfo(int rownum, HashMap<String, Object> data) {
+        this.rownum = rownum;
+        this.data = data;
     }
-    Map<String, DataArray<Object, FieldDetail>> data;
-    int rownum;
+
+    private HashMap<String, Object> data;
+    private int rownum;
 }

@@ -9,8 +9,6 @@ import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
-import run.cmid.common.reader.annotations.Match;
-import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.exception.ValidatorException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
@@ -29,17 +27,17 @@ import java.util.*;
 public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UNIT> {
     private final Class<T> classes;
     private final HeadInfo<PAGE, UNIT> mode;
-    private final List<LocationTagError<FieldDetail, ConverterExcelException>> columnErrorList;
     private final List<List<String>> indexes;
     private final int readHeadRownum;
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
+    private final Map<String, FieldDetail> fieldMap;
 
     public EntityResultBuild(Class<T> classes, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) {
         this.classes = classes;
         this.mode = mode;
-        this.columnErrorList = mode.getResponse().getErrorList();
         this.indexes = indexes;
         this.readHeadRownum = readHeadRownum;
+        fieldMap = mode.getMap();
     }
 
     /**
@@ -120,58 +118,61 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
-        Iterator<Map.Entry<String, DataArray<Object, FieldDetail>>> it = rowInfo.getData().entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
-            DataArray<Object, FieldDetail> value = next.getValue();
-            Match[] matches = value.getInfo().getMatch();
-            if (matches.length != 0) {
-                List<String> list = null;
-                for (Match match : matches) {
-                    try {
-                        list = MatchValidator.validatorFiledRequire(match.require(), rowInfo);
-                        if (list != null && list.size() == 0) {
-                            if (value.getInfo().isConverterException())
-                                value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
-                            continue;
-                        }
-                        MatchValidator.validatorFiledCompares(value, match.filedCompares(), rowInfo, (list == null) ? "" : list.toString());
-                        MatchValidator.validatorMatch(value, match, rowInfo, (list == null) ? "" : list.toString());
-                        MatchValidator.validatorSize(value);
-                    } catch (ValidatorException e) {
-                        if (!match.check() && e.getType() == ConverterErrorType.ON_EMPTY)
-                            break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
-                        if (e.getType() == ConverterErrorType.ON_EMPTY) {
-                            if (list != null && list.size() != 0) {
-                                String msg = list.toString() + " " + e.getMessage();
-                                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e, msg));
-                                break;
-                            }
-                        }
-                        checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
-                    }
-                    if (value.getInfo().isConverterException())
-                        value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
-                }
-            }
-        }
+        Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
+        //TODO 数据校验层
+        
+//        while (it.hasNext()) {
+//            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
+//            DataArray<Object, FieldDetail> value = next.getValue();
+//            Match[] matches = value.getInfo().getMatch();
+//            if (matches.length != 0) {
+//                List<String> list = null;
+//                for (Match match : matches) {
+//                    try {
+//                        list = MatchValidator.validatorFiledRequire(match.require(), rowInfo);
+//                        if (list != null && list.size() == 0) {
+//                            if (value.getInfo().isConverterException())
+//                                value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
+//                            continue;
+//                        }
+//                        MatchValidator.validatorFiledCompares(value, match.filedCompares(), rowInfo, (list == null) ? "" : list.toString());
+//                        MatchValidator.validatorMatch(value, match, rowInfo, (list == null) ? "" : list.toString());
+//                        MatchValidator.validatorSize(value);
+//                    } catch (ValidatorException e) {
+//                        if (!match.check() && e.getType() == ConverterErrorType.ON_EMPTY)
+//                            break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
+//                        if (e.getType() == ConverterErrorType.ON_EMPTY) {
+//                            if (list != null && list.size() != 0) {
+//                                String msg = list.toString() + " " + e.getMessage();
+//                                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e, msg));
+//                                break;
+//                            }
+//                        }
+//                        checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
+//                    }
+//                    if (value.getInfo().isConverterException())
+//                        value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
+//                }
+//            }
+//        }
 
-        it = rowInfo.getData().entrySet().iterator();
+//        it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
+            Map.Entry<String, Object> next = it.next();
             String name = next.getKey();
-            DataArray<Object, FieldDetail> value = next.getValue();
+            Object value = next.getValue();
             String methodName = "set" + ReflectLcUtils.upperCase(name);
+            FieldDetail fieldDetail = fieldMap.get(name);
             try {
-                cellValueToClass(value.getValue(), out, methodName, value.getInfo(),
-                        new CellAddress(rowInfo.getRownum(), value.getInfo().getColumn()));
+                cellValueToClass(value, out, methodName, fieldDetail,
+                        new CellAddress(rowInfo.getRownum(), fieldDetail.getPosition()));
             } catch (ValidatorException e) {
-                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
+                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e));
                 tag.getFiledNull().add(name);
             }
-            value.getInfo().setConverterException(true);//初始化异常状态
+            fieldDetail.setConverterException(true);//初始化异常状态
         }
-        return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.rownum, mode, tag, checkErrorList);// size == 0 ? null : tag;
+        return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.getRownum(), mode, tag, checkErrorList);// size == 0 ? null : tag;
     }
 
     /**
@@ -185,19 +186,20 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
      */
     public void cellValueToClass(Object value, Object out, String setFunctionValue,
                                  FieldDetail fieldDetail, CellAddress cellAddress) {
+        if (value == null) return;
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
         if (StringUtils.isEmpty(value) && fieldDetail.getType() != FieldDetailType.LIST)
             return;
         try {
             if (parameterClasses.isEnum()) {
-                String methodName = (fieldDetail.getEnumTypeNameFiledValue() != null) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumTypeNameFiledValue()) : null;
+                String methodName = (fieldDetail.getEnumFieldName() != null) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumFieldName()) : null;
                 List<String> list = EnumUtil.getEnumNames(parameterClasses, methodName);
                 if (list.contains(value)) {
                     Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
                 } else
-                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR,fieldDetail.getMatchValue()+" 只能输入："+ list.toString());
+                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR, fieldDetail.getMatchValue() + " 只能输入：" + list.toString());
             }
 
             if (!value.getClass().equals(parameterClasses)) {
@@ -227,37 +229,46 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
 
     private RowInfo readRow(int rownum, ReaderPage readerPage) {
         List<Object> row = readerPage.readRowList(rownum);
-        HashMap<String, DataArray<Object, FieldDetail>> map = buildRowMap(row, mode.getResponse().getList());
+        HashMap<String, Object> map = buildRowMap(row);
         return new RowInfo(rownum, map);
     }
 
-    private HashMap<String, DataArray<Object, FieldDetail>> buildRowMap(List<Object> row,
-                                                                        List<CompareResponse<FieldDetail, String>> list) {
-        HashMap<String, DataArray<Object, FieldDetail>> map = new HashMap<String, DataArray<Object, FieldDetail>>();
-
-        for (CompareResponse<FieldDetail, String> compareResponse : list) {
-            FieldDetail detail = compareResponse.getSrcData();
-            if (row == null) {
-                map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(null, detail));
-                continue;
-            }
-            Object value = null;
+    private HashMap<String, Object> buildRowMap(List<Object> row) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        fieldMap.forEach((key, value) -> {
             try {
-                value = row.get(compareResponse.getDesIndex());
-                value = value == null ? "" : value;
-            } catch (IndexOutOfBoundsException e) {
 
+                if (value.getType() == FieldDetailType.SINGLE) {
+                    Object data = row.get(value.getPosition());
+                    map.put(key, data);
+                } else {
+                    List list = new ArrayList();
+                    map.put(key, list);
+                    try {
+                        Object data = row.get(value.getPosition());
+                        list.add(data == null ? "" : data);
+                    } catch (IndexOutOfBoundsException e) {
+                        list.add("");
+                    }
+                    value.getOtherDetails().forEach((va) -> {
+                        if (va.getMatchValue() == null) {
+                            list.add("");
+                            return;
+                        }
+                        try {
+                            Object val = row.get(va.getPosition());
+                            list.add(val == null ? "" : val);
+                        } catch (IndexOutOfBoundsException e) {
+                            list.add("");
+                        }
+                    });
+
+                }
+
+            } catch (IndexOutOfBoundsException e) {
+                map.put(key, null);
             }
-            if (detail.getType() == FieldDetailType.SINGLE)
-                map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(value, detail));
-            else {
-                DataArray<Object, FieldDetail> arrays = map.get(detail.getFieldName());
-                if (arrays == null) {
-                    map.put(detail.getFieldName(), new DataArray<Object, FieldDetail>(value, detail));
-                } else
-                    arrays.add(value, detail);
-            }
-        }
+        });
         return map;
     }
 }

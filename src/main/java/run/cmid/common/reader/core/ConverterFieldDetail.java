@@ -1,12 +1,5 @@
 package run.cmid.common.reader.core;
 
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import cn.hutool.core.util.ReflectUtil;
 import run.cmid.common.reader.annotations.FindColumn;
 import run.cmid.common.reader.annotations.FindColumns;
@@ -15,16 +8,19 @@ import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 import run.cmid.common.reader.model.to.FindSheetModel;
 
+import java.lang.reflect.Field;
+import java.util.*;
+
 /**
  * @author leichao
  */
 public class ConverterFieldDetail {
-    public static <T> List<FieldDetail> toList(Class<T> classes, ExcelHeadModel excelHeadModel,
-                                               List<String> indexes) {
-        LinkedList<FieldDetail> list = new LinkedList<FieldDetail>();
+    public static <T> Map<String, FieldDetail> toMap(Class<T> classes, ExcelHeadModel excelHeadModel,
+                                                     List<String> indexes) {
+        HashMap<String, FieldDetail> map = new HashMap<>();
         Field[] fields = ReflectUtil.getFields(classes);
-        FieldDetail fieldDetail = null;
-        boolean check = false;
+        FieldDetail fieldDetail;
+        boolean check;//TODO 构造fieldDetail
         for (Field field : fields) {
             check = false;
             if (indexes != null && indexes.contains(field.getName()))
@@ -39,33 +35,37 @@ public class ConverterFieldDetail {
             FormatDate format = field.getAnnotation(FormatDate.class);
 
             if (findColumn != null) {
-                fieldDetail = new FieldDetail(field, classes, format, findColumn);
+                fieldDetail = FieldDetail.build(field, classes, format, findColumn);
                 if (check)//将 具有唯一性验证的列 添加列空检查
                     fieldDetail.setCheckColumn(true);
-                list.add(fieldDetail);
+                map.put(field.getName(), fieldDetail);
                 continue;
             }
 
             if (findColumns != null) {
                 FindColumn[] values = findColumns.value();
-                if (values.length == 0) {
-                    throw new NullPointerException("ExcelConverterList no data");
+                if (values.length == 0) {//TODO 将配置装配至FieldDetail
+                    throw new NullPointerException("@FindColumn no data");
                 }
                 for (int i = 0; i < values.length; i++) {
-                    fieldDetail = new FieldDetail(field, classes, format, values[i], i);
+                    FieldDetail value = FieldDetail.build(field, classes, format, values[i]);
                     if (check)
-                        fieldDetail.setCheckColumn(true);
-                    list.add(fieldDetail);
+                        value.setCheckColumn(true);
+                    fieldDetail = map.get(field.getName());
+                    if (fieldDetail == null)
+                        map.put(field.getName(), value);
+                    else {
+                        fieldDetail.converterList(value, i);
+                    }
                 }
-                continue;
             }
         }
-        return list;
+        return map;
 
     }
 
     public static <T> FindSheetModel<T> toFindModel(Class<T> classes, ExcelHeadModel excelHeadModel) {
-        return new FindSheetModel<T>(toList(classes, excelHeadModel, null));
+        return new FindSheetModel<T>(toMap(classes, excelHeadModel, null));
     }
 
     /**

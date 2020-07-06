@@ -1,4 +1,4 @@
-package run.cmid.common.reader.annotations;
+package run.cmid.common.validator.annotations;
 
 import run.cmid.common.reader.model.eumns.ExcelRead;
 

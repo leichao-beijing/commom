@@ -1,5 +1,8 @@
 package run.cmid.common.reader;
 
+import cn.hutool.crypto.digest.MD5;
+import org.apache.commons.codec.digest.Md5Crypt;
+import org.apache.poi.hssf.record.chart.DataFormatRecord;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
@@ -19,14 +22,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author leichao
  */
 
 public class ExcelTest {
-
-
     @Test
     public void cloneTest() throws IOException {
         InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
@@ -111,7 +114,10 @@ public class ExcelTest {
 
         });
         result.getResultList().forEach((var) -> {
-            System.err.println(var);
+            System.err.print(var.getFiledNull() + " ");
+            System.err.print(var.getValue().getDesignerDoneDate() + " ");
+            System.err.print(var.getValue().getList() + " ");
+            System.err.println(var.getValue().getEngineeringSort());
         });
     }
 }

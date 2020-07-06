@@ -1,39 +1,36 @@
 package run.cmid.common.reader.exception;
 
-import org.apache.poi.ss.util.CellAddress;
-
 import lombok.Getter;
 import lombok.Setter;
-import run.cmid.common.reader.model.FieldDetail;
+import org.apache.poi.ss.util.CellAddress;
 import run.cmid.common.reader.model.eumns.ExcelConverterException;
+import run.cmid.common.validator.model.MatchesValidation;
 
 /**
- * 
  * @author leichao
  */
 @Getter
 @Setter
 public class ExcelReadRuntimeException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    @SuppressWarnings("rawtypes")
     @Getter
-    private final FieldDetail fieldDetail;
+    private final MatchesValidation matchesValidation;
     @Getter
     private final ExcelConverterException errorType;
     private CellAddress cellAddress;
     private int row;
 
-    public ExcelReadRuntimeException(@SuppressWarnings("rawtypes") FieldDetail fieldDetail,
+    public ExcelReadRuntimeException(@SuppressWarnings("rawtypes") MatchesValidation matchesValidation,
                                      ExcelConverterException errorType, CellAddress cellAddress) {
-        this.fieldDetail = fieldDetail;
+        this.matchesValidation = matchesValidation;
         this.errorType = errorType;
         this.cellAddress = cellAddress;
 
     }
 
-    public ExcelReadRuntimeException(@SuppressWarnings("rawtypes") FieldDetail fieldDetail,
+    public ExcelReadRuntimeException(MatchesValidation matchesValidation,
                                      ExcelConverterException errorType, int row) {
-        this.fieldDetail = fieldDetail;
+        this.matchesValidation = matchesValidation;
         this.errorType = errorType;
         this.row = row;
     }
@@ -41,7 +38,7 @@ public class ExcelReadRuntimeException extends RuntimeException {
     @Override
     public String getMessage() {
         if (errorType == ExcelConverterException.StringIndexOutBounds) {
-            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + fieldDetail.getMax();
+            return "单元格" + cellAddress.toString() + "，出现了" + errorType.getTypeName() + " 错误。最大允许字符串数量 " + matchesValidation.getMax();
         }
         return "第" + row + "行，出现了" + errorType.getTypeName() + " 错误";
     }

@@ -1,15 +1,10 @@
 package run.cmid.common.reader.core;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
+import cn.hutool.core.util.ReflectUtil;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
-import cn.hutool.core.util.ReflectUtil;
-import lombok.Getter;
 import run.cmid.common.reader.annotations.ConverterHead;
 import run.cmid.common.reader.annotations.Index;
 import run.cmid.common.reader.exception.ConverterExcelException;
@@ -17,6 +12,11 @@ import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
 import run.cmid.common.utils.ReflectLcUtils;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 通过对象class检索Excel内对应sheet
@@ -29,7 +29,7 @@ public class EntityBuildings<T, PAGE, UNIT> {
     @Getter
     private final Class<T> clazz;
     @Getter
-    private final List<FieldDetail> list;
+    private final Map<String, FieldDetail> map;
     @Getter
     private final ExcelHeadModel headModel;
     @Getter
@@ -47,16 +47,15 @@ public class EntityBuildings<T, PAGE, UNIT> {
         if (head == null)
             throw new NullPointerException("@ConverterHead not enable");
         isIndexMethod(head.indexes(), clazz);// 验证index内值是否存在于对象中。
-        indexes = getIndexList(head.indexes());
+        this.indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
         //sheetName = head.sheetName();
-        List<String> values = new ArrayList<String>();
-        for (List<String> index : indexes) {
-            values.addAll(index);
+        List<String> indexes = new ArrayList<String>();
+        for (List<String> index : this.indexes) {
+            indexes.addAll(index);
         }
-        list = ConverterFieldDetail.toList(clazz, headModel, values);
+        map = ConverterFieldDetail.toMap(clazz, headModel, indexes);
     }
-
 
 
     /**
@@ -66,10 +65,10 @@ public class EntityBuildings<T, PAGE, UNIT> {
      * @param resource       实现 BookResources 接口的方法。
      * @throws ConverterExcelException
      */
-    public EntityBuild<T, Sheet,Cell> find(int readHeadRownum, BookPage<Workbook,Sheet,Cell> resource)
+    public EntityBuild<T, Sheet, Cell> find(int readHeadRownum, BookPage<Workbook, Sheet, Cell> resource)
             throws ConverterExcelException {
-        HeadInfo<Sheet,Cell> mode = new FindResource(list, headModel, readHeadRownum).find(resource);
-        return new EntityResultBuild<T,Sheet,Cell>(clazz, mode, indexes, readHeadRownum);
+        HeadInfo<Sheet, Cell> mode = new FindResource(map, headModel, readHeadRownum).find(resource);
+        return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
     }
 
     protected static <T> void isIndexMethod(Index[] indexes, Class<T> clazz) {

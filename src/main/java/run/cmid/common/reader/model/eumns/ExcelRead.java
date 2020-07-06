@@ -31,7 +31,9 @@ public enum ExcelRead implements TypeName {
 
     NO_INCLUDE("不包含"),
 
-    NO_EQUALS("不等于");
+    NO_EQUALS("不等于"),
+
+    REGEX("正则验证");
 
 
     ExcelRead(String typeName) {

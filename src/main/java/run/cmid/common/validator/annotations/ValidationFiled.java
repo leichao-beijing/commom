@@ -1,4 +1,4 @@
-package run.cmid.common.reader.annotations;
+package run.cmid.common.validator.annotations;
 
 import run.cmid.common.reader.model.eumns.ExcelRead;
 
@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Match {
+public @interface ValidationFiled {
     /**
      * 符合条件进行下层判断。不存在时，直接进行下一层判断
      */

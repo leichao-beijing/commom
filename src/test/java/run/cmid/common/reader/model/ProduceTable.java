@@ -28,10 +28,11 @@ public class ProduceTable {
     @FindColumn(value = "工程分类", checkColumn = true)
     private String engineeringSort;
 
-    @FindColumn(value = "项目类型", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @FindColumn(value = "项目类型", checkColumn = true)
     private Project projectType;
 
-    @FindColumn(value = "需求号", checkColumn = true, matches = {@Match(value = {"TDL"}, model = ExcelRead.NO_INCLUDE)})
+    // @FindColumn(value = "需求号", checkColumn = true, matches = {@Match(value = {"TDL"}, model = ExcelRead.NO_INCLUDE)})
+    @FindColumn(value = "需求号", checkColumn = true)
     private String demandId;
 
     @FindColumn(value = "站名", checkColumn = true)
@@ -63,15 +64,16 @@ public class ProduceTable {
     @FindColumn(value = "勘察设计费", checkColumn = true, model = FindModel.INCLUDE)
     private Double checkDesignerCost;
 
-    @FindColumn(value = "合作类型", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @FindColumn(value = "合作类型", checkColumn = true)
     private Cooperate cooperateType;
 
-    @FindColumn(value = "合作单位", checkColumn = true, matches = {
-            @Match(require = {@FiledRequire(fieldName = "cooperateType", value = "自有")}, value = "/")
-    })
+    //    @FindColumn(value = "合作单位", checkColumn = true, matches = {
+//            @Match(require = {@FiledRequire(fieldName = "cooperateType", value = "自有")}, value = "/")
+//    })
+    @FindColumn(value = "合作单位", checkColumn = true)
     private String cooperateProvider;
 
-    @FindColumn(value = "合作内容", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @FindColumn(value = "合作内容", checkColumn = true)
     private CooperateContent cooperateContent;
 
     @FindColumn(value = "天线数量", model = FindModel.INCLUDE)
@@ -102,13 +104,13 @@ public class ProduceTable {
     @FindColumn(value = "产值上报时间", checkColumn = true)
     private Date productionReportDate;
 
-    @FindColumn(value = "标签", enumGetValueMethodName = "getTypeName", checkColumn = true)
+    @FindColumn(value = "标签", checkColumn = true)
     private TagState tag;
 
     @FindColumn(value = "备注1")
     private String other;
 
-    @FindColumn(value = "订单状态", enumGetValueMethodName = "getTypeName")
+    @FindColumn(value = "订单状态")
     private TableState tableState;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

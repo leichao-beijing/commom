@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -38,7 +35,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
     private final HashMap<String, CellStyle> cellStyleMap = new HashMap<String, CellStyle>();
     private int rownum = 0;
     private Sheet sheet;
-
+    private Map<String, FieldDetail> map;
     @Getter
     private boolean headState = false;
     @Getter
@@ -54,7 +51,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         this(workbookInfo, sheetName, createFieldDetail(clazz), clazz);
     }
 
-    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, List<FieldDetail> list,
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Map<String, FieldDetail> map,
                                  Class<T> clazz) {
         super(clazz);
         this.workbookInfo = workbookInfo;
@@ -78,31 +75,31 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
     }
 
     private void createCellStyle(Sheet sheet) {
-        for (FieldDetail tt : getList()) {
-            if (tt.getFormat() != null) {
+        map.forEach((key, value) -> {
+            if (value.getFormat() != null) {
                 CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
-                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(tt.getFormat().value()));
-                cellStyleMap.put(tt.getFieldName(), cellStyle);
+                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(value.getFormat().value()));
+                cellStyleMap.put(value.getFieldName(), cellStyle);
             }
-        }
+        });
     }
 
-    private static <T> List<FieldDetail> createFieldDetail(Class<T> classes) {
+    private static <T> Map<String, FieldDetail> createFieldDetail(Class<T> classes) {
         ConverterHead head = classes.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ExcelConverterHead not enable");
         isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。
         ExcelHeadModel headModel = new ExcelHeadModel(head);
-        return ConverterFieldDetail.toList(classes, headModel, null);
+        return ConverterFieldDetail.toMap(classes, headModel, null);
     }
 
     /**
      * 分析FieldDetail<T> 获取 head和Field 名称List
      */
     private void headAndFieldDataList() {
-        for (FieldDetail t : getList()) {
-            headNames.add((t.getMatchValue().equals(t.getFieldName())) ? t.getValues().get(0) : t.getMatchValue());
-        }
+        map.forEach((key, value) -> {
+            headNames.add(value.getName() == null ? value.getFieldName() : value.getName());
+        });
     }
 
     private void createHead() {
@@ -129,7 +126,10 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         String str = null;
         int column = 0;
         Row row = SheetUtils.getCreateRow(sheet, rownum);
-        for (FieldDetail tt : getList()) {
+        Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, FieldDetail> next = it.next();
+            FieldDetail tt = next.getValue();
             Object value = ReflectUtil.invoke(t, ("get" + StrUtil.upperFirst(tt.getFieldName())));
             if (value == null) {
                 column++;
@@ -144,7 +144,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
                 List<Object> list = (List<Object>) value;
                 try {
                     Object string = list.get(tt.getIndex());
-                    if(StringUtils.isEmpty(string)){
+                    if (StringUtils.isEmpty(string)) {
                         column++;
                         continue;
                     }
@@ -159,8 +159,8 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
                 column++;
                 continue;
             }
-            if (value.getClass().isEnum() && !tt.getEnumTypeNameFiledValue().equals("")) {
-                str = ReflectUtil.invoke(value, ("get" + StrUtil.upperFirst(tt.getEnumTypeNameFiledValue())))
+            if (value.getClass().isEnum() && !tt.getEnumFieldName().equals("")) {
+                str = ReflectUtil.invoke(value, ("get" + StrUtil.upperFirst(tt.getEnumFieldName())))
                         .toString();
                 cell.setCellValue(str);
                 column++;
@@ -185,6 +185,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
 
             column++;
         }
+
         rownum++;
     }
 
