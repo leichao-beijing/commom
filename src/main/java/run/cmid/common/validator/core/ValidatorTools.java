@@ -1,20 +1,14 @@
 package run.cmid.common.validator.core;
 
-import lombok.Getter;
-import org.apache.commons.collections4.Get;
-import run.cmid.common.reader.core.MatchValidator;
+import run.cmid.common.validator.EngineObject;
 import run.cmid.common.validator.exception.ValidatorException;
-import run.cmid.common.reader.model.eumns.ConverterErrorType;
-import run.cmid.common.utils.ReflectLcUtils;
 import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.EngineClazz;
 import run.cmid.common.validator.FunctionClazzInterface;
-import run.cmid.common.validator.ResultObjectInterface;
 import run.cmid.common.validator.annotations.FiledValidator;
 import run.cmid.common.validator.exception.ValidatorFieldsException;
 import run.cmid.common.validator.model.MachModelInfo;
 import run.cmid.common.validator.model.MatchesValidation;
-import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -22,14 +16,18 @@ import java.util.*;
 public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidation> {
     public ValidatorTools(Class<T> t) {
         this.engineClazz = new EngineClazz(t, this);
-        this.map = engineClazz.getStringMap();
+        validationMap = engineClazz.getFieldMap();
     }
 
-    private final Map<String, MatchesValidation> map;
+    public ValidatorTools(Map<String, MatchesValidation> validationStringMap) {
+        this.validationMap = EngineClazz.getSpotPathMap(validationStringMap);
+    }
+
+    private Map<SpotPath, MatchesValidation> validationMap;
 
     public List<ValidatorException> validation(T t) {
         try {
-            engineClazz.engineObject(t, new ValidatorResultObject()).compute();
+            new EngineObject(t, validationMap, new ValidatorResultObject()).compute();
         } catch (ValidatorFieldsException e) {
             return e.getErr();
         }
@@ -38,7 +36,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidati
 
     public List<ValidatorException> validationMap(Map<String, Object> context) {
         ValidatorResultObject v = new ValidatorResultObject();
-        MachModelInfo info = new MachModelInfo(context, engineClazz.getFieldMap());
+        MachModelInfo info = new MachModelInfo(context, validationMap);
         try {
             v.compute(null, info);
         } catch (ValidatorFieldsException e) {

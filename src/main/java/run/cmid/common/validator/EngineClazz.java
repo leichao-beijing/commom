@@ -25,7 +25,7 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
     private boolean loopState;
     private final FUN1 funClazz;
 
-    public Map<String, RETURN1> getStringMap() {
+    public static <RETURN1> Map<String, RETURN1> getStringMap(Map<SpotPath, RETURN1> fieldMap) {
         HashMap<String, RETURN1> map = new HashMap<String, RETURN1>();
         fieldMap.forEach((key, val) -> {
             map.put(key.getPath(), val);
@@ -33,6 +33,13 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
         return map;
     }
 
+    public static <RETURN1> Map<SpotPath, RETURN1> getSpotPathMap(Map<String, RETURN1> fieldMap) {
+        HashMap<SpotPath, RETURN1> map = new HashMap<SpotPath, RETURN1>();
+        fieldMap.forEach((key, val) -> {
+            map.put(new SpotPath(key), val);
+        });
+        return map;
+    }
 
     /**
      * @param clazz     需要分析的class类
