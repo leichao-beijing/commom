@@ -6,10 +6,10 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import org.apache.poi.ss.util.CellAddress;
 import run.cmid.common.compare.Compares;
-import run.cmid.common.compare.model.*;
+import run.cmid.common.compare.model.LocationTag;
+import run.cmid.common.compare.model.QepeatResponse;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
-import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CellAddressAndMessage;
@@ -18,6 +18,9 @@ import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
+import run.cmid.common.validator.core.ValidatorTools;
+import run.cmid.common.validator.exception.ValidatorException;
+import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.util.*;
 
@@ -31,13 +34,16 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     private final int readHeadRownum;
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
     private final Map<String, FieldDetail> fieldMap;
+    private final ValidatorTools validatorTools;
 
-    public EntityResultBuild(Class<T> classes, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) {
-        this.classes = classes;
+    public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) {
+        this.classes = clazz;
         this.mode = mode;
         this.indexes = indexes;
         this.readHeadRownum = readHeadRownum;
-        fieldMap = mode.getMap();
+        this.fieldMap = mode.getMap();
+        this.validatorTools = new ValidatorTools(clazz);
+
     }
 
     /**
@@ -118,9 +124,12 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
+        List<ValidatorFieldException> error = validatorTools.validationMap(rowInfo.getData());
+        error.forEach((val) -> { //TODO 数据校验层
+            FieldDetail fieldDetail = fieldMap.get(val.getFieldName());
+            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val));
+        });
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
-        //TODO 数据校验层
-
 //        while (it.hasNext()) {
 //            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
 //            DataArray<Object, FieldDetail> value = next.getValue();
@@ -155,8 +164,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
 //                }
 //            }
 //        }
-
-//        it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Object> next = it.next();
             String name = next.getKey();

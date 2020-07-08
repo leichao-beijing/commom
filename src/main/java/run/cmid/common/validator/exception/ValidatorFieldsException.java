@@ -1,14 +1,15 @@
 package run.cmid.common.validator.exception;
 
 import lombok.Getter;
+import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.util.List;
 
 public class ValidatorFieldsException extends RuntimeException {
-    public ValidatorFieldsException(List<ValidatorException> err) {
+    public ValidatorFieldsException(List<ValidatorFieldException> err) {
         this.err = err;
     }
 
     @Getter
-    private List<ValidatorException> err;
+    private List<ValidatorFieldException> err;
 }

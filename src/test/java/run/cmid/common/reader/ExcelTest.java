@@ -16,6 +16,7 @@ import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
 import run.cmid.common.validator.core.ValidatorTools;
 import run.cmid.common.validator.exception.ValidatorException;
+import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.awt.Color;
 import java.io.File;
@@ -33,10 +34,16 @@ public class ExcelTest {
     public void validatorTest() throws IOException, ConverterExcelException {
         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         ValidatorTools<ProduceTable> validator = new ValidatorTools<ProduceTable>(ProduceTable.class);
+
+        result.getCellErrorList().forEach((val)->{
+            System.err.println(val.getMessage());
+        });
+//
+//
         result.getResultList().forEach((val) -> {
-            List<ValidatorException> error = validator.validation(val.getValue());
+            List<ValidatorFieldException> error = validator.validation(val.getValue());
             for (ValidatorException ee : error) {
-                System.err.println(ee.getType()+">>>>"+ee.getMessage() +">>>"+val.getValue().getDemandId());
+                System.err.println(ee.getType() + ">>>>" + ee.getMessage() + ">>>" + val.getValue().getDemandId());
             }
         });
 

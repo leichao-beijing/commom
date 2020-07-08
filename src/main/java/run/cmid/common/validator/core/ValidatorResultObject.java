@@ -19,6 +19,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, Matche
     public void update(T t, Map<SpotPath, MatchesValidation> map) {
 
     }
+
     @Override
     public void addInfo(T t, List<MachModelInfo> list, Map<SpotPath, MatchesValidation> map) {
         HashMap<String, Object> result = new HashMap<>();
@@ -32,7 +33,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, Matche
 
     @Override
     public void compute(T t, List<MachModelInfo> list) {
-        List<ValidatorException> err = new ArrayList<>();
+        List<ValidatorFieldException> err = new ArrayList<ValidatorFieldException>();
         for (MachModelInfo machModelInfo : list) {
             err.addAll(compute(t, machModelInfo));
         }
@@ -60,7 +61,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, Matche
             } catch (ValidatorException e) {
                 if (!value.isCheck() && e.getType() == ConverterErrorType.ON_EMPTY)
                     break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
-                err.add(new ValidatorFieldException(e, value.getName()));
+                err.add(new ValidatorFieldException(e, value.getName(),value.getFieldName()));
             }
         }
         return err;

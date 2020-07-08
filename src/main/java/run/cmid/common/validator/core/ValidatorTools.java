@@ -9,6 +9,7 @@ import run.cmid.common.validator.annotations.FiledValidator;
 import run.cmid.common.validator.exception.ValidatorFieldsException;
 import run.cmid.common.validator.model.MachModelInfo;
 import run.cmid.common.validator.model.MatchesValidation;
+import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -25,7 +26,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidati
 
     private Map<SpotPath, MatchesValidation> validationMap;
 
-    public List<ValidatorException> validation(T t) {
+    public List<ValidatorFieldException> validation(T t) {
         try {
             new EngineObject(t, validationMap, new ValidatorResultObject()).compute();
         } catch (ValidatorFieldsException e) {
@@ -34,15 +35,10 @@ public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidati
         return new ArrayList<>();
     }
 
-    public List<ValidatorException> validationMap(Map<String, Object> context) {
+    public List<ValidatorFieldException> validationMap(Map<String, Object> context) {
         ValidatorResultObject v = new ValidatorResultObject();
         MachModelInfo info = new MachModelInfo(context, validationMap);
-        try {
-            v.compute(null, info);
-        } catch (ValidatorFieldsException e) {
-            return e.getErr();
-        }
-        return new ArrayList<>();
+        return v.compute(null, info);
     }
 
     private EngineClazz engineClazz;
