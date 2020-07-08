@@ -28,18 +28,17 @@ import java.util.List;
 /**
  * @author leichao
  */
-
 public class ExcelTest {
     @Test
     public void validatorTest() throws IOException, ConverterExcelException {
         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         ValidatorTools<ProduceTable> validator = new ValidatorTools<ProduceTable>(ProduceTable.class);
 
-        result.getCellErrorList().forEach((val)->{
+        result.getCellErrorList().forEach((val) -> {
             System.err.println(val.getMessage());
         });
-//
-//
+
+
         result.getResultList().forEach((val) -> {
             List<ValidatorFieldException> error = validator.validation(val.getValue());
             for (ValidatorException ee : error) {
