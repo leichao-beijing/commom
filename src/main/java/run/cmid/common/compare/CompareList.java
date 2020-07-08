@@ -9,7 +9,7 @@ import run.cmid.common.compare.model.LocationTag;
 
 /**
  * 传入两个List对象通过回调函数对List内容进行比较返回对应新的List集合对象
- * 
+ *
  * @author leichao
  */
 public class CompareList<S, D> {
@@ -23,8 +23,7 @@ public class CompareList<S, D> {
 
     /**
      * 等于关系回调函数
-     * 
-     * 
+     *
      * @param srcFun S 对象字符串回调函数
      * @param desFun D 对象字符串回调函数
      * @param <X>    自定义返回异常对象
@@ -32,13 +31,13 @@ public class CompareList<S, D> {
      * @throws X 自定义返回异常
      */
     public <X extends Throwable> List<CompareResponse<S, D>> equalsToListToSrc(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun) throws X {
+                                                                               Function<LocationTag<D>, String> desFun) throws X {
         return equalsToListToSrc(srcFun, desFun, null);
     }
 
     /**
      * 等于关系回调函数
-     * 
+     *
      * @param <X>               自定义异常
      * @param srcFun            S 对象字符串回调函数
      * @param desFun            D 对象字符串回调函数
@@ -47,7 +46,7 @@ public class CompareList<S, D> {
      * @throws X 自定义返回异常
      */
     public <X extends Throwable> List<CompareResponse<S, D>> equalsToListToSrc(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun, Function<CompareState<S>, X> exceptionSupplier) throws X {
+                                                                               Function<LocationTag<D>, String> desFun, Function<CompareState<S>, X> exceptionSupplier) throws X {
         return Compares.toLists(srcList, desList, (s, d) -> {
             if (srcFun.apply(s).equals(desFun.apply(d))) {
                 return true;
@@ -58,7 +57,7 @@ public class CompareList<S, D> {
 
     /**
      * 包含关系回调函数
-     * 
+     *
      * @param <X>    自定义异常
      * @param srcFun S 对象字符串回调函数
      * @param desFun D 对象字符串回调函数
@@ -66,13 +65,13 @@ public class CompareList<S, D> {
      * @throws X 自定义返回异常
      */
     public <X extends Throwable> List<CompareResponse<D, S>> equalsToListToDes(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun) throws X {
+                                                                               Function<LocationTag<D>, String> desFun) throws X {
         return equalsToListToDes(srcFun, desFun, null);
     }
 
     /**
      * 包含关系回调函数
-     * 
+     *
      * @param <X>               自定义异常
      * @param srcFun            S 对象字符串回调函数
      * @param desFun            D 对象字符串回调函数
@@ -81,7 +80,7 @@ public class CompareList<S, D> {
      * @throws X 自定义异常
      */
     public <X extends Throwable> List<CompareResponse<D, S>> equalsToListToDes(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun, Function<CompareState<D>, X> exceptionSupplier) throws X {
+                                                                               Function<LocationTag<D>, String> desFun, Function<CompareState<D>, X> exceptionSupplier) throws X {
         return Compares.toLists(desList, srcList, (d, s) -> {
             if (srcFun.apply(s).equals(desFun.apply(d))) {
                 return true;
@@ -92,7 +91,7 @@ public class CompareList<S, D> {
 
     /**
      * 包含关系回调函数
-     * 
+     *
      * @param <X>    自定义异常
      * @param srcFun S 对象字符串回调函数
      * @param desFun D 对象字符串回调函数
@@ -100,13 +99,13 @@ public class CompareList<S, D> {
      * @throws X 自定义异常
      */
     public <X extends Throwable> List<CompareResponse<S, D>> includeToListToSrc(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun) throws X {
+                                                                                Function<LocationTag<D>, String> desFun) throws X {
         return includeToListToSrc(srcFun, desFun, null);
     }
 
     /**
      * 包含关系回调函数
-     * 
+     *
      * @param <X>               自定义异常
      * @param srcFun            S 对象字符串回调函数
      * @param desFun            D 对象字符串回调函数
@@ -115,7 +114,7 @@ public class CompareList<S, D> {
      * @throws X 自定义异常
      */
     public <X extends Throwable> List<CompareResponse<S, D>> includeToListToSrc(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun, Function<CompareState<S>, X> exceptionSupplier) throws X {
+                                                                                Function<LocationTag<D>, String> desFun, Function<CompareState<S>, X> exceptionSupplier) throws X {
         return Compares.toLists(srcList, desList, (s, d) -> {
             if (desFun.apply(d).indexOf(srcFun.apply(s)) != -1) {
                 return true;
@@ -126,7 +125,7 @@ public class CompareList<S, D> {
 
     /**
      * 包含关系回调函数返回 D 对象List
-     * 
+     *
      * @param <X>    自定义异常
      * @param srcFun S 对象字符串回调函数
      * @param desFun D 对象字符串回调函数
@@ -134,13 +133,13 @@ public class CompareList<S, D> {
      * @throws X 自定义异常
      */
     public <X extends Throwable> List<CompareResponse<D, S>> includeToListToDes(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun) throws X {
+                                                                                Function<LocationTag<D>, String> desFun) throws X {
         return includeToListToDes(srcFun, desFun, null);
     }
 
     /**
      * 包含关系回调函数返回 D 对象List
-     * 
+     *
      * @param <X>               自定义异常
      * @param srcFun            S 对象字符串回调函数
      * @param desFun            D 对象字符串回调函数
@@ -149,7 +148,7 @@ public class CompareList<S, D> {
      * @throws X 自定义异常
      */
     public <X extends Throwable> List<CompareResponse<D, S>> includeToListToDes(Function<LocationTag<S>, String> srcFun,
-            Function<LocationTag<D>, String> desFun, Function<CompareState<D>, X> exceptionSupplier) throws X {
+                                                                                Function<LocationTag<D>, String> desFun, Function<CompareState<D>, X> exceptionSupplier) throws X {
         return Compares.toLists(desList, srcList, (d, s) -> {
             if (desFun.apply(d).indexOf(srcFun.apply(s)) != -1) {
                 return true;

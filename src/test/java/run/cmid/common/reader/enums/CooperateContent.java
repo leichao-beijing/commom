@@ -6,7 +6,7 @@ import run.cmid.common.io.TypeName;
 
 /**
  * 合作内容
- * 
+ *
  * @author leichao
  */
 @Getter

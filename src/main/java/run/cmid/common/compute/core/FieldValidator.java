@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import run.cmid.common.compute.enums.LinkState;
 
 /**
- *
  * @author leichao
  * @date 2020-04-20 07:16:07
  */
@@ -75,7 +74,7 @@ public class FieldValidator {
     }
 
     public static LinkState loop(String parentName, ComputeDetail fieldComputeDetail,
-            LinkedHashMap<String, ComputeDetail> runMap) {
+                                 LinkedHashMap<String, ComputeDetail> runMap) {
         if (fieldComputeDetail.getState() == LinkState.DATA || fieldComputeDetail.getState() == LinkState.NOT_COMPUTE)
             return fieldComputeDetail.getState();
         if (parentName != null) {

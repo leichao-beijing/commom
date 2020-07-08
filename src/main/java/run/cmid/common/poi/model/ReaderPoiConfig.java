@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ReaderPoiConfig {
-  private  boolean cellRangeState=false;
+    private boolean cellRangeState = false;
 }

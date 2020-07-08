@@ -5,11 +5,10 @@ import java.util.Map;
 import lombok.Getter;
 
 /**
- *
  * @author leichao
  * @date 2020-05-05 02:07:02
  */
-@Getter 
+@Getter
 public class ComputeObjectInfo {
     private final Object parentObject;
     private final ComputeInfo info;

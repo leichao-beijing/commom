@@ -7,7 +7,6 @@ import java.util.Map;
 import run.cmid.common.utils.SpotPath;
 
 /**
- *
  * @author leichao
  * @date 2020-05-02 10:51:49
  */
@@ -27,6 +26,6 @@ public class EngineObject<T, RETURN1, RETURN2, FUN2 extends ResultObjectInterfac
     public void compute() {
         fun2.update(t, map);
         fun2.addInfo(t, list, map);
-        fun2.compute(t,list);
+        fun2.compute(t, list);
     }
 }

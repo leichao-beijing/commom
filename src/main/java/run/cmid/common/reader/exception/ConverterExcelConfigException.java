@@ -8,7 +8,6 @@ import lombok.Getter;
 import run.cmid.common.reader.model.eumns.ConfigError;
 
 /**
- * 
  * @author leichao
  */
 public class ConverterExcelConfigException extends RuntimeException {

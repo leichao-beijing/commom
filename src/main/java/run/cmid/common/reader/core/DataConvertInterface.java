@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * 
  * @author leichao
  */
 public interface DataConvertInterface<T> {

@@ -1,8 +1,5 @@
 package run.cmid.common.reader;
 
-import cn.hutool.crypto.digest.MD5;
-import org.apache.commons.codec.digest.Md5Crypt;
-import org.apache.poi.hssf.record.chart.DataFormatRecord;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
@@ -14,15 +11,17 @@ import run.cmid.common.reader.core.EntityBuild;
 import run.cmid.common.reader.exception.ConverterExcelException;
 import run.cmid.common.reader.model.DemandTable;
 import run.cmid.common.reader.model.ProduceTable;
+import run.cmid.common.reader.model.Project;
 import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
+import run.cmid.common.validator.core.ValidatorTools;
+import run.cmid.common.validator.exception.ValidatorException;
 
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +29,19 @@ import java.util.List;
  */
 
 public class ExcelTest {
+    @Test
+    public void validatorTest() throws IOException, ConverterExcelException {
+        EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
+        ValidatorTools<ProduceTable> validator = new ValidatorTools<ProduceTable>(ProduceTable.class);
+        result.getResultList().forEach((val) -> {
+            List<ValidatorException> error = validator.validation(val.getValue());
+            for (ValidatorException ee : error) {
+                System.err.println(ee.getType()+">>>>"+ee.getMessage() +">>>"+val.getValue().getDemandId());
+            }
+        });
+
+    }
+
     @Test
     public void cloneTest() throws IOException {
         InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
@@ -99,13 +111,7 @@ public class ExcelTest {
 
     @Test
     public void produce() throws IOException, ConverterExcelException {
-        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
-        ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
-
-        Workbook workbook = new XSSFWorkbook(ras);
-        EntityBuild<ProduceTable, Sheet, Cell> e = ee.find(workbook);
-        EntityResults<ProduceTable, Sheet, Cell> result = e.build();
-
+        EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);
         });
@@ -119,5 +125,14 @@ public class ExcelTest {
             System.err.print(var.getValue().getList() + " ");
             System.err.println(var.getValue().getEngineeringSort());
         });
+    }
+
+
+    private EntityResults<ProduceTable, Sheet, Cell> getProduceTableTestData() throws IOException, ConverterExcelException {
+        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
+        ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
+        Workbook workbook = new XSSFWorkbook(ras);
+        EntityBuild<ProduceTable, Sheet, Cell> e = ee.find(workbook);
+        return e.build();
     }
 }

@@ -12,7 +12,6 @@ import cn.hutool.core.util.ReflectUtil;
 import run.cmid.common.io.StringUtils;
 
 /**
- * 
  * @author leichao
  */
 public class ReflectLcUtils {
@@ -90,7 +89,7 @@ public class ReflectLcUtils {
 
     /**
      * 验证的class是否为java的原生类
-     * 
+     *
      * @param clazz 验证的class类
      */
     public static boolean isJavaClass(Class<?> clazz) {
@@ -100,7 +99,7 @@ public class ReflectLcUtils {
         return values[0].equals("java");
     }
 
-    public static Object getObjectValue(Object ob, String[] values) {
+    public static Object getObjectValue(Object ob, String... values) {
         Object tmp = ob;
         for (int i = 0; i < values.length; i++) {
             String valueGet = ReflectLcUtils.methodGetString(values[i]);

@@ -5,7 +5,6 @@ import lombok.Setter;
 import run.cmid.common.reader.annotations.ConverterHead;
 
 /**
- * 
  * @author leichao
  */
 @Getter
@@ -20,7 +19,7 @@ public class ExcelHeadModel {
             return;
         maxWrongCount = head.maxWrongCount();
         skipNoAnnotationField = head.skipNoAnnotationField();
-        bookTagName=head.bookTagName();
+        bookTagName = head.bookTagName();
     }
 
     private int maxWrongCount = 3;

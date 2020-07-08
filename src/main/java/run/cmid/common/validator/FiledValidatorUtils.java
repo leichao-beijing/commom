@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import run.cmid.common.io.StringUtils;
-import run.cmid.common.reader.exception.ValidatorException;
+import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.CompareType;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.ExcelRead;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class FiledValidator {
+public class FiledValidatorUtils {
     public static String headMessage(String tagName, Object value) {
         return "<" + tagName + ">的值[" + value + "]";
     }
@@ -157,11 +157,11 @@ public class FiledValidator {
     }
 
     public static Boolean compare(BigDecimal number1, BigDecimal number2, CompareType mode) {
-         switch (mode) {
+        switch (mode) {
             case EQUALS:
-                return NumberUtil.equals(number1,number2);
+                return NumberUtil.equals(number1, number2);
             case NO_EQUALS:
-                return !NumberUtil.equals(number1,number2);
+                return !NumberUtil.equals(number1, number2);
             case LESS_THAN:
                 return NumberUtil.isLess(number1, number2);
             case LESS_THAN_OR_EQUAL:

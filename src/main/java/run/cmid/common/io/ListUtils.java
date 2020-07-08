@@ -3,7 +3,6 @@ package run.cmid.common.io;
 import java.util.List;
 
 /**
- * 
  * @author leichao
  */
 public class ListUtils {

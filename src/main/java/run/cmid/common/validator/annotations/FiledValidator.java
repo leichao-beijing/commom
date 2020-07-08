@@ -4,10 +4,13 @@ import run.cmid.common.reader.model.eumns.ExcelRead;
 
 import java.lang.annotation.*;
 
+/**
+ * 字段验证器
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ValidationFiled {
+public @interface FiledValidator {
     /**
      * 符合条件进行下层判断。不存在时，直接进行下一层判断
      */

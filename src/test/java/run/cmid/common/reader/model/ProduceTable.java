@@ -8,6 +8,8 @@ import run.cmid.common.reader.enums.*;
 import run.cmid.common.reader.enums.Project;
 import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.eumns.FindModel;
+import run.cmid.common.validator.annotations.FieldName;
+import run.cmid.common.validator.annotations.FiledValidator;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +33,8 @@ public class ProduceTable {
     @FindColumn(value = "项目类型", checkColumn = true)
     private Project projectType;
 
-    // @FindColumn(value = "需求号", checkColumn = true, matches = {@Match(value = {"TDL"}, model = ExcelRead.NO_INCLUDE)})
+    @FiledValidator(value = {"TDL"}, model = ExcelRead.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确")
+    @FieldName("需求号")
     @FindColumn(value = "需求号", checkColumn = true)
     private String demandId;
 

@@ -50,7 +50,7 @@ public class StylePalette {
             cellStyle.setRightBorderColor(styleInfo.getRightBorderColor());
 
         if (styleInfo.getFillBackgroundColor() != null) {
-           copyColorBackgroundColor(styleInfo.getFillBackgroundColor(), workbook, cellStyle);
+            copyColorBackgroundColor(styleInfo.getFillBackgroundColor(), workbook, cellStyle);
         }
         if (styleInfo.getFillForegroundColor() != null) {
             copyColorForegroundColor(styleInfo.getFillForegroundColor(), workbook, cellStyle);
@@ -79,7 +79,7 @@ public class StylePalette {
     }
 
     public static void copyColorForegroundColor(Color srcColor, Workbook desWorkbook, CellStyle desStyle) {
-        if(srcColor==null)
+        if (srcColor == null)
             return;
         if (desWorkbook instanceof HSSFWorkbook && desStyle instanceof HSSFCellStyle) {
             short i = color((HSSFWorkbook) desWorkbook, srcColor);

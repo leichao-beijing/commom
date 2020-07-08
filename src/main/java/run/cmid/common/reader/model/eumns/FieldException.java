@@ -3,7 +3,6 @@ package run.cmid.common.reader.model.eumns;
 import run.cmid.common.io.TypeName;
 
 /**
- * 
  * @author leichao
  */
 public enum FieldException implements TypeName {

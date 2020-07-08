@@ -9,6 +9,7 @@ import java.util.List;
 public class DemoEventListener extends AnalysisEventListener<Object> {
 
     List<Object> list = new ArrayList<Object>();
+
     @Override
     public void invoke(Object o, AnalysisContext analysisContext) {
         list.add(o);

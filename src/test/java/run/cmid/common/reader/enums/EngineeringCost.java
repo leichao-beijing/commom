@@ -6,7 +6,7 @@ import run.cmid.common.io.TypeName;
 
 /**
  * 工程类型
- * 
+ *
  * @author leichao
  */
 @Getter

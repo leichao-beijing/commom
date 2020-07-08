@@ -28,7 +28,7 @@ public class ExcelImageExport {
 
     public static int readExcel(Path srcPath, File outPath) throws IOException {
         FileInputStream is = new FileInputStream(srcPath.toFile());
-        PoiReader poi=   PoiReader.build(is,null,new ReaderPoiConfig(),srcPath.toFile());
+        PoiReader poi = PoiReader.build(is, null, new ReaderPoiConfig(), srcPath.toFile());
         Workbook word = poi.getWorkbook();
         int size = readWordbookAll(word, srcPath.getFileName().toString(), outPath);
         poi.saveAndClose();
@@ -66,7 +66,7 @@ public class ExcelImageExport {
 
     /**
      * 导出sheet内的图片到file目录内。
-     * 
+     *
      * @return 返回sheet内图片的数量
      **/
     private static int exportSheetImageFile(Sheet srcSheet, String fileName, File outPath) {

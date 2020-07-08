@@ -8,21 +8,21 @@ import java.util.Map;
 import lombok.Getter;
 
 /**
- *
  * @author leichao
  * @date 2020-05-06 09:43:08
  */
 public class MapIntegerObject {
     @Getter
     private Map<String, Object> map = new HashMap<String, Object>();
-    private List<SpotPath> paths = new ArrayList<SpotPath>();;
+    private List<SpotPath> paths = new ArrayList<SpotPath>();
+    ;
 
     /**
      * 已重复的path无法再次添加
-     * 
+     *
      * @param path
      * @param value
-     * @exception ClassCastException
+     * @throws ClassCastException
      */
     public void add(SpotPath path, Object value) {
         if (!paths.contains(path))
@@ -30,10 +30,9 @@ public class MapIntegerObject {
     }
 
     /**
-     * 
      * @param path
      * @param value
-     * @exception ClassCastException
+     * @throws ClassCastException
      */
     public void put(SpotPath path, Object value) {
         add(path, value, true, true);
@@ -44,7 +43,7 @@ public class MapIntegerObject {
      * @param castState true时ClassCastException存在时，将会抛出异常。
      * @param state     true时直接存在数据，false时采用ReflectLcUtils.getObjectValue
      *                  获取对应pathValue值
-     * @exception ClassCastException
+     * @throws ClassCastException
      */
     @SuppressWarnings("unchecked")
     public void add(SpotPath path, Object value, boolean castState, boolean state) {

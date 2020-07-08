@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 
 /**
  * 指定计算方法的读取字段
- * 
+ *
  * @author leichao
  * @date 2020-04-16 05:17:06
  */
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ComputeMethodFieldName {

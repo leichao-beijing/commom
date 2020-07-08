@@ -5,7 +5,6 @@ import lombok.Getter;
 import run.cmid.common.io.TypeName;
 
 /**
- * 
  * @author leichao
  */
 @Getter

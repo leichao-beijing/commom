@@ -21,7 +21,7 @@ public class DataArray<VALUE, INFO> {
     private VALUE value;
     private INFO info;
 
-    public void add(VALUE value,INFO info) {
+    public void add(VALUE value, INFO info) {
         if (values == null) {
             values = new ArrayList<>();
             values.add(this.value);

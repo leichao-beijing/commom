@@ -131,7 +131,7 @@ public class SheetUtils {
     /**
      * 获取sheet内现存最大行数，匹配空白行除外
      */
-    public static <A, B> int sheetCount(Sheet sheet,Map<String, FieldDetail> map) {
+    public static <A, B> int sheetCount(Sheet sheet, Map<String, FieldDetail> map) {
         int size = sheet.getLastRowNum();
         while (isRowAllEmpty(sheet.getRow(size), map)) {
             size--;
@@ -145,10 +145,10 @@ public class SheetUtils {
     public static <A, B> boolean isRowAllEmpty(Function<Integer, String> fun, Map<String, FieldDetail> map) {
         int size = 0;
         Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry<String, FieldDetail> next = it.next();
             FieldDetail fieldDetail = next.getValue();
-            if(fieldDetail.getPosition()==-1){
+            if (fieldDetail.getPosition() == -1) {
                 size++;
                 continue;
             }

@@ -54,6 +54,8 @@ public enum ConverterErrorType implements TypeName {
 
     EMPTY("不能存在值"),
 
+    REGEX_EMPTY("正则验证内容不能为空"),
+
     NUMBER_NULL("数字不能是null"),
 
     STRING_OUT_BOUNDS("字符串长度超出限制");

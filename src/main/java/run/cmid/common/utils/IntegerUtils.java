@@ -3,14 +3,13 @@ package run.cmid.common.utils;
 import java.math.BigDecimal;
 
 /**
- *
  * @author leichao
  * @date 2020-04-15 02:29:15
  */
 public class IntegerUtils {
     /**
      * object to BigDecimal
-     * 
+     *
      * @throws NumberFormatException
      */
     public static BigDecimal ObjectToBigDecimal(Object object) {

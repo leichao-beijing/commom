@@ -8,7 +8,6 @@ import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.to.AddressCell;
 
 /**
- * 
  * @author leichao
  */
 @Getter

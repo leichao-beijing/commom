@@ -2,6 +2,7 @@ package run.cmid.common.validator;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
@@ -13,8 +14,6 @@ import run.cmid.common.utils.ReflectLcUtils;
 import run.cmid.common.utils.SpotPath;
 
 /**
- *
- *
  * @author leichao
  * @date 2020-05-01 02:52:02
  */
@@ -23,14 +22,23 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
     private final OverflowUtils<SpotPath> overflow;
     @Getter
     private final Map<SpotPath, RETURN1> fieldMap = new HashedMap<SpotPath, RETURN1>();
-    private boolean loopState = true;
+    private boolean loopState;
     private final FUN1 funClazz;
+
+    public Map<String, RETURN1> getStringMap() {
+        HashMap<String, RETURN1> map = new HashMap<String, RETURN1>();
+        fieldMap.forEach((key, val) -> {
+            map.put(key.getPath(), val);
+        });
+        return map;
+    }
+
 
     /**
      * @param clazz     需要分析的class类
-     * @param loopState 是否递归解析下位class对象 默认进行递归
+     * @param loopState 是否递归解析下位class对象 不进行递归分析
      */
-    public EngineClazz(Class<T> clazz, FUN1 funClazz,  boolean loopState) {
+    public EngineClazz(Class<T> clazz, FUN1 funClazz, boolean loopState) {
         this.loopState = loopState;
         overflow = new OverflowUtils<SpotPath>();
         this.funClazz = funClazz;
@@ -38,7 +46,7 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
     }
 
     public EngineClazz(Class<T> clazz, FUN1 funClazz) {
-        this(clazz, funClazz,  true);
+        this(clazz, funClazz, false);
     }
 
     private void analysis(Class<T> clazz) {
@@ -80,8 +88,8 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
         return fieldMap.get(path);
     }
 
-    public<RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1,RETURN2>> EngineObject<T, RETURN1,RETURN2, FUN2> engineObject(T t, FUN2 funObject) {
-        return new EngineObject<T, RETURN1,RETURN2, FUN2>(t, fieldMap, funObject);
+    public <RETURN2, FUN2 extends ResultObjectInterface<T, RETURN1, RETURN2>> EngineObject<T, RETURN1, RETURN2, FUN2> engineObject(T t, FUN2 funObject) {
+        return new EngineObject<T, RETURN1, RETURN2, FUN2>(t, fieldMap, funObject);
     }
 
 }

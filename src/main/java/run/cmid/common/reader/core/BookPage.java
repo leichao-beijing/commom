@@ -4,7 +4,7 @@ import run.cmid.common.poi.core.PageClone;
 
 import java.util.List;
 
-public interface BookPage<RESOURCES, PAGE, UNIT>{
+public interface BookPage<RESOURCES, PAGE, UNIT> {
     RESOURCES getResources();
 
     ReaderPage<PAGE, UNIT> book(int i);

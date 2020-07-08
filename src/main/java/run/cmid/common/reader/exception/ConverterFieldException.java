@@ -3,7 +3,6 @@ package run.cmid.common.reader.exception;
 import run.cmid.common.reader.model.eumns.FieldException;
 
 /**
- * 
  * @author leichao
  */
 public class ConverterFieldException extends RuntimeException {

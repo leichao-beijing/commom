@@ -59,7 +59,7 @@ public class EntityResults<T, PAGE, UNIT> {
     }
 
     public void addResult(EntityResult<T, PAGE, UNIT> result) {
-        if (result.getCellErrorList() != null){
+        if (result.getCellErrorList() != null) {
             result.upDateErrorType();
             cellErrorList.addAll(result.getCellErrorList());
         }

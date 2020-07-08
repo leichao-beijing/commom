@@ -10,7 +10,6 @@ import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.EngineClazz;
 
 /**
- *
  * @author leichao
  * @date 2020-05-03 11:57:31
  */
@@ -31,10 +30,6 @@ public class ComputeBuilder<T> {
         engineClazz.engineObject(t, rco).compute();
     }
 
-    public static void main(String[] args) {
-        ComputeTest ct = new ComputeTest();
-        ComputeBuilder.build(ComputeTest.class).compute(ct);
-    }
 
     public static <T> ComputeBuilder<T> build(Class<T> clazz) {
         return new ComputeBuilder<T>(clazz);

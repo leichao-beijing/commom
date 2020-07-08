@@ -1,7 +1,6 @@
 package run.cmid.common.validator;
 
 /**
- *
  * @author leichao
  * @date 2020-05-05 03:48:36
  */

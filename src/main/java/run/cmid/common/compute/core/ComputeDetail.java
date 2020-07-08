@@ -7,7 +7,6 @@ import run.cmid.common.compute.enums.LinkState;
 import run.cmid.common.utils.SpotPath;
 
 /**
- *
  * @author leichao
  * @date 2020-04-15 01:46:39
  */

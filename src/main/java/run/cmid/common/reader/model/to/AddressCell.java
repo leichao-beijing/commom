@@ -3,7 +3,6 @@ package run.cmid.common.reader.model.to;
 import lombok.Getter;
 
 /**
- * 
  * @author leichao
  */
 @Getter
@@ -14,6 +13,7 @@ public class AddressCell<R> {
         this.column = column;
         this.value = value;
     }
+
     private final int rownum;
     private final int column;
     private final R value;

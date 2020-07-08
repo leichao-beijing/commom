@@ -8,7 +8,6 @@ import run.cmid.common.compute.annotations.EnableCompute;
 import run.cmid.common.utils.SpotPath;
 
 /**
- *
  * @author leichao
  * @date 2020-04-13 09:29:18
  */

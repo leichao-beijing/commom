@@ -19,7 +19,6 @@ import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
 
 /**
- * 
  * @author leichao
  * @date 2019年12月3日--上午9:05:49
  */
@@ -50,7 +49,7 @@ public class Compares {
      * 将list内重复数据和重复数据的对象位置索引返回list。重复数据的对象也写入List中，但QepeatResponse.qepeatIndex=-1
      */
     public static <S> List<QepeatResponse> repeatDataAll(List<S> s1, Function<S, String> fun
-           )  {
+    ) {
         List<QepeatResponse> qepeatList = new ArrayList<QepeatResponse>();
         Map<String, Integer> map = new HashMap<String, Integer>();
         int size = s1.size();
@@ -81,7 +80,7 @@ public class Compares {
 
     /**
      * 包含关系回调函数返回 S1 对象List
-     * 
+     *
      * @param <S1>       原始数据类型
      * @param <D1>       目标数据类型
      * @param s1         需匹配的原始数据
@@ -90,13 +89,13 @@ public class Compares {
      * @return 返回 S1 对象List
      */
     public static <S1, D1> List<CompareResponse<S1, D1>> toLists(List<S1> s1, List<D1> d1,
-            BiFunction<LocationTag<S1>, LocationTag<D1>, Boolean> biFunction) {
+                                                                 BiFunction<LocationTag<S1>, LocationTag<D1>, Boolean> biFunction) {
         return toLists(s1, d1, biFunction, null);
     }
 
     /**
      * 返回匹配成功的S1数据类型的list 位置信息由list所有索引决定
-     * 
+     *
      * @param <S1>              原始数据类型
      * @param <D1>              目标数据类型
      * @param <X1>              自定义异常回调
@@ -108,8 +107,8 @@ public class Compares {
      * @throws <X1> 自定义返回异常
      */
     public static <S1, D1, X1 extends Throwable> List<CompareResponse<S1, D1>> toLists(List<S1> srcList,
-            List<D1> desList, BiFunction<LocationTag<S1>, LocationTag<D1>, Boolean> biFunction,
-            Function<CompareState<S1>, X1> exceptionSupplier) throws X1 {
+                                                                                       List<D1> desList, BiFunction<LocationTag<S1>, LocationTag<D1>, Boolean> biFunction,
+                                                                                       Function<CompareState<S1>, X1> exceptionSupplier) throws X1 {
         LinkedList<CompareResponse<S1, D1>> list = new LinkedList<CompareResponse<S1, D1>>();
         LocationTag<S1> srcTag = null;
         LocationTag<D1> desTag = null;
@@ -145,7 +144,7 @@ public class Compares {
 
     /**
      * 返回匹配成功的S1数据类型的list 位置信息由CompareResponse.tag决定
-     * 
+     *
      * @param <S1>              原始数据类型
      * @param <D1>              目标数据类型
      * @param <X1>              自定义异常回调
@@ -197,7 +196,7 @@ public class Compares {
 
     /**
      * 返回匹配成功的S1数据类型的list 位置信息由CompareResponse.tag决定 and 返回错误信息列表
-     * 
+     *
      * @param <S1>              原始数据类型
      * @param <D1>              目标数据类型
      * @param <EX>              自定义异常回调
@@ -222,10 +221,9 @@ public class Compares {
         CompareState<LocationTag<D1>> desCompareState;
         for (int i = 0; i < srcCompareStateList.size(); i++) {
             srcCompareState = srcCompareStateList.get(i);
-            if(srcCompareState.getValue().getValue().getClass().isAssignableFrom(FieldDetail.class))
-            {
-                FieldDetail f= (FieldDetail)   srcCompareState.getValue().getValue();
-                if(f.getFieldName().equals("externalWorkDay"))
+            if (srcCompareState.getValue().getValue().getClass().isAssignableFrom(FieldDetail.class)) {
+                FieldDetail f = (FieldDetail) srcCompareState.getValue().getValue();
+                if (f.getFieldName().equals("externalWorkDay"))
                     System.err.println("");
             }
             for (int a = 0; a < desCompareStateList.size(); a++) {
@@ -253,7 +251,7 @@ public class Compares {
 
     /**
      * 将数据转换成带状态标记的数据
-     * 
+     *
      * @param <D>    数据原始类型
      * @param desLis 数据List
      * @return 带状态标记的数据
@@ -268,7 +266,7 @@ public class Compares {
 
     /**
      * 将数据转换成带状态标记的数据
-     * 
+     *
      * @param <S1>        原始数据类型
      * @param <D1>        目标数据类型
      * @param s1          匹配原始单数据
@@ -278,7 +276,7 @@ public class Compares {
      * @return 带状态标记的数据
      */
     public static <S1, D1> CompareResponse<S1, D1> toList(S1 s1, int srcIndex, List<D1> deses,
-            BiFunction<Integer, D1, Boolean> desFunction) {
+                                                          BiFunction<Integer, D1, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))
                 return new CompareResponse<S1, D1>(srcIndex, i, s1, deses.get(i));
@@ -288,7 +286,7 @@ public class Compares {
 
     /**
      * 将数据转换成带状态标记的数据 数据必须全部匹配，失败将会返回无法匹配的目标数据列表
-     * 
+     *
      * @param <S1>        原始数据类型
      * @param <D1>        目标数据类型
      * @param s1          匹配原始单数据
@@ -298,7 +296,7 @@ public class Compares {
      * @return 带状态标记的数据
      */
     public static <S1, D1> CompareResponse<S1, D1> toListAll(S1 s1, int srcIndex, List<D1> deses,
-            BiFunction<Integer, D1, Boolean> desFunction) {
+                                                             BiFunction<Integer, D1, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))
                 return new CompareResponse<S1, D1>(srcIndex, i, s1, deses.get(i));
@@ -308,7 +306,7 @@ public class Compares {
 
     /**
      * 将数据转换成带状态标记的数据
-     * 
+     *
      * @param <S1>        原始数据类型
      * @param <D1>        目标数据类型
      * @param s1          匹配原始单数据
@@ -317,7 +315,7 @@ public class Compares {
      * @return 带状态标记的数据
      */
     public static <S1, D1> CompareResponse<S1, D1> toListLocationTag(S1 s1, int srcIndex, List<LocationTag<D1>> deses,
-            BiFunction<Integer, LocationTag<D1>, Boolean> desFunction) {
+                                                                     BiFunction<Integer, LocationTag<D1>, Boolean> desFunction) {
         for (int i = 0; i < deses.size(); i++) {
             if (desFunction.apply(i, deses.get(i)))
                 return new CompareResponse<S1, D1>(srcIndex, deses.get(i).getPosition().intValue(), s1,

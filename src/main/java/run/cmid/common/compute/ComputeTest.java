@@ -9,7 +9,6 @@ import run.cmid.common.compute.annotations.EnableCompute;
 import run.cmid.common.compute.core.ComputeObject;
 
 /**
- *
  * @author leichao
  * @date 2020-04-13 09:16:21
  */

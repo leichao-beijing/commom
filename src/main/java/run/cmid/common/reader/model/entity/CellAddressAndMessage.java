@@ -3,7 +3,7 @@ package run.cmid.common.reader.model.entity;
 import org.apache.poi.ss.util.CellAddress;
 
 import lombok.Getter;
-import run.cmid.common.reader.exception.ValidatorException;
+import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 /**

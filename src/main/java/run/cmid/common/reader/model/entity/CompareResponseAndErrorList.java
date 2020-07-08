@@ -7,7 +7,6 @@ import run.cmid.common.compare.model.CompareResponse;
 import run.cmid.common.compare.model.LocationTagError;
 
 /**
- * 
  * @author leichao
  */
 @Getter

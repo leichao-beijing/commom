@@ -5,7 +5,6 @@ import lombok.Getter;
 import run.cmid.common.io.TypeName;
 
 /**
- * 
  * @author leichao
  */
 @Getter
@@ -18,9 +17,11 @@ public enum Cooperate implements TypeName {
     QUOTA("工时定额"),
 
     OWN("自有");
+
     Cooperate(String typeName) {
         this.typeName = typeName;
     }
+
     @JsonValue
     private String typeName;
 

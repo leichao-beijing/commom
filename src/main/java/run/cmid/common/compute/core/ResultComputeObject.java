@@ -20,7 +20,6 @@ import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.ResultObjectInterface;
 
 /**
- *
  * @author leichao
  * @date 2020-05-03 11:59:06
  */

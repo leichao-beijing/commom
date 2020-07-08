@@ -9,7 +9,7 @@ import run.cmid.common.compare.Compares;
 import run.cmid.common.compare.model.*;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
-import run.cmid.common.reader.exception.ValidatorException;
+import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CellAddressAndMessage;
@@ -120,7 +120,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
         //TODO 数据校验层
-        
+
 //        while (it.hasNext()) {
 //            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
 //            DataArray<Object, FieldDetail> value = next.getValue();
@@ -198,7 +198,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                     Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
-                } else
+                } else//todo 处理
                     throw new ValidatorException(ConverterErrorType.ENUM_ERROR, fieldDetail.getMatchValue() + " 只能输入：" + list.toString());
             }
 

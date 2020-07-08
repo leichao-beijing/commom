@@ -9,7 +9,6 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
 /**
- *
  * @author leichao
  * @date 2020-05-12 02:44:25
  */
@@ -29,7 +28,7 @@ public class LcValidator implements Validator {
 
     @Override
     public <T> Set<ConstraintViolation<T>> validateValue(Class<T> beanType, String propertyName, Object value,
-            Class<?>... groups) {
+                                                         Class<?>... groups) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -53,6 +52,6 @@ public class LcValidator implements Validator {
     }
 
     public static void main(String[] args) {
-        
+
     }
 }

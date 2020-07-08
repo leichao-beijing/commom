@@ -6,7 +6,6 @@ import java.util.List;
 import cn.hutool.core.util.ReflectUtil;
 
 /**
- * 
  * @author leichao
  */
 public class EnumUtil {
@@ -33,7 +32,7 @@ public class EnumUtil {
      * @param classEnum enum类
      * @param fieldName 调用fieldName进行匹配 当null时，采用默认Enum.toString
      */
-    public static  List<String> getEnumNames(Class<?> classEnum, String fieldName) {
+    public static List<String> getEnumNames(Class<?> classEnum, String fieldName) {
         Object[] ts = values(classEnum);
         boolean fieldState = true;
         if (fieldName.equals(""))

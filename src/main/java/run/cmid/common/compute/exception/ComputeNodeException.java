@@ -1,7 +1,6 @@
 package run.cmid.common.compute.exception;
 
 /**
- *
  * @author leichao
  * @date 2020-04-21 10:32:29
  */

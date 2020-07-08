@@ -4,7 +4,6 @@ import lombok.Getter;
 import run.cmid.common.io.TypeName;
 
 /**
- *
  * @author leichao
  * @date 2020-04-04 04:17:01
  */
