@@ -60,7 +60,7 @@ public class EngineClazz<T, RETURN1, FUN1 extends FunctionClazzInterface<RETURN1
         Field[] fields = ReflectUtil.getFields(clazz);
         for (Field field : fields) {
             SpotPath path = new SpotPath(field.getName());
-            if (!ReflectLcUtils.isJavaClass(field.getType())) {
+            if (!ReflectLcUtils.isJavaClass(field.getType()) && !field.getType().isEnum()) {
                 if (!loopState)
                     continue;
                 analysisLoop(path, field.getType());

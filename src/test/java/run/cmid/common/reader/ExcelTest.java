@@ -41,6 +41,7 @@ public class ExcelTest {
 
         result.getResultList().forEach((val) -> {
             List<ValidatorFieldException> error = validator.validation(val.getValue());
+
             for (ValidatorException ee : error) {
                 System.err.println(ee.getType() + ">>>>" + ee.getMessage() + ">>>" + val.getValue().getDemandId());
             }
@@ -56,18 +57,9 @@ public class ExcelTest {
         PoiReader desPoi = PoiReader.build(ras2);
         srcPoi.clone(desPoi, "sheet1", "填写注意事项");
 
-        desPoi.saveAndClose(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx"));
+     // desPoi.saveAndClose(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx"));
         srcPoi.close();
         desPoi.close();
-    }
-
-    @Test
-    public void test123() throws IOException, ConverterExcelException {
-        FileInputStream io = new FileInputStream(new File("C:\\java\\common\\src\\test\\resources\\data\\新建测试汇总表.xlsx"));
-        PoiReader poi = PoiReader.build(io);
-        EntityBuild ee = new ExcelEntityBuildings(DemandTable.class).find(0, poi);
-        EntityResults result = ee.build();
-        System.err.println(result.getResultList());
     }
 
     @Test

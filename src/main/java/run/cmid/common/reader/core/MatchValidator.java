@@ -1,9 +1,10 @@
 package run.cmid.common.reader.core;
 
 import run.cmid.common.io.StringUtils;
+import run.cmid.common.utils.RegexReplace;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.FiledValidatorUtils;
 import run.cmid.common.validator.model.CompareField;
 import run.cmid.common.validator.model.MatchesValidation;
@@ -17,10 +18,11 @@ public class MatchValidator {
      * @param regex
      * @param value
      */
-    public static boolean validationRegex(String regex, String value) {
+    public static boolean validationRegex(String regex, String value, Map<String, Object> map) {
         if (regex.trim().equals(""))
             throw new ValidatorException(ConverterErrorType.REGEX_EMPTY);
-       boolean s= Pattern.compile(regex).matcher(value).matches();
+        value = RegexReplace.replaceValue(map, value);
+        boolean s = Pattern.compile(regex).matcher(value).matches();
         return s;
     }
 
@@ -31,9 +33,9 @@ public class MatchValidator {
         String mgs = null;
         for (Require filedMatch : filedMatches) {
             Object value = dataMap.get(filedMatch.getFieldName());
-            if (filedMatch.getModel() == ExcelRead.REGEX) {
+            if (filedMatch.getModel() == ValidationType.REGEX) {
                 //ExcelRead.NONE 对正则进行匹配
-                if (validationRegex(filedMatch.getRegex(), value.toString())) {
+                if (validationRegex(filedMatch.getRegex(), value.toString(), dataMap)) {
                     list.add("满足：" + (!filedMatch.getMessage().equals("") ? filedMatch.getMessage() : "正则验证 " + filedMatch.getRegex()));
                 }
                 continue;//none时，该条配置无效
@@ -86,53 +88,67 @@ public class MatchValidator {
     }
 
 
-    public static void validatorFiledCompares(MatchesValidation matchesValidation, List<CompareField> filedCompares, Map<String, Object> dataMap, String frontMassages) {
+    public static void validatorFiledCompares(MatchesValidation matchesValidation, List<CompareField> filedCompares, Map<String, Object> dataMap, List<String> list) {
         if (filedCompares == null || filedCompares.size() == 0)
             return;
-        List<String> error = new ArrayList<>();
+        int count = 0;
         String msg;
         Object value = dataMap.get(matchesValidation.getFieldName());
         for (CompareField compareField : filedCompares) {
             Object data = dataMap.get(compareField.getFieldName());
             if (!FiledValidatorUtils.compare(value, data, compareField.getMode())) {
                 if (!compareField.getMessage().equals(""))
-                    msg = frontMassages + " " + compareField.getMessage();
+                    msg = compareField.getMessage();
                 else
-                    msg = frontMassages + " " + matchesValidation.getName() + "：" + value + " 与 " + compareField.getName() +
-                            "：" + data + " 不满足 " + compareField.getMode() + " 的条件";
-                error.add(msg);
+                    msg = validationMessages(matchesValidation, value, data, compareField, false);
+                count++;
+                list.add(msg);
             }
         }
-        if (error.size() != 0) {
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, error.toString());
-        }
-        return;
+        if (count != 0)
+            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, list.toString());
     }
 
-    public static void validatorMatch(MatchesValidation matchesValidation, Map<String, Object> dataMap, String frontMassages) {
+    private static String validationMessages(MatchesValidation matchesValidation, Object value, Object data, CompareField compareField, boolean state) {
+        if (!compareField.getMessage().equals(""))
+            return compareField.getMessage();
+        String mgs;
+        if (state)
+            mgs = " 满足 ";
+        else mgs = " 不满足 ";
+        return matchesValidation.getName() + "：" + value + " 与 " + compareField.getName() +
+                "：" + data + mgs + compareField.getMode() + " 的条件";
+    }
+
+
+    public static void validatorMatch(MatchesValidation matchesValidation, Map<String, Object> dataMap, List<String> list) {
+        if (matchesValidation.getModel() == ValidationType.EXCEPTION)
+            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, matchesValidation.getMessage());
+
         Object value = dataMap.get(matchesValidation.getFieldName());
         if (StringUtils.isBlack(value)) {
             throw new ValidatorException(ConverterErrorType.ON_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.ON_EMPTY.getTypeName());
         }
-        if (matchesValidation.getModel() == ExcelRead.REGEX) {
-            if (!validationRegex(matchesValidation.getRegex(), value.toString())) {
+        if (matchesValidation.getModel() == ValidationType.REGEX) {
+            if (!validationRegex(matchesValidation.getRegex(), value.toString(), dataMap)) {
                 throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, "不满足：" + (!matchesValidation.getMessage().equals("") ? matchesValidation.getMessage() : "正则验证 " + matchesValidation.getRegex()));
             }
             return;
         }//none 比较配置跳过
-        if (matchesValidation.getValue().length == 0 && matchesValidation.getModel() == ExcelRead.EXISTS) {
+        if (matchesValidation.getValue().length == 0 && matchesValidation.getModel() == ValidationType.EXISTS) {
             return;
-        } else if (matchesValidation.getValue().length == 0 && !(matchesValidation.getModel() == ExcelRead.EXISTS
-                || matchesValidation.getModel() == ExcelRead.EMPTY)) {
+        } else if (matchesValidation.getValue().length == 0 && !(matchesValidation.getModel() == ValidationType.EXISTS
+                || matchesValidation.getModel() == ValidationType.EMPTY)) {
             throw new ValidatorException(ConverterErrorType.COMPARE_IS_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
         }
 
-        String mgs = null;
-        if (!matchesValidation.getMessage().equals(""))
-            mgs = frontMassages + " 不满足：" + matchesValidation.getMessage();
-        if (!FiledValidatorUtils.mode(value, matchesValidation.getValue(), matchesValidation.getModel()))
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, (mgs != null) ? mgs : frontMassages + " " + FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getModel(), matchesValidation.getValue(), false));
-
+        if (!FiledValidatorUtils.mode(value, matchesValidation.getValue(), matchesValidation.getModel())){
+            if (!matchesValidation.getMessage().equals(""))
+                list.add(matchesValidation.getMessage());
+            else
+                list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getModel(), matchesValidation.getValue(), false));
+            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, list.toString());
+        }
     }
 
 }

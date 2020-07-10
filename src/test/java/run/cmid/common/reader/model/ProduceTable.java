@@ -6,7 +6,9 @@ import lombok.Setter;
 import run.cmid.common.reader.annotations.*;
 import run.cmid.common.reader.enums.*;
 import run.cmid.common.reader.enums.Project;
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.annotations.FiledRequire;
+import run.cmid.common.validator.annotations.FiledValidators;
+import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.reader.model.eumns.FindModel;
 import run.cmid.common.validator.annotations.FieldName;
 import run.cmid.common.validator.annotations.FiledValidator;
@@ -30,10 +32,13 @@ public class ProduceTable {
     @FindColumn(value = "工程分类", checkColumn = true)
     private String engineeringSort;
 
+    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", model = ValidationType.EQUALS)}, model = ValidationType.EXCEPTION, message = "demandId：值不可以为 NR20011647")
     @FindColumn(value = "项目类型", checkColumn = true)
     private Project projectType;
 
-    @FiledValidator(value = {"TDL"}, model = ExcelRead.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确")
+    @FiledValidators({
+            @FiledValidator(value = {"TDL"}, model = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
+    })
     @FieldName("需求号")
     @FindColumn(value = "需求号", checkColumn = true)
     private String demandId;

@@ -3,7 +3,7 @@ package run.cmid.common.validator.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.annotations.FieldName;
 import run.cmid.common.validator.annotations.FiledValidator;
 
@@ -35,7 +35,7 @@ public class MatchesValidation {
     private List<Require> requires;
     private List<CompareField> compareFields;
     private String[] value;
-    private ExcelRead model = ExcelRead.EQUALS;// ExcelRead.NONE;//regex
+    private ValidationType model = ValidationType.EQUALS;// ExcelRead.NONE;//regex
     /**
      * 默认不允许出现 null 值。
      * false时，该值为空时将跳过判断条件直接基于通过

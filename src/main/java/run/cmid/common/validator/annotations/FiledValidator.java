@@ -1,6 +1,6 @@
 package run.cmid.common.validator.annotations;
 
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 
 import java.lang.annotation.*;
 
@@ -23,7 +23,7 @@ public @interface FiledValidator {
 
     String[] value() default {};
 
-    ExcelRead model() default ExcelRead.NONE;//regex
+    ValidationType model() default ValidationType.NONE;//regex
 
     /**
      * filedName 符合正则时生效。不存在时忽略

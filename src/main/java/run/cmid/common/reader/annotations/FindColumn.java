@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.eumns.FindModel;
 
 /**

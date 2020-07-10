@@ -1,6 +1,7 @@
 package run.cmid.common.validator.core;
 
 import run.cmid.common.validator.EngineObject;
+import run.cmid.common.validator.annotations.FiledValidators;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.EngineClazz;
@@ -14,17 +15,17 @@ import run.cmid.common.validator.model.ValidatorFieldException;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidation> {
+public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesValidation>> {
     public ValidatorTools(Class<T> t) {
         this.engineClazz = new EngineClazz(t, this);
         validationMap = engineClazz.getFieldMap();
     }
 
-    public ValidatorTools(Map<String, MatchesValidation> validationStringMap) {
+    public ValidatorTools(Map<String,List<MatchesValidation>> validationStringMap) {
         this.validationMap = EngineClazz.getSpotPathMap(validationStringMap);
     }
 
-    private Map<SpotPath, MatchesValidation> validationMap;
+    private Map<SpotPath, List<MatchesValidation>> validationMap;
 
     public List<ValidatorFieldException> validation(T t) {
         try {
@@ -44,20 +45,23 @@ public class ValidatorTools<T> implements FunctionClazzInterface<MatchesValidati
     private EngineClazz engineClazz;
 
     @Override
-    public MatchesValidation resultField(SpotPath path, Field field) {
+    public List<MatchesValidation> resultField(SpotPath path, Field field) {
         return resultFieldFiledValidator(path, field);
     }
 
     @Override
-    public void validator(Map<SpotPath, MatchesValidation> fieldMap) {
-
+    public void validator(Map<SpotPath, List<MatchesValidation>> fieldMap) { System.err.println("111");
     }
 
-    private MatchesValidation resultFieldFiledValidator(SpotPath path, Field field) {
-        if (field.getAnnotation(FiledValidator.class) == null)
-            return null;
-        FiledValidator filedValidator = field.getAnnotation(FiledValidator.class);
-        return new MatchesValidation(filedValidator, field);
-    }
+    private List<MatchesValidation> resultFieldFiledValidator(SpotPath path, Field field) {
+        List<MatchesValidation> list = new ArrayList<>();
+        if (field.getAnnotation(FiledValidator.class) != null)
+            list.add(new MatchesValidation(field.getAnnotation(FiledValidator.class), field));
 
+        if (field.getAnnotation(FiledValidators.class) != null)
+            for (FiledValidator filedValidator : field.getAnnotation(FiledValidators.class).value()) {
+                list.add(new MatchesValidation(filedValidator, field));
+            }
+        return list;
+    }
 }

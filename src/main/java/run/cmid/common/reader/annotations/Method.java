@@ -1,6 +1,6 @@
 package run.cmid.common.reader.annotations;
 
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.eumns.Value;
 
 import java.lang.annotation.*;
@@ -28,7 +28,7 @@ public @interface Method {
 
     String[] compareValue() default {};
 
-    ExcelRead fieldNameModel() default ExcelRead.EQUALS;//regex
+    ValidationType fieldNameModel() default ValidationType.EQUALS;//regex
 
     /**
      * filedName 符合正则时生效。不存在时忽略
@@ -40,7 +40,7 @@ public @interface Method {
 
     String[] value() default {};
 
-    ExcelRead model() default ExcelRead.EQUALS;
+    ValidationType model() default ValidationType.EQUALS;
 
     boolean check() default false;
 

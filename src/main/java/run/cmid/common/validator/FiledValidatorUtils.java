@@ -8,7 +8,7 @@ import run.cmid.common.io.StringUtils;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.CompareType;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -25,11 +25,11 @@ public class FiledValidatorUtils {
      * @param values
      * @param state  false 不满足 true 满足
      */
-    public static String message(ExcelRead mode, String[] values, boolean state) {
+    public static String message(ValidationType mode, String[] values, boolean state) {
         String no = "";
         if (!state)
             no = "不";
-        if (mode == ExcelRead.EMPTY || mode == ExcelRead.EXISTS) {
+        if (mode == ValidationType.EMPTY || mode == ValidationType.EXISTS) {
             return no + "满足 " + mode.getTypeName() + " 的条件";
         }
         return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getTypeName() + " 的条件";
@@ -41,13 +41,13 @@ public class FiledValidatorUtils {
      * @param mode
      * @return value== NULL or "" 时不进行判断返回null  , values.length==0返回true
      */
-    public static boolean mode(Object value, String[] values, ExcelRead mode) {
+    public static boolean mode(Object value, String[] values, ValidationType mode) {
         if (StringUtils.isBlack(value))
             throw new ValidatorException(ConverterErrorType.ON_EMPTY);
-        else if (mode == ExcelRead.EXISTS) {
+        else if (mode == ValidationType.EXISTS) {
             return true;
         }
-        if (mode == ExcelRead.EMPTY) {
+        if (mode == ValidationType.EMPTY) {
             return false;
         }
         List<String> list = Arrays.asList(values);
@@ -142,7 +142,7 @@ public class FiledValidatorUtils {
     /**
      * 比大小
      */
-    public static Boolean compare(BigDecimal number1, BigDecimal number2, ExcelRead mode) {
+    public static Boolean compare(BigDecimal number1, BigDecimal number2, ValidationType mode) {
         switch (mode) {
             case LESS_THAN:
                 return NumberUtil.isLess(number1, number2);

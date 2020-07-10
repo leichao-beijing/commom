@@ -1,4 +1,4 @@
-package run.cmid.common.reader.model.eumns;
+package run.cmid.common.validator.eumns;
 
 import run.cmid.common.io.TypeName;
 
@@ -10,7 +10,7 @@ import java.io.File;
  *
  * @author leichao
  */
-public enum ExcelRead implements TypeName {
+public enum ValidationType implements TypeName {
     NONE(""),
 
     LESS_THAN("小于"),
@@ -33,10 +33,12 @@ public enum ExcelRead implements TypeName {
 
     NO_EQUALS("不等于"),
 
+    EXCEPTION("满足条件时,返回条件的消息"),
+
     REGEX("正则验证");
 
 
-    ExcelRead(String typeName) {
+    ValidationType(String typeName) {
         this.typeName = typeName;
     }
 

@@ -10,7 +10,7 @@ import run.cmid.common.reader.enums.Cooperate;
 import run.cmid.common.reader.enums.CooperateContent;
 import run.cmid.common.reader.enums.TableState;
 import run.cmid.common.reader.enums.TagState;
-import run.cmid.common.reader.model.eumns.ExcelRead;
+import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.reader.model.eumns.FindModel;
 import run.cmid.common.validator.annotations.FieldName;
 import run.cmid.common.validator.annotations.FiledValidator;
@@ -33,7 +33,7 @@ public class Project {
 
     @FindColumn(value = "序号")
     @FieldName("序号")
-    @FiledValidator(value = "1", model = ExcelRead.NO_EQUALS)
+    @FiledValidator(value = "1", model = ValidationType.NO_EQUALS)
     private Long id;
 
     //@FindColumn(value = "生产部门", checkColumn = true, matches = {@Match(require={@FiledRequire(fieldName = "id",value = "2")},check = true)})

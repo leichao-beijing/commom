@@ -1,15 +1,10 @@
 package run.cmid.common.reader.model;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import run.cmid.common.reader.annotations.*;
-import run.cmid.common.reader.model.eumns.ExcelRead;
 import run.cmid.common.reader.model.eumns.FindModel;
-import run.cmid.common.validator.eumns.Value;
 
 @ToString
 @Getter
