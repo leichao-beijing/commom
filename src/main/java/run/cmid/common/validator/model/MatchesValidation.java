@@ -3,6 +3,7 @@ package run.cmid.common.validator.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import run.cmid.common.validator.RegexModeInterface;
 import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.annotations.FieldName;
 import run.cmid.common.validator.annotations.FiledValidator;
@@ -12,20 +13,25 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MatchesValidation {
+public class MatchesValidation implements RegexModeInterface {
     public MatchesValidation(FiledValidator fieldValidator, Field field) {
         this.name = (field.isAnnotationPresent(FieldName.class)) ? field.getAnnotation(FieldName.class).value() : field.getName();
         this.fieldName = field.getName();
         this.format = (field.isAnnotationPresent(JsonFormat.class)) ? field.getAnnotation(JsonFormat.class).pattern() : null;
         this.value = fieldValidator.value();
-        this.model = fieldValidator.model();
+        this.mode = fieldValidator.mode();
         this.regex = fieldValidator.regex();
         this.message = fieldValidator.message();
         this.check = fieldValidator.check();
         this.requires = Require.builds(fieldValidator.require(), this.name);
-        this.compareFields = CompareField.builds(fieldValidator.filedCompares(), this.fieldName, this.name);
+        this.compareFields = CompareField.builds(fieldValidator.fieldValidation(), this.fieldName, this.name);
+        this.throwState = fieldValidator.throwState();
     }
 
+    /**
+     * 满足前置条件时，不进行判断直接抛出异常。读取messages内值
+     */
+    private boolean throwState;
     private String fieldName;
     private String name;
     private String format;
@@ -35,7 +41,7 @@ public class MatchesValidation {
     private List<Require> requires;
     private List<CompareField> compareFields;
     private String[] value;
-    private ValidationType model = ValidationType.EQUALS;// ExcelRead.NONE;//regex
+    private ValidationType mode = ValidationType.EQUALS;// ExcelRead.NONE;//regex
     /**
      * 默认不允许出现 null 值。
      * false时，该值为空时将跳过判断条件直接基于通过

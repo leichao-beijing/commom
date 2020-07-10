@@ -2,6 +2,7 @@ package run.cmid.common.validator.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import run.cmid.common.validator.RegexModeInterface;
 import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.annotations.FiledRequire;
 
@@ -13,11 +14,11 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Require {
+public class Require implements RegexModeInterface {
     private Require(FiledRequire filedRequires, String name) {
         this.fieldName = filedRequires.fieldName();
         this.message = filedRequires.message();
-        this.model = filedRequires.model();
+        this.mode = filedRequires.model();
         this.value = filedRequires.value();
         this.regex = filedRequires.regex();
         this.name = name;
@@ -26,7 +27,7 @@ public class Require {
     String fieldName;
     String name;
     String[] value;
-    ValidationType model = ValidationType.EQUALS;//regex
+    ValidationType mode = ValidationType.EQUALS;//regex
     /**
      * model== ExcelRead.NONE 时匹配正则 符合正则时生效。不存在时忽略 只验证转换对象的toString类型
      */

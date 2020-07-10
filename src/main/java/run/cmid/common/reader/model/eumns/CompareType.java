@@ -16,6 +16,13 @@ public enum CompareType implements TypeName {
 
     GREATER_THAN_OR_EQUAL("大于等于"),
 
+    NO_EMPTY("非空值"),
+
+    EMPTY("空值"),
+
+    INCLUDE("包含"),
+
+    NO_INCLUDE("不包含"),
     ;
     @Getter
     String typeName;

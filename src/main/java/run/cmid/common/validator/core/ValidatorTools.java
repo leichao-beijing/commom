@@ -50,7 +50,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
     }
 
     @Override
-    public void validator(Map<SpotPath, List<MatchesValidation>> fieldMap) { System.err.println("111");
+    public void validator(Map<SpotPath, List<MatchesValidation>> fieldMap) {
     }
 
     private List<MatchesValidation> resultFieldFiledValidator(SpotPath path, Field field) {

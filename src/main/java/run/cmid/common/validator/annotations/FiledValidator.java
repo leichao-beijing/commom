@@ -12,18 +12,18 @@ import java.lang.annotation.*;
 @Documented
 public @interface FiledValidator {
     /**
-     * 符合条件进行下层判断。不存在时，直接进行下一层判断
+     * FiledRequire.FieldName 满足条件时执行后续判断
      */
     FiledRequire[] require() default {};
 
     /**
-     * 指定filedName的值与 Matches所在的值进行比较大小不符合时报错
+     * 判断注解所在值与其他值的关系，不符合抛出异常
      */
-    FiledCompare[] filedCompares() default {};
+    FiledCompare[] fieldValidation() default {};
 
     String[] value() default {};
 
-    ValidationType model() default ValidationType.NONE;//regex
+    ValidationType mode() default ValidationType.EQUALS;//regex
 
     /**
      * filedName 符合正则时生效。不存在时忽略
@@ -31,6 +31,8 @@ public @interface FiledValidator {
     String regex() default "";
 
     String message() default "";
+
+    boolean throwState() default false;
 
     /**
      * 默认不允许出现 null 值。

@@ -11,7 +11,7 @@ import java.io.File;
  * @author leichao
  */
 public enum ValidationType implements TypeName {
-    NONE(""),
+    //NONE("不进行操作"),
 
     LESS_THAN("小于"),
 
@@ -21,19 +21,19 @@ public enum ValidationType implements TypeName {
 
     GREATER_THAN_OR_EQUAL("大于等于"),
 
-    EXISTS("非空值"),
+    NO_EMPTY("非空值"),
 
     EMPTY("空值"),
 
     EQUALS("等于"),
 
+    NO_EQUALS("不等于"),
+
     INCLUDE("包含"),
 
     NO_INCLUDE("不包含"),
 
-    NO_EQUALS("不等于"),
-
-    EXCEPTION("满足条件时,返回条件的消息"),
+    //EXCEPTION("满足条件时,返回条件的消息"),
 
     REGEX("正则验证");
 

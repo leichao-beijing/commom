@@ -2,7 +2,9 @@ package run.cmid.common.validator.model;
 
 import lombok.Getter;
 import run.cmid.common.reader.model.eumns.CompareType;
+import run.cmid.common.validator.RegexModeInterface;
 import run.cmid.common.validator.annotations.FiledCompare;
+import run.cmid.common.validator.eumns.ValidationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +13,22 @@ import java.util.List;
  * filedName or  filedName 数据比较
  */
 @Getter
-public class CompareField {
+public class CompareField implements RegexModeInterface {
     private CompareField(FiledCompare filedCompares, String compareFieldNameSrc, String name) {
         this.fieldName = filedCompares.fieldName();
         this.message = filedCompares.message();
         this.mode = filedCompares.mode();
         this.compareFieldNameSrc = compareFieldNameSrc;
         this.name = name;
+        this.regex = filedCompares.regex();
     }
 
-    private String compareFieldNameSrc;
-    private String fieldName;
-    private String name;
-    private String message = "";
-    private CompareType mode;
+    private final String compareFieldNameSrc;
+    private final String fieldName;
+    private final String name;
+    private final String message;
+    private final String regex;
+    private final ValidationType mode;
 
     /**
      * @param filedCompares

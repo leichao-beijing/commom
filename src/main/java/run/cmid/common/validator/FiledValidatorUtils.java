@@ -5,15 +5,14 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import run.cmid.common.io.StringUtils;
+import run.cmid.common.reader.core.MatchValidator;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.CompareType;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.validator.eumns.ValidationType;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class FiledValidatorUtils {
     public static String headMessage(String tagName, Object value) {
@@ -29,7 +28,7 @@ public class FiledValidatorUtils {
         String no = "";
         if (!state)
             no = "不";
-        if (mode == ValidationType.EMPTY || mode == ValidationType.EXISTS) {
+        if (mode == ValidationType.EMPTY || mode == ValidationType.NO_EMPTY) {
             return no + "满足 " + mode.getTypeName() + " 的条件";
         }
         return "在" + Arrays.asList(values) + "内，" + no + "满足 " + mode.getTypeName() + " 的条件";
@@ -38,24 +37,18 @@ public class FiledValidatorUtils {
     /**
      * @param value
      * @param values
-     * @param mode
+     * @param regexMode
+     * @param dataMap
      * @return value== NULL or "" 时不进行判断返回null  , values.length==0返回true
      */
-    public static boolean mode(Object value, String[] values, ValidationType mode) {
-        if (StringUtils.isBlack(value))
-            throw new ValidatorException(ConverterErrorType.ON_EMPTY);
-        else if (mode == ValidationType.EXISTS) {
-            return true;
-        }
-        if (mode == ValidationType.EMPTY) {
-            return false;
-        }
+    public static boolean mode(Object value, String[] values, RegexModeInterface regexMode, Map<String, Object> dataMap) {
+        ValidationType mode = regexMode.getMode();
         List<String> list = Arrays.asList(values);
         switch (mode) {
             case EQUALS:
                 for (String val : list) {
                     try {
-                        if (compare(value, val, CompareType.EQUALS))
+                        if (compare(value, val, regexMode, dataMap))
                             return true;
                     } catch (ValidatorException e) {
                         if (e.getType() == ConverterErrorType.NO_NUMBER) {
@@ -68,14 +61,14 @@ public class FiledValidatorUtils {
                 return false;
             case INCLUDE:
                 for (String val : list) {
-                    if (value.toString().indexOf(val) != -1)
+                    if (compare(value, val, regexMode, dataMap))
                         return true;
                 }
                 return false;
             case NO_EQUALS:
                 for (String val : list) {
                     try {
-                        if (compare(value, val, CompareType.EQUALS))
+                        if (compare(value, val, regexMode, dataMap))
                             return false;
                     } catch (ValidatorException e) {
                         if (e.getType() == ConverterErrorType.NO_NUMBER) {
@@ -88,18 +81,12 @@ public class FiledValidatorUtils {
                 }
                 return true;
             case NO_INCLUDE:
-                for (String val : list) {
-                    if (value.toString().indexOf(val) != -1)
-                        return false;
-                }
-                return true;
             case LESS_THAN:
             case LESS_THAN_OR_EQUAL:
             case GREATER_THAN:
             case GREATER_THAN_OR_EQUAL:
-                BigDecimal srcBigDecimal = getBigDecimal(value);
                 for (String val : list) {
-                    if (!compare(srcBigDecimal, getBigDecimal(val), mode))
+                    if (compare(value, val, regexMode, dataMap))
                         return false;
                 }
                 return true;
@@ -119,10 +106,6 @@ public class FiledValidatorUtils {
             throw new ValidatorException(ConverterErrorType.NO_NUMBER);
     }
 
-    public static boolean compare(Object src, Object des, CompareType mode) {
-        return compare(getBigDecimal(src), getBigDecimal(des), mode);
-    }
-
     public static BigDecimal getBigDecimal(Object object) {
         if (object == null)
             throw new ValidatorException(ConverterErrorType.ON_EMPTY);
@@ -139,39 +122,34 @@ public class FiledValidatorUtils {
         }
     }
 
-    /**
-     * 比大小
-     */
-    public static Boolean compare(BigDecimal number1, BigDecimal number2, ValidationType mode) {
-        switch (mode) {
+    public static Boolean compare(Object object1, Object object2, RegexModeInterface regexMode, Map<String, Object> dataMap) {
+        if (regexMode.getMode() != ValidationType.NO_EMPTY && regexMode.getMode() != ValidationType.EMPTY)
+            if (StringUtils.isEmpty(object1))
+                throw new ValidatorException(ConverterErrorType.ON_EMPTY);
+        switch (regexMode.getMode()) {
             case LESS_THAN:
-                return NumberUtil.isLess(number1, number2);
+                return NumberUtil.isLess(getBigDecimal(object1), getBigDecimal(object2));
             case LESS_THAN_OR_EQUAL:
-                return NumberUtil.isLessOrEqual(number1, number2);
+                return NumberUtil.isLessOrEqual(getBigDecimal(object1), getBigDecimal(object2));
             case GREATER_THAN:
-                return NumberUtil.isGreater(number1, number2);
+                return NumberUtil.isGreater(getBigDecimal(object1), getBigDecimal(object2));
             case GREATER_THAN_OR_EQUAL:
-                return NumberUtil.isGreaterOrEqual(number1, number2);
+                return NumberUtil.isGreaterOrEqual(getBigDecimal(object1), getBigDecimal(object2));
+            case NO_EMPTY:
+                return (object1 != null && object2 != null);
+            case EMPTY:
+                return (object1 == null && object2 == null);
+            case EQUALS:
+                return object1.equals(object2);
+            case NO_EQUALS:
+                return !object1.equals(object2);
+            case INCLUDE:
+            case NO_INCLUDE:
+                boolean state = object1.toString().contains(object2.toString());
+                return regexMode.getMode() == ValidationType.INCLUDE ? state : !state;
+            case REGEX:
+                return MatchValidator.validationRegex(regexMode.getRegex(), object1.toString(), dataMap) && MatchValidator.validationRegex(regexMode.getRegex(), object2.toString(), dataMap);
         }
         return false;
-    }
-
-    public static Boolean compare(BigDecimal number1, BigDecimal number2, CompareType mode) {
-        switch (mode) {
-            case EQUALS:
-                return NumberUtil.equals(number1, number2);
-            case NO_EQUALS:
-                return !NumberUtil.equals(number1, number2);
-            case LESS_THAN:
-                return NumberUtil.isLess(number1, number2);
-            case LESS_THAN_OR_EQUAL:
-                return NumberUtil.isLessOrEqual(number1, number2);
-            case GREATER_THAN:
-                return NumberUtil.isGreater(number1, number2);
-            case GREATER_THAN_OR_EQUAL:
-                return NumberUtil.isGreaterOrEqual(number1, number2);
-            default:
-                throw new IllegalArgumentException("Unexpected value: " + mode);
-        }
     }
 }
