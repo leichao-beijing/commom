@@ -127,43 +127,11 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         List<ValidatorFieldException> error = validatorTools.validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FieldDetail fieldDetail = fieldMap.get(val.getFieldName());
+            if (fieldDetail == null) return;
             checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val));
         });
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry<String, DataArray<Object, FieldDetail>> next = it.next();
-//            DataArray<Object, FieldDetail> value = next.getValue();
-//            Match[] matches = value.getInfo().getMatch();
-//            if (matches.length != 0) {
-//                List<String> list = null;
-//                for (Match match : matches) {
-//                    try {
-//                        list = MatchValidator.validatorFiledRequire(match.require(), rowInfo);
-//                        if (list != null && list.size() == 0) {
-//                            if (value.getInfo().isConverterException())
-//                                value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
-//                            continue;
-//                        }
-//                        MatchValidator.validatorFiledCompares(value, match.filedCompares(), rowInfo, (list == null) ? "" : list.toString());
-//                        MatchValidator.validatorMatch(value, match, rowInfo, (list == null) ? "" : list.toString());
-//                        MatchValidator.validatorSize(value);
-//                    } catch (ValidatorException e) {
-//                        if (!match.check() && e.getType() == ConverterErrorType.ON_EMPTY)
-//                            break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
-//                        if (e.getType() == ConverterErrorType.ON_EMPTY) {
-//                            if (list != null && list.size() != 0) {
-//                                String msg = list.toString() + " " + e.getMessage();
-//                                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e, msg));
-//                                break;
-//                            }
-//                        }
-//                        checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getInfo().getColumn(), e));
-//                    }
-//                    if (value.getInfo().isConverterException())
-//                        value.getInfo().setConverterException(match.converterException());//对转换异常进行响应配置
-//                }
-//            }
-//        }
+
         while (it.hasNext()) {
             Map.Entry<String, Object> next = it.next();
             String name = next.getKey();

@@ -19,7 +19,7 @@ public @interface FiledRequire {
     String[] value();
 
 
-    ValidationType model() default ValidationType.EQUALS;//regex
+    ValidationType mode() default ValidationType.EQUALS;//regex
 
     /**
      * model== ExcelRead.NONE 时匹配正则 符合正则时生效。不存在时忽略 只验证转换对象的toString类型

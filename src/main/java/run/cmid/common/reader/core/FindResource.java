@@ -101,6 +101,8 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
         if (detail.getModel() == FindModel.EQUALS) {
             for (String valueValue : detail.getValues()) {
                 for (int i = 0; i < des.size(); i++) {
+                    if(des.get(i)==null)
+                        continue;
                     boolean bool = valueValue.equals(des.get(i).toString());
                     if (bool) {//TODO setPosition
                         detail.setPosition(i);

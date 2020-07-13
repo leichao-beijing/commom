@@ -16,12 +16,11 @@ import java.util.regex.Pattern;
 public class MatchValidator {
     /**
      * @param regex
-     * @param value
      */
-    public static boolean validationRegex(String regex, String value, Map<String, Object> dataMap) {
+    public static boolean validationRegex(String value,String regex, Map<String, Object> dataMap) {
         if (regex.trim().equals(""))
             throw new ValidatorException(ConverterErrorType.REGEX_EMPTY);
-        value = RegexReplace.replaceValue(dataMap, value);
+          regex = RegexReplace.replaceValue(dataMap, regex);
         boolean s = Pattern.compile(regex).matcher(value).matches();
         return s;
     }
@@ -122,7 +121,7 @@ public class MatchValidator {
             throw new ValidatorException(ConverterErrorType.ON_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.ON_EMPTY.getTypeName());
         }
         if (matchesValidation.getMode() == ValidationType.REGEX) {
-            if (!validationRegex(matchesValidation.getRegex(), value.toString(), dataMap)) {
+            if (!validationRegex(value.toString(),matchesValidation.getRegex(), dataMap)) {
                 throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, "不满足：" + (!matchesValidation.getMessage().equals("") ? matchesValidation.getMessage() : "正则验证 " + matchesValidation.getRegex()));
             }
             return;

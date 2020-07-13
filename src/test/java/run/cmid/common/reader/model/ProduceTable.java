@@ -32,7 +32,7 @@ public class ProduceTable {
     @FindColumn(value = "工程分类", checkColumn = true)
     private String engineeringSort;
 
-    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", model = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
+    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
     @FindColumn(value = "项目类型", checkColumn = true)
     private Project projectType;
 

@@ -18,7 +18,7 @@ public class Require implements RegexModeInterface {
     private Require(FiledRequire filedRequires, String name) {
         this.fieldName = filedRequires.fieldName();
         this.message = filedRequires.message();
-        this.mode = filedRequires.model();
+        this.mode = filedRequires.mode();
         this.value = filedRequires.value();
         this.regex = filedRequires.regex();
         this.name = name;

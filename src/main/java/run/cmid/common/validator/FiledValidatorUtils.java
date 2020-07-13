@@ -45,6 +45,10 @@ public class FiledValidatorUtils {
         ValidationType mode = regexMode.getMode();
         List<String> list = Arrays.asList(values);
         switch (mode) {
+            case NO_EMPTY:
+                return !StringUtils.isEmpty(value);
+            case EMPTY:
+                return StringUtils.isEmpty(value);
             case EQUALS:
                 for (String val : list) {
                     try {
@@ -90,6 +94,7 @@ public class FiledValidatorUtils {
                         return false;
                 }
                 return true;
+            case REGEX:
             default:
                 throw new IllegalArgumentException("Unexpected value: " + mode);
         }
@@ -148,7 +153,7 @@ public class FiledValidatorUtils {
                 boolean state = object1.toString().contains(object2.toString());
                 return regexMode.getMode() == ValidationType.INCLUDE ? state : !state;
             case REGEX:
-                return MatchValidator.validationRegex(regexMode.getRegex(), object1.toString(), dataMap) && MatchValidator.validationRegex(regexMode.getRegex(), object2.toString(), dataMap);
+                return MatchValidator.validationRegex(object1.toString(), regexMode.getRegex(), dataMap) && MatchValidator.validationRegex(object2.toString(), regexMode.getRegex(), dataMap);
         }
         return false;
     }
