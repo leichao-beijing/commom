@@ -61,8 +61,12 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell))
                     return cell.getDateCellValue();
-                else
+                else {
+                    if (cell.getCellStyle().getDataFormat() == 0 || cell.getCellStyle().getDataFormat() == 1)
+                        return (int) cell.getNumericCellValue();
                     return cell.getNumericCellValue();
+                }
+
             case STRING:
                 return cell.toString();
             case FORMULA:
