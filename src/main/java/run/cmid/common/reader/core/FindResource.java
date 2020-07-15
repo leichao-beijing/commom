@@ -84,8 +84,8 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) {
-        Map map = entityBuildings.converterFieldDetailToMap();
         try {
+            Map map = entityBuildings.converterFieldDetailToMap();
             List tmp = readerPage.readRowList(readHeadRownum);
             matchCompare(map, tmp);//TODO 头信息匹配
             return new HeadInfo(map, readerPage);

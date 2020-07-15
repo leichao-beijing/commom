@@ -49,29 +49,26 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         this.fieldMap = mode.getMap();
         try {
             this.validatorTools = new ValidatorTools(clazz);
-        }catch (ValidatorOverlapException e){
-            ConverterExceptionUtils utils=     ConverterExceptionUtils.build(e.getMessage(),ConverterErrorType.FILED_NAME_OVERLAP);
-           throw utils.exception();
+        } catch (ValidatorOverlapException e) {
+            ConverterExceptionUtils utils = ConverterExceptionUtils.build(e.getMessage(), ConverterErrorType.FILED_NAME_OVERLAP);
+            throw utils.exception();
         }
 
 
     }
+
     /**
      * @param rownum 等于头读取行时返回bull
      */
     @Override
     public EntityResult<T, PAGE, UNIT> build(int rownum) {
-        return build(rownum, true);
-    }
-
-    public EntityResult<T, PAGE, UNIT> build(int rownum, boolean error) {
         if (readHeadRownum == rownum)
             return null;
         RowInfo rowInfo = readRow(rownum, mode.getReaderPage());
         if (rowInfo == null)
             return null;
 
-        return build(rowInfo, classes, error);
+        return build(rowInfo, classes);
     }
 
     /**
@@ -87,11 +84,9 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         end = Math.min(end, mode.getReaderPage().length());
         start = Math.max(0, start);
         EntityResults<T, PAGE, UNIT> entityResults = new EntityResults<T, PAGE, UNIT>(start, end, mode.getReaderPage(), mode);
-        boolean error = true;
         for (int i = 0; i < end; i++) {
-            EntityResult<T, PAGE, UNIT> t = build(i, error);
+            EntityResult<T, PAGE, UNIT> t = build(i);
             if (t != null) {
-                error = false;
                 entityResults.addResult(t);
             }
         }
@@ -136,16 +131,11 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     /**
      * 当所有内容均未匹配时，返回null;
      */
-    private EntityResult<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes, boolean errorState) {
+    private EntityResult<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
-        if (errorState)
-            fieldMap.forEach((key, value) -> {
-                if (value.isCheckColumn() && rowInfo.getData().get(value.getFieldName()) == null) {
-                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getPosition(), ConverterErrorType.NOT_FIND_CHECK_COLUMN, ConverterErrorType.NOT_FIND_CHECK_COLUMN.getTypeName()));
-                }
-            });
+
 
         List<ValidatorFieldException> error = validatorTools.validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层

@@ -461,7 +461,7 @@ public class Produce {
             @FiledRequire(fieldName = "engineeringType",
                     value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),
             @FiledRequire(fieldName = "engineeringType", mode = ValidationType.EQUALS, value = "5G微蜂窝信源工程")
-    }, value = {"SA", "NSA"}, mode = ValidationType.EQUALS, check = true)
+    }, value = {"SA", "NSA"}, mode = ValidationType.EQUALS)
     private String networkMode5g;
 
     @FieldName("框架")
