@@ -6,6 +6,7 @@ import run.cmid.common.utils.ReflectLcUtils;
 import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.ResultObjectInterface;
 import run.cmid.common.validator.eumns.ValidationType;
+import run.cmid.common.validator.eumns.ValidatorErrorType;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.validator.exception.ValidatorFieldsException;
 import run.cmid.common.validator.model.MachModelInfo;
@@ -61,7 +62,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<M
                     MatchValidator.validatorMatch(value, context, list);
                     MatchValidator.validatorSize(value, context);
                 } catch (ValidatorException e) {
-                    if (!value.isCheck() && e.getType() == ConverterErrorType.ON_EMPTY)
+                    if (!value.isCheck() && e.getType() == ValidatorErrorType.ON_EMPTY)
                         break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
                     err.add(new ValidatorFieldException(e, value.getName(),value.getFieldName()));
                 }

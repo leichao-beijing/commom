@@ -84,8 +84,8 @@ public class Produce {
     })
     private String siteId;
 
-    @FieldName("方案所在县")
-    @FindColumn(value = "方案所在县", checkColumn = true)
+    @FieldName("站点所在区县")
+    @FindColumn(value = "站点所在区县", checkColumn = true)
     @FiledValidator(require = {
             @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)
     }, check = true)
@@ -138,7 +138,7 @@ public class Produce {
     private String coverRange;
 
     @FieldName("建筑面积（万平米）")
-    @FindColumn(value = "建筑面积（万平米）", checkColumn = true)
+    @FindColumn(value = "建筑面积\n（万平米）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -149,7 +149,7 @@ public class Produce {
     private String floorage;
 
     @FieldName("覆盖面积（万平米）")
-    @FindColumn(value = "覆盖面积（万平米）", checkColumn = true)
+    @FindColumn(value = "覆盖面积\n（万平米）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -159,8 +159,8 @@ public class Produce {
     })
     private String coverage;
 
-    @FieldName("覆盖面积（万平米）")
-    @FindColumn(value = "覆盖面积（万平米）", checkColumn = true)
+    @FieldName("未覆盖区域说明")
+    @FindColumn(value = "未覆盖\n区域说明", checkColumn = true)
     private String uncoverRemarks;
 
     @FieldName("覆盖功能类型")
@@ -205,7 +205,7 @@ public class Produce {
     private String branchOffice;
 
     @FieldName("网格确认人")
-    @FindColumn(value = "网格确认人", checkColumn = true)
+    @FindColumn(value = "网格\n确认人", checkColumn = true)
     @FiledValidator(require = {
             @FiledRequire(fieldName = "engineeringType",
                     value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true)
@@ -216,11 +216,11 @@ public class Produce {
     private String gridPhone;
 
     //根据网络确认人自动匹配对数据
-    @FieldName("需求提出人")
+    @FieldName("需求\n提出人")
     private String demandInitiation;
 
     @FieldName("是否提交智能审核平台")
-    @FindColumn(value = "是否提交智能审核平台", checkColumn = true)
+    @FindColumn(value = "是否提交\n智能审核平台", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -258,7 +258,7 @@ public class Produce {
     private String checkHead;
 
     @FieldName("勘察完成日期")
-    @FindColumn(value = "勘察完成日期", checkColumn = true)
+    @FindColumn(value = "勘察\n完成日期", checkColumn = true)
     @JsonFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent
     @FiledValidator(require = {
@@ -293,8 +293,8 @@ public class Produce {
                     value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true)
     private String designHead;
 
-    @FieldName("设计院电话")
-    @FindColumn(value = "设计院电话", checkColumn = true)
+    @FieldName("设计人电话")
+    @FindColumn(value = "设计人电话", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -304,7 +304,7 @@ public class Produce {
     private String designPhone;
 
     @FieldName("设计完成日期")
-    @FindColumn(value = "设计完成日期", checkColumn = true)
+    @FindColumn(value = "设计\n完成日期", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -313,7 +313,7 @@ public class Produce {
     })
     private Date designEndDate;
     @FieldName("网格审核通过日期")
-    @FindColumn(value = "网格审核通过日期", checkColumn = true)
+    @FindColumn(value = "网格审核\n通过日期", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -323,7 +323,7 @@ public class Produce {
     private Date GridEndDate;
 
     @FieldName("网优审核通过日期")
-    @FindColumn(value = "网优审核通过日期", checkColumn = true)
+    @FindColumn(value = "网优审核\n通过日期", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -353,8 +353,8 @@ public class Produce {
     })
     private String changeContext;
 
-    @FieldName("变更网格审核通过时间")
-    @FindColumn(value = "变更网格审核通过时间", checkColumn = true)
+    @FieldName("变更网格审核通过日期")
+    @FindColumn(value = "变更网格审核通过日期", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -363,8 +363,8 @@ public class Produce {
     })
     private Date changeGridEndDate;
 
-    @FieldName("变更网优审核通过时间")
-    @FindColumn(value = "变更网优审核通过时间", checkColumn = true)
+    @FieldName("变更网优审核通过日期")
+    @FindColumn(value = "变更网优审核通过日期", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -418,7 +418,7 @@ public class Produce {
     private String buildMode;
 
     @FieldName("5G对应的4G BBU站号")
-    @FindColumn(value = "5G对应的4G BBU站号", checkColumn = true)
+    @FindColumn(value = "5G对应的\n4G BBU站号", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -428,7 +428,7 @@ public class Produce {
     private String Buu5gTo4gSiteId;
 
     @FieldName("5G对应的4G BBU站名")
-    @FindColumn(value = "5G对应的4G BBU站名", checkColumn = true)
+    @FindColumn(value = "5G对应的\n4G BBU站名", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -438,7 +438,7 @@ public class Produce {
     private String Buu5gTo4gSiteName;
 
     @FieldName("5G对应的4G BBU SN")
-    @FindColumn(value = "5G对应的4G BBU SN", checkColumn = true)
+    @FindColumn(value = "5G对应的\n4G BBU SN", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -456,7 +456,7 @@ public class Produce {
     private String Buu5gBuildMode;
 
     @FieldName("5G组网模式")
-    @FindColumn(value = "5G组网模式", checkColumn = true)
+    @FindColumn(value = "5G\n组网模式", checkColumn = true)
     @FiledValidator(require = {
             @FiledRequire(fieldName = "engineeringType",
                     value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),
@@ -479,7 +479,7 @@ public class Produce {
     private String constructionDiscount;
 
     @FieldName("勘察费（含税）（元）")//^(\-)?\d+(\.\d{2,2})$
-    @FindColumn(value = "勘察费（含税）（元）", checkColumn = true)
+    @FindColumn(value = "勘察费\n（含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -489,7 +489,7 @@ public class Produce {
     private String checkCost;
 
     @FieldName("设计费（含税）（元）")
-    @FindColumn(value = "设计费（含税）（元）", checkColumn = true)
+    @FindColumn(value = "设计费\n（含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -499,7 +499,7 @@ public class Produce {
     private String designCost;
 
     @FieldName("施工费（不含安全生产费）（不含税）（元）")
-    @FindColumn(value = "施工费（不含安全生产费）（不含税）（元）", checkColumn = true)
+    @FindColumn(value = "施工费\n（不含安全生产费）\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -509,7 +509,7 @@ public class Produce {
     private String constructionCost;
 
     @FieldName("安全生产费（不含税）（元）")
-    @FindColumn(value = "施工费（不含安全生产费）（不含税）（元）", checkColumn = true)
+    @FindColumn(value = "安全生产费\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -524,11 +524,11 @@ public class Produce {
             @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
     })
     @FieldName("设备费 （不含税）（元）")
-    @FindColumn(value = "设备费 （不含税）（元）", checkColumn = true)
+    @FindColumn(value = "设备费\n（不含税）\n（元）", checkColumn = true)
     private String deviceCost;
 
     @FieldName("建安费（不含税）（元）")
-    @FindColumn(value = "建安费（不含税）（元）", checkColumn = true)
+    @FindColumn(value = "建安费\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -537,8 +537,9 @@ public class Produce {
     })
     private String buildSafeCost;
 
-    @FieldName("建安费（不含税）（元）")
-    @FindColumn(value = "建安费（不含税）（元）", checkColumn = true)
+
+    @FieldName("其他费（不含税）（元）")
+    @FindColumn(value = "其他费\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -546,8 +547,9 @@ public class Produce {
             @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
     })
     private String otherCost;
+
     @FieldName("预备费（不含税）（元）")
-    @FindColumn(value = "预备费（不含税）（元）", checkColumn = true)
+    @FindColumn(value = "预备费\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -557,7 +559,7 @@ public class Produce {
     private String prepareCost;
 
     @FieldName("总投资（不含税）（元）")
-    @FindColumn(value = "总投资（不含税）（元）", checkColumn = true)
+    @FindColumn(value = "总投资\n（不含税）\n（元）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -575,7 +577,7 @@ public class Produce {
     private String constructionOffice;
 
     @FieldName("施工厂家联系人")
-    @FindColumn(value = "施工厂家联系人", checkColumn = true)
+    @FindColumn(value = "施工厂家\n联系人", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -585,7 +587,7 @@ public class Produce {
     private String constructionHead;
 
     @FieldName("施工厂家联系电话")
-    @FindColumn(value = "施工厂家联系电话", checkColumn = true)
+    @FindColumn(value = "施工厂家\n联系人电话", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -672,7 +674,7 @@ public class Produce {
     private String siteType;
 
     @FieldName("机房面积（平米）")
-    @FindColumn(value = "机房面积（平米）", checkColumn = true)
+    @FindColumn(value = "机房面积\n（平米）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -682,7 +684,7 @@ public class Produce {
     private String equipmentRoomModeArea;
 
     @FieldName("机房高度（米）")
-    @FindColumn(value = "机房高度（米）", checkColumn = true)
+    @FindColumn(value = "机房高度\n（米）", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -719,7 +721,7 @@ public class Produce {
     private String bbuAddress;
 
     @FieldName("RRU rHUB SW数量")
-    @FindColumn(value = "RRU rHUB SW数量", checkColumn = true)
+    @FindColumn(value = "RRU\nrHUB\nSW\n数量", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -729,7 +731,7 @@ public class Produce {
     private String RruRHubSwCount;
 
     @FieldName("RRU rHUB SW位置")
-    @FindColumn(value = "RRU rHUB SW位置", checkColumn = true)
+    @FindColumn(value = "RRU\nrHUB\nSW\n位置", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
@@ -738,7 +740,7 @@ public class Produce {
     private String RruRHubSwAddress;
 
     @FieldName("pRRU DP数量")
-    @FindColumn(value = "pRRU DP数量", checkColumn = true)
+    @FindColumn(value = "pRRU\nDP\n数量", checkColumn = true)
     @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d*$", message = "数值格式")
     private String pRruDpCount;
 

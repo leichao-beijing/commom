@@ -9,7 +9,7 @@ import run.cmid.common.reader.model.entity.EntityResults;
  */
 public interface EntityBuild<T, PAGE, UNIT> {
 
-    public EntityResults<T, PAGE, UNIT> build() throws ConverterExcelException;
+    public EntityResults<T, PAGE, UNIT> build();
 
     public EntityResult<T, PAGE, UNIT> build(int rownum) throws ConverterExcelException;
 

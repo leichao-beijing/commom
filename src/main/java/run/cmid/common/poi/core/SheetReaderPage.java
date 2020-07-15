@@ -104,11 +104,8 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
 
 
     @Override
-    public void info(HeadInfo headInfo) throws ConverterExcelException {
+    public void info(HeadInfo headInfo) {
         this.length = SheetUtils.sheetCount(sheet, headInfo.getMap());// 获取最大行
-//        Map<ConverterErrorType, String> errorType = computeErrorType(headInfo.getResponse().getErrorList());
-//        if (errorType.size() != 0)
-//            throw new ConverterExcelException(errorType);
         this.headInfo = headInfo;
     }
 

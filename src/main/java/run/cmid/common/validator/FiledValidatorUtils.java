@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.core.MatchValidator;
+import run.cmid.common.validator.eumns.ValidatorErrorType;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.CompareType;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
@@ -55,7 +56,7 @@ public class FiledValidatorUtils {
                         if (compare(value, val, regexMode, dataMap))
                             return true;
                     } catch (ValidatorException e) {
-                        if (e.getType() == ConverterErrorType.NO_NUMBER) {
+                        if (e.getType() == ValidatorErrorType.NO_NUMBER) {
                             if (val.equals(value))
                                 return true;
                         } else
@@ -75,7 +76,7 @@ public class FiledValidatorUtils {
                         if (compare(value, val, regexMode, dataMap))
                             return false;
                     } catch (ValidatorException e) {
-                        if (e.getType() == ConverterErrorType.NO_NUMBER) {
+                        if (e.getType() == ValidatorErrorType.NO_NUMBER) {
                             if (val.equals(value))
                                 return false;
                         } else
@@ -108,12 +109,12 @@ public class FiledValidatorUtils {
      */
     public static void isNumber(String val) {
         if (!NumberUtil.isNumber(val))
-            throw new ValidatorException(ConverterErrorType.NO_NUMBER);
+            throw new ValidatorException(ValidatorErrorType.NO_NUMBER);
     }
 
     public static BigDecimal getBigDecimal(Object object) {
         if (object == null)
-            throw new ValidatorException(ConverterErrorType.ON_EMPTY);
+            throw new ValidatorException(ValidatorErrorType.ON_EMPTY);
         if (object.getClass().isAssignableFrom(Date.class)) {
             return new BigDecimal(((Date) object).getTime());
         } else {
@@ -130,7 +131,7 @@ public class FiledValidatorUtils {
     public static Boolean compare(Object object1, Object object2, RegexModeInterface regexMode, Map<String, Object> dataMap) {
         if (regexMode.getMode() != ValidationType.NO_EMPTY && regexMode.getMode() != ValidationType.EMPTY)
             if (StringUtils.isEmpty(object1))
-                throw new ValidatorException(ConverterErrorType.ON_EMPTY);
+                throw new ValidatorException(ValidatorErrorType.ON_EMPTY);
         switch (regexMode.getMode()) {
             case LESS_THAN:
                 return NumberUtil.isLess(getBigDecimal(object1), getBigDecimal(object2));

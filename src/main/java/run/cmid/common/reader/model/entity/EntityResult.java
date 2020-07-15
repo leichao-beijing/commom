@@ -7,6 +7,7 @@ import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class EntityResult<T, PAGE, UNIT> {
         this.cellErrorList = cellErrorList;
     }
 
-    private Set<ConverterErrorType> errorType = EnumSet.noneOf(ConverterErrorType.class);
+    private Set<String> errorType = new HashSet<>();
 
     private final HeadInfo<PAGE, UNIT> mode;
     /**
@@ -56,7 +57,7 @@ public class EntityResult<T, PAGE, UNIT> {
     public void upDateErrorType() {
         if (cellErrorList.size() != 0) {
             for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx());
+                errorType.add(message.getEx().getTypeName());
             }
         }
     }

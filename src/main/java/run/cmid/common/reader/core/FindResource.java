@@ -6,6 +6,8 @@ import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.io.StringUtils;
 import run.cmid.common.reader.exception.ConverterExcelConfigException;
 import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
+import run.cmid.common.reader.exception.ConverterExceptionUtils;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CompareResponseAndErrorList;
@@ -20,9 +22,8 @@ import java.util.*;
  * @author leichao
  */
 public class FindResource<RESOURCES, PAGE, UNIT> {
-
-    ///private final List<LocationTag<FieldDetail>> findList;
-    private final Map<String, FieldDetail> map;
+    private EntityBuildings entityBuildings;
+    //private final Map<String, FieldDetail> map;
     private int readHeadRownum = 0;
     private final ExcelHeadModel headModel;
     /**
@@ -30,34 +31,31 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
      */
     private final int wrongCount;
 
-    public FindResource(Map<String, FieldDetail> map, ExcelHeadModel headModel) {
-        //this.findList = toLocationTag(map);
-        this.map = map;
+    public FindResource(EntityBuildings entityBuildings, ExcelHeadModel headModel) {
+        this.entityBuildings = entityBuildings;
         this.wrongCount = headModel.getMaxWrongCount();
         this.headModel = headModel;
     }
 
     /**
-     * @param map            ConverterFieldDetail.toList(classes.class)
-     * @param readHeadRownum 获取匹配头文件的行数，默认值 0 行。
+     * @param entityBuildings
+     * @param readHeadRownum  获取匹配头文件的行数，默认值 0 行。
      */
-    public FindResource(Map<String, FieldDetail> map, ExcelHeadModel headModel, int readHeadRownum) {
-        this(map, headModel);
+    public FindResource(EntityBuildings entityBuildings, ExcelHeadModel headModel, int readHeadRownum) {
+        this(entityBuildings, headModel);
         this.readHeadRownum = readHeadRownum;
     }
 
-    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources) throws ConverterExcelException {
+    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources) throws ConverterException {
         return find(bookResources, headModel.getBookTagName());
     }
 
 
     @SuppressWarnings("rawtypes")
-    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources, String name) throws ConverterExcelException {
+    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources, String name) throws ConverterException {
         List<HeadInfo> list = new ArrayList<HeadInfo>();
         @SuppressWarnings("unchecked")
         List<ReaderPage<PAGE, UNIT>> resource = bookResources.bookList();
-        //List<LocationTag<String>> vales = null;
-        //List<Object> tmp = null;
         if (!name.equals(""))
             list.add(find(bookResources.book(name)));
         else
@@ -71,7 +69,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
             }
         Collections.sort(list);
         if (list.size() == 0) {
-            throw new ConverterExcelException(ConverterErrorType.NOT_FINDS_SHEET);
+            ConverterExceptionUtils.build(ConverterErrorType.NOT_FINDS_SHEET.getTypeName(), ConverterErrorType.NOT_FINDS_SHEET).throwException();
         }
         HeadInfo model = list.get(list.size() - 1);
         if (model.getEx() != null) {
@@ -79,20 +77,19 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
         }
         int size = model.getSize();
         if (size < wrongCount)
-            throw new ConverterExcelException(ConverterErrorType.FIND_FIELD_COUNT_WRONG)
-                    .setMessage("最少匹配到" + wrongCount + "列数据，当前匹配到了" + size);
+            ConverterExceptionUtils.build("最少匹配到" + wrongCount + "列数据，当前匹配到了" + size, ConverterErrorType.FIND_FIELD_COUNT_WRONG).throwException();
         model.getReaderPage().info(model);
         return model;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) throws ConverterExcelException {
+    public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) {
+        Map map = entityBuildings.converterFieldDetailToMap();
         try {
-            List<LocationTag<String>> vales = new ArrayList<>();
             List tmp = readerPage.readRowList(readHeadRownum);
             matchCompare(map, tmp);//TODO 头信息匹配
             return new HeadInfo(map, readerPage);
-        } catch (ConverterExcelException e) {
+        } catch (ConverterException e) {
             return new HeadInfo(e);
         }
     }
@@ -101,7 +98,7 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
         if (detail.getModel() == FindModel.EQUALS) {
             for (String valueValue : detail.getValues()) {
                 for (int i = 0; i < des.size(); i++) {
-                    if(des.get(i)==null)
+                    if (des.get(i) == null)
                         continue;
                     boolean bool = valueValue.equals(des.get(i).toString());
                     if (bool) {//TODO setPosition
@@ -131,21 +128,26 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
      * 对数据进行匹配
      */
     public static void matchCompare(
-            Map<String, FieldDetail> map, List<Object> des) throws ConverterExcelException {
+            Map<String, FieldDetail> map, List<Object> des) throws ConverterException {
         List<String> nullList = new ArrayList<>();
         map.forEach((key, value) -> {
-            if (!matchCompare(value, des))
-                nullList.add(key);
             if (value.getType() == FieldDetailType.LIST)
                 value.getOtherDetails().forEach((va) -> {
                     matchCompare(va, des);
                 });
+            else if (!matchCompare(value, des))
+                nullList.add(key);
         });
+        ConverterExceptionUtils utilsException = ConverterExceptionUtils.build();
 
         nullList.forEach((key) -> {
+            FieldDetail f = map.get(key);
+            if (f.isCheckColumn())
+                utilsException.addError(f.getName(), ConverterErrorType.NOT_FIND_CHECK_COLUMN);
             map.remove(key);
         });
 
+        utilsException.throwException();
         List<Map.Entry<String, FieldDetail>> list = new ArrayList<Map.Entry<String, FieldDetail>>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<String, FieldDetail>>() {
             //升序排序

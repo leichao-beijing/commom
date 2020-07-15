@@ -26,14 +26,17 @@ import java.util.Date;
 @Setter
 @ConverterHead(maxWrongCount = 1, indexes = {@Index({"demandId", "provider", "cooperateContent"})})
 public class ProduceTable {
+    @FieldName("序号")
     @FindColumn(value = "序号")
     private Long id;
 
+    @FieldName("工程分类")
     @FindColumn(value = "工程分类", checkColumn = true)
     private String engineeringSort;
 
-    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
+    @FieldName("项目类型")
     @FindColumn(value = "项目类型", checkColumn = true)
+    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
     private Project projectType;
 
     @FiledValidators({

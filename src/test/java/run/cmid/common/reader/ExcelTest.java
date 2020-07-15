@@ -9,6 +9,7 @@ import run.cmid.common.poi.model.ReaderPoiConfig;
 import run.cmid.common.poi.model.StyleInfo;
 import run.cmid.common.reader.core.EntityBuild;
 import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
 import run.cmid.common.reader.model.DemandTable;
 import run.cmid.common.reader.model.ProduceTable;
 import run.cmid.common.reader.model.Project;
@@ -16,6 +17,7 @@ import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
 import run.cmid.common.validator.core.ValidatorTools;
 import run.cmid.common.validator.exception.ValidatorException;
+import run.cmid.common.validator.exception.ValidatorOverlapException;
 import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.awt.Color;
@@ -30,7 +32,7 @@ import java.util.List;
  */
 public class ExcelTest {
     @Test
-    public void validatorTest() throws IOException, ConverterExcelException {
+    public void validatorTest() throws IOException, ConverterException, ValidatorOverlapException {
         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         ValidatorTools<ProduceTable> validator = new ValidatorTools<ProduceTable>(ProduceTable.class);
 
@@ -57,7 +59,7 @@ public class ExcelTest {
         PoiReader desPoi = PoiReader.build(ras2);
         srcPoi.clone(desPoi, "sheet1", "填写注意事项");
 
-     // desPoi.saveAndClose(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx"));
+        // desPoi.saveAndClose(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx"));
         srcPoi.close();
         desPoi.close();
     }
@@ -108,7 +110,7 @@ public class ExcelTest {
 
 
     @Test
-    public void produce() throws IOException, ConverterExcelException {
+    public void produce() throws IOException, ConverterException {
         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);
@@ -126,7 +128,7 @@ public class ExcelTest {
     }
 
 
-    private EntityResults<ProduceTable, Sheet, Cell> getProduceTableTestData() throws IOException, ConverterExcelException {
+    private EntityResults<ProduceTable, Sheet, Cell> getProduceTableTestData() throws IOException, ConverterException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
         ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
         Workbook workbook = new XSSFWorkbook(ras);

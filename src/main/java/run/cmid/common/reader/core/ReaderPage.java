@@ -20,5 +20,5 @@ public interface ReaderPage<PAGE, UNIT> {
     /**
      * 匹配到book后执行
      */
-    void info(HeadInfo headInfo) throws ConverterExcelException;
+    void info(HeadInfo headInfo) ;
 }

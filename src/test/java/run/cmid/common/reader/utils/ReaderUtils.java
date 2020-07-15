@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import run.cmid.common.reader.core.EntityBuild;
 import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
 import run.cmid.common.reader.model.entity.EntityResults;
 import run.cmid.common.reader.service.ExcelEntityBuildings;
 
@@ -21,21 +22,21 @@ public class ReaderUtils<T> {
         this.is = is;
     }
 
-    public EntityBuild<T, Sheet, Cell> build() throws IOException, ConverterExcelException {
+    public EntityBuild<T, Sheet, Cell> build() throws IOException, ConverterException {
         return build(0);
     }
 
-    public EntityBuild<T, Sheet, Cell> build(int readRow) throws IOException, ConverterExcelException {
+    public EntityBuild<T, Sheet, Cell> build(int readRow) throws IOException, ConverterException {
         ExcelEntityBuildings<T> ee = new ExcelEntityBuildings<T>(clazz);
         Workbook workbook = new XSSFWorkbook(is);
         return ee.find(workbook, readRow);
     }
 
-    public EntityResults<T, Sheet, Cell> result(int readRow) throws IOException, ConverterExcelException {
+    public EntityResults<T, Sheet, Cell> result(int readRow) throws IOException, ConverterException {
         return build(readRow).build();
     }
 
-    public EntityResults<T, Sheet, Cell> result() throws IOException, ConverterExcelException {
+    public EntityResults<T, Sheet, Cell> result() throws IOException, ConverterException {
         return result(0);
     }
 

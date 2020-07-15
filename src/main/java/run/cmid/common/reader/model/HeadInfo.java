@@ -3,7 +3,7 @@ package run.cmid.common.reader.model;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmid.common.reader.core.ReaderPage;
-import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
 
 import java.util.Map;
 
@@ -13,18 +13,18 @@ import java.util.Map;
 @Getter
 @Setter
 public class HeadInfo<PAGE, UNIT> implements Comparable<HeadInfo> {
-    public HeadInfo(Map<String, FieldDetail> map, ReaderPage<PAGE, UNIT> readerPage) throws ConverterExcelException {
+    public HeadInfo(Map<String, FieldDetail> map, ReaderPage<PAGE, UNIT> readerPage) {
         this.map = map;
         size = map.size();
         this.readerPage = readerPage;
     }
 
-    public HeadInfo(ConverterExcelException ex) {
+    public HeadInfo(ConverterException ex) {
         this.ex = ex;
     }
 
     private ReaderPage<PAGE, UNIT> readerPage;
-    private ConverterExcelException ex;
+    private ConverterException ex;
     private int size;
     private Map<String, FieldDetail> map;
 

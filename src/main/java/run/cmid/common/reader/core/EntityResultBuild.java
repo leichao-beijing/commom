@@ -10,6 +10,9 @@ import run.cmid.common.compare.model.LocationTag;
 import run.cmid.common.compare.model.QepeatResponse;
 import run.cmid.common.io.EnumUtil;
 import run.cmid.common.io.StringUtils;
+import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
+import run.cmid.common.reader.exception.ConverterExceptionUtils;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.entity.CellAddressAndMessage;
@@ -19,7 +22,9 @@ import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.utils.ReflectLcUtils;
 import run.cmid.common.validator.core.ValidatorTools;
+import run.cmid.common.validator.eumns.ValidatorErrorType;
 import run.cmid.common.validator.exception.ValidatorException;
+import run.cmid.common.validator.exception.ValidatorOverlapException;
 import run.cmid.common.validator.model.ValidatorFieldException;
 
 import java.util.*;
@@ -36,28 +41,37 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     private final Map<String, FieldDetail> fieldMap;
     private final ValidatorTools validatorTools;
 
-    public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) {
+    public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) throws ConverterException {
         this.classes = clazz;
         this.mode = mode;
         this.indexes = indexes;
         this.readHeadRownum = readHeadRownum;
         this.fieldMap = mode.getMap();
-        this.validatorTools = new ValidatorTools(clazz);
+        try {
+            this.validatorTools = new ValidatorTools(clazz);
+        }catch (ValidatorOverlapException e){
+            ConverterExceptionUtils utils=     ConverterExceptionUtils.build(e.getMessage(),ConverterErrorType.FILED_NAME_OVERLAP);
+           throw utils.exception();
+        }
+
 
     }
-
     /**
      * @param rownum 等于头读取行时返回bull
      */
     @Override
     public EntityResult<T, PAGE, UNIT> build(int rownum) {
+        return build(rownum, true);
+    }
+
+    public EntityResult<T, PAGE, UNIT> build(int rownum, boolean error) {
         if (readHeadRownum == rownum)
             return null;
         RowInfo rowInfo = readRow(rownum, mode.getReaderPage());
         if (rowInfo == null)
             return null;
 
-        return build(rowInfo, classes);
+        return build(rowInfo, classes, error);
     }
 
     /**
@@ -73,9 +87,11 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         end = Math.min(end, mode.getReaderPage().length());
         start = Math.max(0, start);
         EntityResults<T, PAGE, UNIT> entityResults = new EntityResults<T, PAGE, UNIT>(start, end, mode.getReaderPage(), mode);
+        boolean error = true;
         for (int i = 0; i < end; i++) {
-            EntityResult<T, PAGE, UNIT> t = build(i);
+            EntityResult<T, PAGE, UNIT> t = build(i, error);
             if (t != null) {
+                error = false;
                 entityResults.addResult(t);
             }
         }
@@ -112,7 +128,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             }
         }
         if (list.size() != 0)
-            entityResults.getErrorType().add(ConverterErrorType.INDEX_ERROR);
+            entityResults.getErrorType().add(ConverterErrorType.INDEX_ERROR.getTypeName());
         entityResults.getCellErrorList().addAll(list);
     }
 
@@ -120,15 +136,22 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     /**
      * 当所有内容均未匹配时，返回null;
      */
-    private EntityResult<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes) {
+    private EntityResult<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes, boolean errorState) {
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
+        if (errorState)
+            fieldMap.forEach((key, value) -> {
+                if (value.isCheckColumn() && rowInfo.getData().get(value.getFieldName()) == null) {
+                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), value.getPosition(), ConverterErrorType.NOT_FIND_CHECK_COLUMN, ConverterErrorType.NOT_FIND_CHECK_COLUMN.getTypeName()));
+                }
+            });
+
         List<ValidatorFieldException> error = validatorTools.validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FieldDetail fieldDetail = fieldMap.get(val.getFieldName());
             if (fieldDetail == null) return;
-            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val));
+            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val.getType(), val.getMessage()));
         });
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
 
@@ -142,6 +165,9 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 cellValueToClass(value, out, methodName, fieldDetail,
                         new CellAddress(rowInfo.getRownum(), fieldDetail.getPosition()));
             } catch (ValidatorException e) {
+                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e.getType(), e.getMessage()));
+                tag.getFiledNull().add(name);
+            } catch (ConverterExcelException e) {
                 checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e));
                 tag.getFiledNull().add(name);
             }
@@ -160,7 +186,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
      * @param cellAddress
      */
     public void cellValueToClass(Object value, Object out, String setFunctionValue,
-                                 FieldDetail fieldDetail, CellAddress cellAddress) {
+                                 FieldDetail fieldDetail, CellAddress cellAddress) throws ConverterExcelException {
         if (value == null) return;
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
         if (StringUtils.isEmpty(value) && fieldDetail.getType() != FieldDetailType.LIST)
@@ -174,7 +200,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
                 } else//todo 处理
-                    throw new ValidatorException(ConverterErrorType.ENUM_ERROR, fieldDetail.getMatchValue() + " 只能输入：" + list.toString());
+                    throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR, fieldDetail.getMatchValue() + " 只能输入：" + list.toString());
             }
 
             if (!value.getClass().equals(parameterClasses)) {
@@ -188,7 +214,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                     data = converterRegistry.convert(parameterClasses, value);
 
                 if (data == null && fieldDetail.isConverterException())
-                    throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
+                    throw new ConverterExcelException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
                             ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
                 else {
                     ReflectUtil.invoke(out, setFunctionValue, data);
@@ -198,7 +224,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 ReflectUtil.invoke(out, setFunctionValue, value);
         } catch (Exception e) {
             if (fieldDetail.isConverterException())
-                throw new ValidatorException(ConverterErrorType.CONVERT_ERROR, e.getMessage());
+                throw new ConverterExcelException(ConverterErrorType.CONVERT_ERROR, e.getMessage());
         }
     }
 

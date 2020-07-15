@@ -50,14 +50,7 @@ public class FieldDetail {
                 enumFieldName = list.get(0).getName();
         }
 
-    }
-//
-//    private FieldDetail(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn,
-//                       int index) {
-//        this(field, parentClass, format, findColumn);
-//        this.type = FieldDetailType.LIST;
-//        this.index = index;
-//    }
+    } 
 
     private List<FieldDetail> otherDetails;
     private final FindModel model;

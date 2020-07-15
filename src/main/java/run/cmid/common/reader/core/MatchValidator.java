@@ -2,6 +2,7 @@ package run.cmid.common.reader.core;
 
 import run.cmid.common.io.StringUtils;
 import run.cmid.common.utils.RegexReplace;
+import run.cmid.common.validator.eumns.ValidatorErrorType;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.validator.eumns.ValidationType;
@@ -17,10 +18,10 @@ public class MatchValidator {
     /**
      * @param regex
      */
-    public static boolean validationRegex(String value,String regex, Map<String, Object> dataMap) {
+    public static boolean validationRegex(String value, String regex, Map<String, Object> dataMap) {
         if (regex.trim().equals(""))
-            throw new ValidatorException(ConverterErrorType.REGEX_EMPTY);
-          regex = RegexReplace.replaceValue(dataMap, regex);
+            throw new ValidatorException(ValidatorErrorType.REGEX_EMPTY);
+        regex = RegexReplace.replaceValue(dataMap, regex);
         boolean s = Pattern.compile(regex).matcher(value).matches();
         return s;
     }
@@ -72,9 +73,9 @@ public class MatchValidator {
             if (matchesValidation.getMax() != -1)
                 msg = (msg != null) ? msg + " 最大:" + matchesValidation.getMax() : " 最大:" + matchesValidation.getMax();
             if (type)
-                throw new ValidatorException(ConverterErrorType.SIZE_ERROR, "内容数量必须在<" + msg + ">的范围内");
+                throw new ValidatorException(ValidatorErrorType.SIZE_ERROR, "内容数量必须在<" + msg + ">的范围内");
             else
-                throw new ValidatorException(ConverterErrorType.LENGTH_ERROR, "长度数量必须在<" + msg + ">的范围内");
+                throw new ValidatorException(ValidatorErrorType.LENGTH_ERROR, "长度数量必须在<" + msg + ">的范围内");
         }
     }
 
@@ -97,7 +98,7 @@ public class MatchValidator {
             }
         }
         if (count != 0)
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, list.toString());
+            throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, list.toString());
     }
 
     private static String validationMessages(MatchesValidation matchesValidation, Object value, Object data, CompareField compareField, boolean state) {
@@ -114,15 +115,16 @@ public class MatchValidator {
 
     public static void validatorMatch(MatchesValidation matchesValidation, Map<String, Object> dataMap, List<String> list) {
         if (matchesValidation.isThrowState())
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, matchesValidation.getMessage());
-
+            throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, matchesValidation.getMessage());
+        if (list == null)
+            list = new ArrayList<>();
         Object value = dataMap.get(matchesValidation.getFieldName());
         if (StringUtils.isBlack(value)) {
-            throw new ValidatorException(ConverterErrorType.ON_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.ON_EMPTY.getTypeName());
+            throw new ValidatorException(ValidatorErrorType.ON_EMPTY, matchesValidation.getName() + " " + ValidatorErrorType.ON_EMPTY.getTypeName());
         }
         if (matchesValidation.getMode() == ValidationType.REGEX) {
-            if (!validationRegex(value.toString(),matchesValidation.getRegex(), dataMap)) {
-                throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, "不满足：" + (!matchesValidation.getMessage().equals("") ? matchesValidation.getMessage() : "正则验证 " + matchesValidation.getRegex()));
+            if (!validationRegex(value.toString(), matchesValidation.getRegex(), dataMap)) {
+                throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, "不满足：" + (!matchesValidation.getMessage().equals("") ? matchesValidation.getMessage() : "正则验证 " + matchesValidation.getRegex()));
             }
             return;
         }//none 比较配置跳过
@@ -130,15 +132,17 @@ public class MatchValidator {
             return;
         } else if (matchesValidation.getValue().length == 0 && !(matchesValidation.getMode() == ValidationType.NO_EMPTY
                 || matchesValidation.getMode() == ValidationType.EMPTY)) {
-            throw new ValidatorException(ConverterErrorType.COMPARE_IS_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
+            throw new ValidatorException(ValidatorErrorType.COMPARE_IS_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
         }
 
         if (!FiledValidatorUtils.mode(value, matchesValidation.getValue(), matchesValidation, dataMap)) {
             if (!matchesValidation.getMessage().equals(""))
                 list.add(matchesValidation.getMessage());
-            else
-                list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getMode(), matchesValidation.getValue(), false));
-            throw new ValidatorException(ConverterErrorType.VALIDATOR_ERROR, list.toString());
+            else {
+                    list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getMode(), matchesValidation.getValue(), false));
+
+            }
+            throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, list.toString());
         }
     }
 

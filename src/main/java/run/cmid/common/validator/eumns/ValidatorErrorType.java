@@ -7,7 +7,7 @@ public enum ValidatorErrorType implements TypeName {
 
     CUSTOM("自定义错误"),
 
-    ENUM_ERROR("数据不再范围内"),
+    //ENUM_ERROR("数据不再范围内"),
 
     VALIDATOR_ERROR("逻辑验证失败"),
 

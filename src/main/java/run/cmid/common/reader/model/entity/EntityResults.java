@@ -1,9 +1,6 @@
 package run.cmid.common.reader.model.entity;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import lombok.Getter;
 import run.cmid.common.compare.model.LocationTag;
@@ -25,7 +22,7 @@ public class EntityResults<T, PAGE, UNIT> {
         this.mode = mode;
     }
 
-    private Set<ConverterErrorType> errorType = EnumSet.noneOf(ConverterErrorType.class);
+    private Set<String> errorType = new HashSet<>();
 
     private final HeadInfo<PAGE, UNIT> mode;
     /**
@@ -53,7 +50,7 @@ public class EntityResults<T, PAGE, UNIT> {
     public void upDateErrorType() {
         if (cellErrorList.size() != 0) {
             for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx());
+                errorType.add(message.getEx().getTypeName());
             }
         }
     }

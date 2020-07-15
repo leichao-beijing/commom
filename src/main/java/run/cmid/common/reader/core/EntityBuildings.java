@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import run.cmid.common.reader.annotations.ConverterHead;
 import run.cmid.common.reader.annotations.Index;
 import run.cmid.common.reader.exception.ConverterExcelException;
+import run.cmid.common.reader.exception.ConverterException;
 import run.cmid.common.reader.model.FieldDetail;
 import run.cmid.common.reader.model.HeadInfo;
 import run.cmid.common.reader.model.to.ExcelHeadModel;
@@ -29,8 +30,6 @@ public class EntityBuildings<T, PAGE, UNIT> {
     @Getter
     private final Class<T> clazz;
     @Getter
-    private final Map<String, FieldDetail> map;
-    @Getter
     private final ExcelHeadModel headModel;
     @Getter
     private final List<List<String>> indexes;
@@ -49,14 +48,15 @@ public class EntityBuildings<T, PAGE, UNIT> {
         isIndexMethod(head.indexes(), clazz);// 验证index内值是否存在于对象中。
         this.indexes = getIndexList(head.indexes());
         headModel = new ExcelHeadModel(head);
-        //sheetName = head.sheetName();
+    }
+
+    public Map<String, FieldDetail> converterFieldDetailToMap() {
         List<String> indexes = new ArrayList<String>();
         for (List<String> index : this.indexes) {
             indexes.addAll(index);
         }
-        map = ConverterFieldDetail.toMap(clazz, headModel, indexes);
+        return ConverterFieldDetail.toMap(clazz, headModel, indexes);
     }
-
 
     /**
      * 将指定资源进行实体化
@@ -66,9 +66,8 @@ public class EntityBuildings<T, PAGE, UNIT> {
      * @throws ConverterExcelException
      */
     public EntityBuild<T, Sheet, Cell> find(int readHeadRownum, BookPage<Workbook, Sheet, Cell> resource)
-            throws ConverterExcelException {
-        HeadInfo<Sheet, Cell> mode = new FindResource(map, headModel, readHeadRownum).find(resource);
-        return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
+            throws ConverterException {
+        HeadInfo<Sheet, Cell> mode = new FindResource(this, headModel, readHeadRownum).find(resource);return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
     }
 
     protected static <T> void isIndexMethod(Index[] indexes, Class<T> clazz) {
