@@ -130,8 +130,12 @@ public class MatchValidator {
         }//none 比较配置跳过
         if (matchesValidation.getValue().length == 0 && matchesValidation.getMode() == ValidationType.NO_EMPTY) {
             return;
-        } else if (matchesValidation.getValue().length == 0 && !(matchesValidation.getMode() == ValidationType.NO_EMPTY
-                || matchesValidation.getMode() == ValidationType.EMPTY)) {
+        } else if (matchesValidation.getValue().length == 0 && !(ValidationType.noValidationValue(matchesValidation.getMode()))) {
+
+            boolean state = (matchesValidation.getMode() == ValidationType.NO_EMPTY
+                    || matchesValidation.getMode() == ValidationType.EMPTY);
+            boolean state1 = matchesValidation.getValue().length == 0;
+
             throw new ValidatorException(ValidatorErrorType.COMPARE_IS_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
         }
 
@@ -139,7 +143,7 @@ public class MatchValidator {
             if (!matchesValidation.getMessage().equals(""))
                 list.add(matchesValidation.getMessage());
             else {
-                    list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getMode(), matchesValidation.getValue(), false));
+                list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getMode(), matchesValidation.getValue(), false));
 
             }
             throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, list.toString());

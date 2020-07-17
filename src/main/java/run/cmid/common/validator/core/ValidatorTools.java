@@ -68,9 +68,12 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
             setFieldMap = new HashSet<>();
 
         FieldName fieldName = field.getAnnotation(FieldName.class);
-        String name = field.getName();
+        String name;
         if (fieldName != null)
             name = fieldName.value();
+        else
+            name = field.getName();
+
         if (setFieldMap.contains(name))
             overlapList.add(name);
         else

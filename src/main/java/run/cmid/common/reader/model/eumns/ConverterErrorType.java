@@ -1,6 +1,8 @@
 package run.cmid.common.reader.model.eumns;
 
 import run.cmid.common.io.TypeName;
+import run.cmid.common.validator.eumns.ValidationType;
+import run.cmid.common.validator.eumns.ValidatorErrorType;
 
 /**
  * @author leichao
@@ -8,7 +10,7 @@ import run.cmid.common.io.TypeName;
 public enum ConverterErrorType implements TypeName {
     //SUCCESS("成功"),
 
-    COMPARE_IS_EMPTY("当mode!=ExcelRead.NO_EMPTY or ExcelRead.EMPTY时，value的内容是不允许为空。"),
+    COMPARE_IS_EMPTY("mode=" + ValidationType.ALLOW_LIST.toString() + "的value内容允许为空。"),
 
     // CUSTOM("自定义错误"),
 

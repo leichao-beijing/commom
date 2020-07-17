@@ -18,8 +18,13 @@ public class Produce {
     @FieldName("序号")
     private Long id;
 
+    /**
+     * 工程类型为分布类型时，需在 工程号=需求号-FB-BBU序号，其他需求号-BBU序号
+     */
     @FieldName("工程类型")
     @FindColumn(value = "工程类型", checkColumn = true)
+    @FiledValidator(mode = ValidationType.EQUALS, value = {"4G微蜂窝信源工程", "4G微蜂窝信源工程", "5G微蜂窝信源工程", "5G微蜂窝分布工程", "2G微蜂窝信源工程", "2G微蜂窝分布工程", "2G微蜂窝替换工程", "4G微蜂窝信源工程",
+            "4G微蜂窝分布工程", "5G微蜂窝信源工程", "5G微蜂窝分布工程", "WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"})
     private String engineeringType;
 
     @FieldName("项目号")
@@ -48,29 +53,52 @@ public class Produce {
                     @FiledRequire(fieldName = "engineeringType", value = "4G", mode = ValidationType.INCLUDE, message = "4G需求号")},
                     mode = ValidationType.REGEX, message = "必须为TDL开头，字母后面有10位以内字符", regex = "^(TDL)\\d{1,10}$"),
             @FiledValidator(require = {
+                    @FiledRequire(fieldName = "engineeringType", value = "4G", mode = ValidationType.INCLUDE, message = "4G需求号")},
+                    mode = ValidationType.REGEX, message = "必须为TDLF开头，字母后面有10位以内字符", regex = "^(TDLF)\\d{1,10}$"),
+            @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType", value = "5G", mode = ValidationType.INCLUDE, message = "5G需求号")},
                     mode = ValidationType.REGEX, message = "必须为NR开头，字母后面有10位以内字符", regex = "^(NR)\\d{1,10}$"),
     })
     private String demandId;
 
+
+    @FieldName("制式")
+    @FindColumn(value = "制式", checkColumn = true)
+    @FiledValidator(mode = ValidationType.EQUALS, value = {"2G", "3G", "4G", "5G"})
+    private String mode;
+
+    @FieldName("站址站名")
+    @FindColumn(value = "站址站名", checkColumn = true)
+    @FiledValidator(mode = ValidationType.NO_EMPTY, check = true)
+    private String addressTagName;
+
+    @FieldName("BBU序号")
+    @FindColumn(value = "BBU序号", checkColumn = true)
+    @FiledValidator(mode = ValidationType.NO_EMPTY, check = true)
+    private String BuuId;
+
+    @FieldName("设备厂家")
+    @FindColumn(value = "设备厂家", checkColumn = true)
+    @FiledValidator(mode = ValidationType.EQUALS, value = {"H", "Z", "N", "J"}, check = true)
+    private String deviceId;
+
+    @FieldName("基站类型")
+    @FindColumn(value = "基站类型", checkColumn = true)
+    @FiledValidator(mode = ValidationType.EQUALS, value = {"M", "X"})
+    private String siteMode;
+
     @FieldName("工程号")
-    @FindColumn(value = "工程号", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(mode = ValidationType.REGEX, message = "“需求号”后面增加“-xx”，“xx”为1或2位数字", regex = "^({{demandId}})-\\d{1,2}$"),
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)
-            }, check = true)
-    })
     private String engineeringId;
 
-    @FindColumn(value = "方案名称", checkColumn = true)
+    /**
+     * 系统根据 方案名称 进行自动生成 分公司 + 制式 +站址站名 + 设备厂家 + 基站类型
+     */
     @FieldName("方案名称")
-    @FiledValidator(require = {
-            @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)
-    }, check = true)
     private String schemeName;
 
-    //系统根据 方案名称 进行自动生成
+    /**
+     * 进行自动生成 分公司 + 制式 +站址站名 +BBU站号 + 设备厂家 + 基站类型
+     */
     @FieldName("站名")
     private String siteName;
 
@@ -110,7 +138,6 @@ public class Produce {
     @FiledValidator(require = {
             @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)
     }, check = true)
-
     private String addressName;
 
     @FindColumn(value = "产权单位", checkColumn = true)
@@ -144,7 +171,7 @@ public class Produce {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
             @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "coverage", message = "建筑面积应≥覆盖面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(([1-9]{1}\\d*)|(0{1}))(\\.\\d{1,2})?$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
     })
     private String floorage;
 
@@ -154,8 +181,8 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "floorage", message = "覆盖面积应≤建筑面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(([1-9]{1}\\d*)|(0{1}))(\\.\\d{1,2})?$", message = "保留两位小数")
+            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "floorage", message = "覆盖面积应≤建筑面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}, mode = ValidationType.EXECUTE),
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
     })
     private String coverage;
 
@@ -179,8 +206,8 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(([1-9]{1}\\d*)|(0{1}))(\\.\\d{5,5})?[1-9]$", message = "保留六位小数最后一位不为0")
-    })
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{6,})?$", message = "至少保留小数点后六位")
+    })//结果要求保留小数点后六位 最后一位为O时进1
     private String longitude;
 
     @FieldName("纬度")
@@ -189,8 +216,8 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(([1-9]{1}\\d*)|(0{1}))(\\.\\d{5,5})?[1-9]$", message = "保留六位小数最后一位不为0")
-    })
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{6,})?$", message = "至少保留小数点后六位")
+    })//结果要求保留小数点后六位 最后一位为O时进1
     private String latitude;
 
     @FieldName("分公司")
@@ -412,7 +439,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(value = {"Lampsite", "Lightsite", "新建单支路室分", "新建双支路室分", "扩容单支路室分", "扩容双支路室分", "补点单支路室分", "补点双支路室分", "馈入单支路室分", "馈入双支路室分", "新建第二支路室分", "信源扩容",
+            @FiledValidator(value = {"Lampsite升级5G", "Lampsite", "Lightsite", "新建单支路室分", "新建双支路室分", "扩容单支路室分", "扩容双支路室分", "补点单支路室分", "补点双支路室分", "馈入单支路室分", "馈入双支路室分", "新建第二支路室分", "信源扩容",
                     "Book RRU", "京信2G分布式", "京信4G分布式", "京信2G、4G分布式", "京信4G一体化", "京信2G、4G一体化", "MDAS", "WLAN"}, mode = ValidationType.EQUALS)
     })
     private String buildMode;
@@ -431,9 +458,9 @@ public class Produce {
     @FindColumn(value = "5G对应的\n4G BBU站名", checkColumn = true)
     @FiledValidators({
             @FiledValidator(require = {
+                    @FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = ""),
                     @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {@FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = "")}, check = true)
+                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, mode = ValidationType.EXECUTE, check = true),
     })
     private String Buu5gTo4gSiteName;
 
@@ -443,7 +470,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {@FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = "")}, mode = ValidationType.REGEX, regex = "^\\d{1,20}$", message = "必须输入20位以内数字", check = true)
+            @FiledValidator(require = {@FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = "")}, mode = ValidationType.REGEX, regex = "^\\d{1,20}$", message = "必须输入20位以内数字")
     })
     private String Buu5gBuildSN;
 
@@ -474,7 +501,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^[1-9][0-9]$", message = "百分数形式，无小数点", check = true)
+            @FiledValidator(mode = ValidationType.INTEGER, message = "百分数形式，无小数点")
     })
     private String constructionDiscount;
 
@@ -484,7 +511,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String checkCost;
 
@@ -494,7 +521,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String designCost;
 
@@ -504,7 +531,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String constructionCost;
 
@@ -514,14 +541,15 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String safeProductionCost;
+
     @FiledValidators({
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数", check = true)
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     @FieldName("设备费 （不含税）（元）")
     @FindColumn(value = "设备费\n（不含税）\n（元）", checkColumn = true)
@@ -533,7 +561,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String buildSafeCost;
 
@@ -544,7 +572,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String otherCost;
 
@@ -554,7 +582,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String prepareCost;
 
@@ -564,7 +592,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
     })
     private String investCountCost;
 
@@ -634,7 +662,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^((([O][0-9]\\+)*([O][0-9]))|[0])$", message = "每数字间用“+”分隔数字前面写字母“O”，或者写一个数字“0”")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d*$", message = "数值格式")
     })
     private String partitionToolCount;
 
@@ -679,7 +707,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
     })
     private String equipmentRoomModeArea;
 
@@ -689,7 +717,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{2,2})$", message = "保留两位小数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
     })
     private String equipmentRoomModeHeight;
 

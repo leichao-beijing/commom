@@ -9,6 +9,7 @@ import run.cmid.common.reader.annotations.FormatDate;
 import run.cmid.common.reader.model.eumns.FieldDetailType;
 import run.cmid.common.reader.model.eumns.FindModel;
 import run.cmid.common.utils.ReflectLcUtils;
+import run.cmid.common.validator.annotations.FieldName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -49,8 +50,12 @@ public class FieldDetail {
             if (list.size() != 0)
                 enumFieldName = list.get(0).getName();
         }
-
-    } 
+        FieldName fieldName = field.getAnnotation(FieldName.class);
+        if (fieldName != null)
+            this.name = fieldName.value();
+        else
+            this.name = field.getName();
+    }
 
     private List<FieldDetail> otherDetails;
     private final FindModel model;

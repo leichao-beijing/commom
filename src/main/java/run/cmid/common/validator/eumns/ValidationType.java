@@ -1,8 +1,11 @@
 package run.cmid.common.validator.eumns;
 
+import org.apache.poi.ss.formula.functions.T;
 import run.cmid.common.io.TypeName;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * EQUAL LESS_THAN_OR_EQUAL LESS_THAN GREATER_THAN_OR_EQUAL GREATER_THAN <br>
@@ -33,10 +36,16 @@ public enum ValidationType implements TypeName {
 
     NO_INCLUDE("不包含"),
 
+    INTEGER("整数类型"),
+
+    LONG("长整形"),
+
+    DOUBLE("双精度"),
     //EXCEPTION("满足条件时,返回条件的消息"),
+    //EXECUTE
+    EXECUTE("执行"),
 
     REGEX("正则验证");
-
 
     ValidationType(String typeName) {
         this.typeName = typeName;
@@ -48,4 +57,22 @@ public enum ValidationType implements TypeName {
         new File("").exists();
         return typeName;
     }
+
+    public static boolean noValidationValue(ValidationType type) {
+        return ALLOW_LIST.contains(type);
+    }
+
+    /**
+     * 不对values的长度进行校验的验证类型
+     */
+    public static List<ValidationType> ALLOW_LIST = new ArrayList<ValidationType>() {
+        {
+            add(ValidationType.INTEGER);
+            add(ValidationType.LONG);
+            add(ValidationType.DOUBLE);
+            add(ValidationType.NO_EMPTY);
+            add(ValidationType.EMPTY);
+            add(ValidationType.EXECUTE);
+        }
+    };
 }

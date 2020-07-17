@@ -23,7 +23,7 @@ public @interface FiledValidator {
 
     String[] value() default {};
 
-    ValidationType mode() default ValidationType.EQUALS;//regex
+    ValidationType mode() default ValidationType.EXECUTE;//regex
 
     /**
      * filedName 符合正则时生效。不存在时忽略

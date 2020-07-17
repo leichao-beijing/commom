@@ -62,8 +62,12 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
                 if (DateUtil.isCellDateFormatted(cell))
                     return cell.getDateCellValue();
                 else {
-                    if (cell.getCellStyle().getDataFormat() == 0 || cell.getCellStyle().getDataFormat() == 1)
-                        return (int) cell.getNumericCellValue();
+                    if (cell.getCellStyle().getDataFormat() == 0 || cell.getCellStyle().getDataFormat() == 1) {
+                        int i = (int) cell.getNumericCellValue();
+                        if (i == Integer.MAX_VALUE || i == Integer.MIN_VALUE)
+                            return (long) cell.getNumericCellValue();
+                        return i;
+                    }
                     return cell.getNumericCellValue();
                 }
 

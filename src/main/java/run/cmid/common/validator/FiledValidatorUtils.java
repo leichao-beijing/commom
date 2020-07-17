@@ -85,6 +85,12 @@ public class FiledValidatorUtils {
                     }
                 }
                 return true;
+            case DOUBLE:
+                return NumberUtil.isDouble(value.toString());
+            case INTEGER:
+                return NumberUtil.isInteger(value.toString());
+            case LONG:
+                return NumberUtil.isLong(value.toString());
             case NO_INCLUDE:
             case LESS_THAN:
             case LESS_THAN_OR_EQUAL:
@@ -94,6 +100,8 @@ public class FiledValidatorUtils {
                     if (compare(value, val, regexMode, dataMap))
                         return false;
                 }
+                return true;
+            case EXECUTE:
                 return true;
             case REGEX:
             default:
