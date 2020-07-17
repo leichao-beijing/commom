@@ -47,17 +47,17 @@ public class Produce {
                     @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)
             }, check = true),
             @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = "2G", mode = ValidationType.INCLUDE, message = "2G需求号")},
-                    mode = ValidationType.REGEX, message = "必须为GSM开头，字母后面有10位以内字符", regex = "^(GSM)\\d{1,10}$"),
+                    @FiledRequire(fieldName = "engineeringType", value = "2G", mode = ValidationType.INCLUDE, message = "2G需求号"),
+                    @FiledRequire(fieldName = "demandId", value = "暂无", mode = ValidationType.NO_EQUALS)},
+                    mode = ValidationType.REGEX, message = "必须为GSM开头，字母后面有10位以内字符", regex = "^(GSM)[0-9A-Za-z]{1,10}$"),
             @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = "4G", mode = ValidationType.INCLUDE, message = "4G需求号")},
-                    mode = ValidationType.REGEX, message = "必须为TDL开头，字母后面有10位以内字符", regex = "^(TDL)\\d{1,10}$"),
+                    @FiledRequire(fieldName = "engineeringType", value = "4G", mode = ValidationType.INCLUDE, message = "4G需求号"),
+                    @FiledRequire(fieldName = "demandId", value = "暂无", mode = ValidationType.NO_EQUALS)},
+                    mode = ValidationType.REGEX, message = "必须为TDL开头，字母后面有10位以内字符", regex = "^(TDL)[0-9A-Za-z]{1,10}$"),
             @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = "4G", mode = ValidationType.INCLUDE, message = "4G需求号")},
-                    mode = ValidationType.REGEX, message = "必须为TDLF开头，字母后面有10位以内字符", regex = "^(TDLF)\\d{1,10}$"),
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = "5G", mode = ValidationType.INCLUDE, message = "5G需求号")},
-                    mode = ValidationType.REGEX, message = "必须为NR开头，字母后面有10位以内字符", regex = "^(NR)\\d{1,10}$"),
+                    @FiledRequire(fieldName = "engineeringType", value = "5G", mode = ValidationType.INCLUDE, message = "5G需求号"),
+                    @FiledRequire(fieldName = "demandId", value = "暂无", mode = ValidationType.NO_EQUALS)},
+                    mode = ValidationType.REGEX, message = "必须为NR开头，字母后面有10位以内字符", regex = "^(NR)[0-9A-Za-z]{1,10}$"),
     })
     private String demandId;
 
@@ -74,7 +74,6 @@ public class Produce {
 
     @FieldName("BBU序号")
     @FindColumn(value = "BBU序号", checkColumn = true)
-    @FiledValidator(mode = ValidationType.NO_EMPTY, check = true)
     private String BuuId;
 
     @FieldName("设备厂家")
@@ -82,8 +81,8 @@ public class Produce {
     @FiledValidator(mode = ValidationType.EQUALS, value = {"H", "Z", "N", "J"}, check = true)
     private String deviceId;
 
-    @FieldName("基站类型")
-    @FindColumn(value = "基站类型", checkColumn = true)
+    @FieldName("基站标签")
+    @FindColumn(value = "基站标签", checkColumn = true)
     @FiledValidator(mode = ValidationType.EQUALS, value = {"M", "X"})
     private String siteMode;
 
@@ -104,12 +103,8 @@ public class Produce {
 
     @FieldName("站号")
     @FindColumn(value = "站号", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, message = "10位以内数字", regex = "^\\d{1,10}$")
-    })
+    @FiledValidator(require = {@FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+            mode = ValidationType.REGEX, message = "10位以内数字", regex = "^\\d{1,10}$")
     private String siteId;
 
     @FieldName("站点所在区县")
@@ -171,7 +166,7 @@ public class Produce {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
             @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "coverage", message = "建筑面积应≥覆盖面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{1,})?$", message = "至少保留一位小数点或整数")
     })
     private String floorage;
 
@@ -182,7 +177,7 @@ public class Produce {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
             @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "floorage", message = "覆盖面积应≤建筑面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}, mode = ValidationType.EXECUTE),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{1,})?$", message = "至少保留一位小数点或整数")
     })
     private String coverage;
 
@@ -268,13 +263,10 @@ public class Produce {
 
     @FieldName("勘察单位合作类型")
     @FindColumn(value = "勘察单位合作类型", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = {"自有", "工时定额", "单项目合作", "多项目合作"}, mode = ValidationType.EQUALS)}, check = true)
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType", value = {"自有", "工时定额", "单项目合作", "多项目合作"}, mode = ValidationType.EQUALS),
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)})
     private String checkOfficeCooperationType;
 
     @FieldName("勘察人")
@@ -304,12 +296,10 @@ public class Produce {
 
     @FieldName("设计单位合作类型")
     @FindColumn(value = "设计单位合作类型", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType", value = {"自有", "工时定额", "单项目合作", "多项目合作"}, mode = ValidationType.EQUALS)}, check = true)
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),
+            @FiledRequire(fieldName = "engineeringType", value = {"自有", "工时定额", "单项目合作", "多项目合作"}, mode = ValidationType.EQUALS)
     })
     private String designOfficeCooperationType;
 
@@ -332,31 +322,27 @@ public class Produce {
 
     @FieldName("设计完成日期")
     @FindColumn(value = "设计\n完成日期", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "checkEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“勘察完成日期”")})
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+            fieldValidation = {
+                    @FiledCompare(fieldName = "checkEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“勘察完成日期”")}, check = true)
+
     private Date designEndDate;
+
     @FieldName("网格审核通过日期")
     @FindColumn(value = "网格审核\n通过日期", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "designEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“设计完成日期”")})
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+            fieldValidation = {
+                    @FiledCompare(fieldName = "designEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“设计完成日期”")})
     private Date GridEndDate;
 
     @FieldName("网优审核通过日期")
     @FindColumn(value = "网优审核\n通过日期", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "GridEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“网格审核通过日期”")})
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType", value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),}
+            , fieldValidation = {
+            @FiledCompare(fieldName = "GridEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“网格审核通过日期”")})
     private String optimumEndDate;
 
     @FieldName("是否变更方案")
@@ -371,33 +357,27 @@ public class Produce {
 
     @FieldName("变更内容")
     @FindColumn(value = "变更内容", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "changeSchemeState", value = "是", mode = ValidationType.EQUALS)}, check = true),
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),
+            @FiledRequire(fieldName = "changeSchemeState", value = "是", mode = ValidationType.EQUALS)}, check = true)
     private String changeContext;
 
     @FieldName("变更网格审核通过日期")
     @FindColumn(value = "变更网格审核通过日期", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "optimumEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“网优审核通过日期”")})
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+            fieldValidation = {@FiledCompare(fieldName = "optimumEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“网优审核通过日期”")})
+
     private Date changeGridEndDate;
 
     @FieldName("变更网优审核通过日期")
     @FindColumn(value = "变更网优审核通过日期", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "changeGridEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“变更网格审核通过日期”")})
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+            fieldValidation = {@FiledCompare(fieldName = "changeGridEndDate", mode = ValidationType.GREATER_THAN_OR_EQUAL, message = "应晚于或等于“变更网格审核通过日期”")})
     private Date changeOptimumDate;
 
     @FieldName("计提设计单位")
@@ -446,12 +426,9 @@ public class Produce {
 
     @FieldName("5G对应的4G BBU站号")
     @FindColumn(value = "5G对应的\n4G BBU站号", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d{1,10}$", message = "必须输入10位以内数字")
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, mode = ValidationType.REGEX, regex = "^\\d{1,10}$", message = "必须输入10位以内数字")
     private String Buu5gTo4gSiteId;
 
     @FieldName("5G对应的4G BBU站名")
@@ -466,20 +443,21 @@ public class Produce {
 
     @FieldName("5G对应的4G BBU SN")
     @FindColumn(value = "5G对应的\n4G BBU SN", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(require = {@FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = "")}, mode = ValidationType.REGEX, regex = "^\\d{1,20}$", message = "必须输入20位以内数字")
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS),
+            @FiledRequire(fieldName = "Buu5gTo4gSiteId", mode = ValidationType.NO_EMPTY, value = "")}, mode = ValidationType.REGEX, regex = "^\\d{1,20}$", message = "必须输入20位以内数字", check = true)
     private String Buu5gBuildSN;
 
     @FieldName("5G BBU建设方式")
     @FindColumn(value = "5G BBU建设方式", checkColumn = true)
-    @FiledValidator(require = {
-            @FiledRequire(fieldName = "engineeringType",
-                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
-            value = {"新装", "直接升级", "换框升级"}, mode = ValidationType.EQUALS, check = true)
+    @FiledValidators({
+            @FiledValidator(require = {
+                    @FiledRequire(fieldName = "engineeringType",
+                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)},
+                    value = {"新装", "直接升级", "换框升级"}, mode = ValidationType.EQUALS),
+            @FiledValidator(require = {@FiledRequire(fieldName = "engineeringType", value = {"5G微蜂窝信源工程"}, mode = ValidationType.EQUALS)}, check = true),
+    })
     private String Buu5gBuildMode;
 
     @FieldName("5G组网模式")
@@ -497,12 +475,9 @@ public class Produce {
 
     @FieldName("施工折扣")//^[1-9][0-9]$
     @FindColumn(value = "施工折扣", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.INTEGER, message = "百分数形式，无小数点")
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, mode = ValidationType.INTEGER, message = "百分数形式，无小数点")
     private String constructionDiscount;
 
     @FieldName("勘察费（含税）（元）")//^(\-)?\d+(\.\d{2,2})$
@@ -658,12 +633,9 @@ public class Produce {
 
     @FieldName("分区工具小区数量（Lampsite填写）")
     @FindColumn(value = "分区工具小区数量（Lampsite填写）", checkColumn = true)
-    @FiledValidators({
-            @FiledValidator(require = {
-                    @FiledRequire(fieldName = "engineeringType",
-                            value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d*$", message = "数值格式")
-    })
+    @FiledValidator(require = {
+            @FiledRequire(fieldName = "engineeringType",
+                    value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, mode = ValidationType.REGEX, regex = "^\\d*$", message = "数值格式")
     private String partitionToolCount;
 
     @FieldName("分区数")//^\d*$
@@ -707,7 +679,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{1,})?$", message = "至少保留一位小数点或整数")
     })
     private String equipmentRoomModeArea;
 
@@ -717,7 +689,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.REGEX, regex = "^(\\-)?\\d+(\\.\\d{1,2})?$", message = "最多保留两位小数或整数")
+            @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{1,})?$", message = "至少保留一位小数点或整数")
     })
     private String equipmentRoomModeHeight;
 

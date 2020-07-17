@@ -73,7 +73,7 @@ public class FiledValidatorUtils {
             case NO_EQUALS:
                 for (String val : list) {
                     try {
-                        if (compare(value, val, regexMode, dataMap))
+                        if (!compare(value, val, regexMode, dataMap))
                             return false;
                     } catch (ValidatorException e) {
                         if (e.getType() == ValidatorErrorType.NO_NUMBER) {

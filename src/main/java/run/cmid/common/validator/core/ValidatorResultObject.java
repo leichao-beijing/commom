@@ -50,12 +50,11 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<M
         List<ValidatorFieldException> err = new ArrayList<>();
         while (it.hasNext()) {
             Map.Entry<SpotPath, List<MatchesValidation>> next = it.next();
-            //SpotPath key = next.getKey();
             List<MatchesValidation> values = next.getValue();
             for (MatchesValidation value : values) {
                 try {
                     List<String> list = MatchValidator.validatorFiledRequire(value.getRequires(), context);
-                    if (list != null && list.size() == 0) {
+                    if (list != null && list.size() != value.getRequires().size()) {//条件全部满足才可执行下部操作
                         continue;
                     }
                     MatchValidator.validatorFiledCompares(value, value.getCompareFields(), context,list);
