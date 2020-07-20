@@ -86,11 +86,14 @@ public class FiledValidatorUtils {
                 }
                 return true;
             case DOUBLE:
+                boolean ss = NumberUtil.isDouble(value.toString());
                 return NumberUtil.isDouble(value.toString());
             case INTEGER:
                 return NumberUtil.isInteger(value.toString());
             case LONG:
                 return NumberUtil.isLong(value.toString());
+            case NUMBER:
+                return NumberUtil.isNumber(value.toString());
             case NO_INCLUDE:
             case LESS_THAN:
             case LESS_THAN_OR_EQUAL:

@@ -38,6 +38,8 @@ public enum ValidationType implements TypeName {
 
     INTEGER("整数类型"),
 
+    NUMBER("数值类型"),
+
     LONG("长整形"),
 
     DOUBLE("双精度"),
@@ -72,6 +74,7 @@ public enum ValidationType implements TypeName {
             add(ValidationType.DOUBLE);
             add(ValidationType.NO_EMPTY);
             add(ValidationType.EMPTY);
+            add(ValidationType.NUMBER);
             add(ValidationType.EXECUTE);
         }
     };

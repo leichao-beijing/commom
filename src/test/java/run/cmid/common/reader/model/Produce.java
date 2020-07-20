@@ -486,7 +486,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String checkCost;
 
@@ -496,7 +496,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String designCost;
 
@@ -506,7 +506,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String constructionCost;
 
@@ -516,7 +516,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String safeProductionCost;
 
@@ -524,7 +524,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     @FieldName("设备费 （不含税）（元）")
     @FindColumn(value = "设备费\n（不含税）\n（元）", checkColumn = true)
@@ -536,7 +536,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String buildSafeCost;
 
@@ -547,7 +547,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String otherCost;
 
@@ -557,7 +557,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String prepareCost;
 
