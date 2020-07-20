@@ -9,6 +9,7 @@ import run.cmid.common.validator.annotations.*;
 import run.cmid.common.validator.eumns.ValidationType;
 
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
 
 @Getter
@@ -279,7 +280,7 @@ public class Produce {
     @FieldName("勘察完成日期")
     @FindColumn(value = "勘察\n完成日期", checkColumn = true)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent
+    @PastOrPresent
     @FiledValidator(require = {
             @FiledRequire(fieldName = "engineeringType",
                     value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true)
@@ -567,7 +568,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(mode = ValidationType.DOUBLE, message = "数值格式")
+            @FiledValidator(mode = ValidationType.NUMBER, message = "数值格式")
     })
     private String investCountCost;
 

@@ -13,6 +13,8 @@ import run.cmid.common.validator.exception.ValidatorOverlapException;
 import run.cmid.common.validator.model.MachModelInfo;
 import run.cmid.common.validator.model.MatchesValidation;
 import run.cmid.common.validator.model.ValidatorFieldException;
+import run.cmid.common.validator.plugins.ReaderPluginsPastOrPresent;
+import run.cmid.common.validator.plugins.ReaderPluginsInterface;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -23,9 +25,18 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
         validatorException();
     }
 
+
     public ValidatorTools(Map<String, List<MatchesValidation>> validationStringMap) throws ValidatorOverlapException {
         this.validationMap = EngineClazz.getSpotPathMap(validationStringMap);
         validatorException();
+    }
+
+    private final List<ReaderPluginsInterface> plugins = new ArrayList<>() {{
+        add(new ReaderPluginsPastOrPresent());
+    }};
+
+    public void addPlugins(ReaderPluginsInterface readerPluginsInterface) {
+        plugins.add(readerPluginsInterface);
     }
 
     public void validatorException() throws ValidatorOverlapException {
@@ -37,7 +48,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
 
     public List<ValidatorFieldException> validation(T t) {
         try {
-            new EngineObject(t, validationMap, new ValidatorResultObject()).compute();
+            new EngineObject(t, validationMap, new ValidatorResultObject(plugins)).compute();
         } catch (ValidatorFieldsException e) {
             return e.getErr();
         }
@@ -45,7 +56,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
     }
 
     public List<ValidatorFieldException> validationMap(Map<String, Object> context) {
-        ValidatorResultObject v = new ValidatorResultObject();
+        ValidatorResultObject v = new ValidatorResultObject(plugins);
         MachModelInfo info = new MachModelInfo(context, validationMap);
         return v.compute(null, info);
     }

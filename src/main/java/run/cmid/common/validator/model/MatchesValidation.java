@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 public class MatchesValidation implements RegexModeInterface {
     public MatchesValidation(FiledValidator fieldValidator, Field field) {
+        this.field=field;
         this.name = (field.isAnnotationPresent(FieldName.class)) ? field.getAnnotation(FieldName.class).value() : field.getName();
         this.fieldName = field.getName();
         this.format = (field.isAnnotationPresent(JsonFormat.class)) ? field.getAnnotation(JsonFormat.class).pattern() : null;
@@ -27,7 +28,7 @@ public class MatchesValidation implements RegexModeInterface {
         this.compareFields = CompareField.builds(fieldValidator.fieldValidation(), this.fieldName, this.name);
         this.throwState = fieldValidator.throwState();
     }
-
+    private  Field field;
     /**
      * 满足前置条件时，不进行判断直接抛出异常。读取messages内值
      */
