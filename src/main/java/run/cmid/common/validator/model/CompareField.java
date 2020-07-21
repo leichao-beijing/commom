@@ -40,7 +40,7 @@ public class CompareField implements RegexModeInterface {
         for (FiledCompare filedCompare : filedCompares) {
             list.add(build(filedCompare, compareFieldNameSrc, name));
         }
-        return null;
+        return list;
     }
 
     /**

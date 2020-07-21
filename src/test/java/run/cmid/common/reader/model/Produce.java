@@ -177,7 +177,7 @@ public class Produce {
             @FiledValidator(require = {
                     @FiledRequire(fieldName = "engineeringType",
                             value = {"WLAN信源工程", "WLAN分布工程", "微蜂窝大修理工程", "微蜂窝信源扩容工程"}, mode = ValidationType.NO_EQUALS)}, check = true),
-            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "floorage", message = "覆盖面积应≤建筑面积", mode = ValidationType.GREATER_THAN_OR_EQUAL)}, mode = ValidationType.EXECUTE),
+            @FiledValidator(fieldValidation = {@FiledCompare(fieldName = "floorage", message = "覆盖面积应≤建筑面积", mode = ValidationType.LESS_THAN_OR_EQUAL)}, mode = ValidationType.EXECUTE),
             @FiledValidator(mode = ValidationType.REGEX, regex = "^\\d+(\\.\\d{1,})?$", message = "至少保留一位小数点或整数")
     })
     private String coverage;

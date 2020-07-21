@@ -86,11 +86,13 @@ public class MatchValidator {
         int count = 0;
         String msg;
         Object value = dataMap.get(matchesValidation.getFieldName());
+        if (list == null)
+            list = new ArrayList<>();
         for (CompareField compareField : filedCompares) {
             Object data = dataMap.get(compareField.getFieldName());
-            if (!FiledValidatorUtils.compare(value, data, matchesValidation, dataMap)) {
+            if (!FiledValidatorUtils.compare(value, data, compareField, dataMap)) {
                 if (!compareField.getMessage().equals(""))
-                    msg = compareField.getMessage();
+                    msg = "<" + matchesValidation.getName() + ">的值 不满足："+compareField.getMessage();
                 else
                     msg = validationMessages(matchesValidation, value, data, compareField, false);
                 count++;
@@ -131,20 +133,14 @@ public class MatchValidator {
         if (matchesValidation.getValue().length == 0 && matchesValidation.getMode() == ValidationType.NO_EMPTY) {
             return;
         } else if (matchesValidation.getValue().length == 0 && !(ValidationType.noValidationValue(matchesValidation.getMode()))) {
-
-            boolean state = (matchesValidation.getMode() == ValidationType.NO_EMPTY
-                    || matchesValidation.getMode() == ValidationType.EMPTY);
-            boolean state1 = matchesValidation.getValue().length == 0;
-
             throw new ValidatorException(ValidatorErrorType.COMPARE_IS_EMPTY, matchesValidation.getName() + " " + ConverterErrorType.COMPARE_IS_EMPTY.getTypeName());
         }
 
         if (!FiledValidatorUtils.mode(value, matchesValidation.getValue(), matchesValidation, dataMap)) {
             if (!matchesValidation.getMessage().equals(""))
-                list.add(matchesValidation.getMessage());
+                list.add("<" + matchesValidation.getName() + ">的值,不满足：" + matchesValidation.getMessage());
             else {
                 list.add(FiledValidatorUtils.headMessage(matchesValidation.getName(), value) + " " + FiledValidatorUtils.message(matchesValidation.getMode(), matchesValidation.getValue(), false));
-
             }
             throw new ValidatorException(ValidatorErrorType.VALIDATOR_ERROR, list.toString());
         }
