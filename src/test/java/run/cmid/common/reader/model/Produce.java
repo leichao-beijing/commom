@@ -8,7 +8,6 @@ import run.cmid.common.reader.annotations.FindColumn;
 import run.cmid.common.validator.annotations.*;
 import run.cmid.common.validator.eumns.ValidationType;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
 

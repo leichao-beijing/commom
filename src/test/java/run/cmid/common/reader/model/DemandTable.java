@@ -3,7 +3,9 @@ package run.cmid.common.reader.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmid.common.reader.annotations.*;
+import run.cmid.common.reader.annotations.ConverterHead;
+import run.cmid.common.reader.annotations.FindColumn;
+import run.cmid.common.reader.annotations.Index;
 import run.cmid.common.reader.model.eumns.FindModel;
 
 @ToString
