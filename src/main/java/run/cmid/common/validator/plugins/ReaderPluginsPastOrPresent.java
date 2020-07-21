@@ -10,20 +10,26 @@ import run.cmid.common.validator.exception.ValidatorException;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.PastOrPresent;
 import java.util.Date;
+import java.util.Map;
 
 public class ReaderPluginsPastOrPresent implements ReaderPluginsInterface<PastOrPresent> {
     @Override
-    public Class<PastOrPresent> isSupport() {
+    public Class<PastOrPresent> getAnnotation() {
         return PastOrPresent.class;
     }
 
     @Override
-    public void validator(Object value, PastOrPresent pastOrPresent) throws ValidatorException {
+    public String getName() {
+        return "PastOrPresent";
+    }
+
+    @Override
+    public void validator(Object value, Map<String, Object> context,PastOrPresent pastOrPresent) throws ValidatorException {
         Date date;
         if (!value.getClass().isAssignableFrom(Date.class)) {
             try {
                 date = DateUtil.parse(value.toString());
-            }catch (DateException e){
+            } catch (DateException e) {
                 throw new ValidatorException(ValidatorErrorType.CUSTOM, "不是时间类型数据");
             }
         } else

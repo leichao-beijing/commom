@@ -1,42 +1,65 @@
 package run.cmid.common.validator.core;
 
 import lombok.Getter;
-import run.cmid.common.validator.EngineObject;
-import run.cmid.common.validator.annotations.FieldName;
-import run.cmid.common.validator.annotations.FiledValidators;
 import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.EngineClazz;
+import run.cmid.common.validator.EngineObject;
 import run.cmid.common.validator.FunctionClazzInterface;
+import run.cmid.common.validator.annotations.FieldName;
 import run.cmid.common.validator.annotations.FiledValidator;
+import run.cmid.common.validator.annotations.FiledValidators;
+import run.cmid.common.validator.exception.ValidatorErrorException;
 import run.cmid.common.validator.exception.ValidatorFieldsException;
+import run.cmid.common.validator.exception.ValidatorNullPointerException;
 import run.cmid.common.validator.exception.ValidatorOverlapException;
-import run.cmid.common.validator.model.MachModelInfo;
-import run.cmid.common.validator.model.MatchesValidation;
-import run.cmid.common.validator.model.ValidatorFieldException;
-import run.cmid.common.validator.plugins.ReaderPluginsPastOrPresent;
+import run.cmid.common.validator.model.*;
 import run.cmid.common.validator.plugins.ReaderPluginsInterface;
+import run.cmid.common.validator.plugins.ReaderPluginsPastOrPresent;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesValidation>> {
+public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain> {
     public ValidatorTools(Class<T> t) throws ValidatorOverlapException {
         validationMap = new EngineClazz(t, this).getFieldMap();
         validatorException();
     }
 
-
-    public ValidatorTools(Map<String, List<MatchesValidation>> validationStringMap) throws ValidatorOverlapException {
+    public ValidatorTools(Map<String, ValidationMain> validationStringMap) throws ValidatorErrorException {
         this.validationMap = EngineClazz.getSpotPathMap(validationStringMap);
-        validatorException();
+        HashSet<String> set = new HashSet<>();
+        validationMap.forEach((key, value) -> {
+            if (value.getPluginAnnotationList() != null)
+                value.getPluginAnnotationList().forEach((val) -> {
+                    set.add(val);
+                });
+        });
+        ArrayList<String> errorList = new ArrayList<>();
+        set.forEach((value) -> {
+            if (plugins.get(value) == null)
+                errorList.add(value);
+        });
+        if (!errorList.isEmpty())
+            throw new ValidatorNullPointerException(errorList);
     }
 
-    private final List<ReaderPluginsInterface> plugins = new ArrayList<>() {{
-        add(new ReaderPluginsPastOrPresent());
+    private final Map<String, ReaderPluginsInterface> plugins = new HashMap<>() {{
+        ReaderPluginsPastOrPresent readerPluginsPastOrPresent = new ReaderPluginsPastOrPresent();
+        put(readerPluginsPastOrPresent.getName(), readerPluginsPastOrPresent);
     }};
 
-    public void addPlugins(ReaderPluginsInterface readerPluginsInterface) {
-        plugins.add(readerPluginsInterface);
+    /**
+     * 添加扩展注解验证
+     */
+    public void addPlugins(ReaderPluginsInterface readerPluginsInterface) throws ValidatorErrorException {
+        ReaderPluginsInterface plugin = plugins.get(readerPluginsInterface.getName());
+        if (plugin != null) {
+            throw new ValidatorOverlapException(new ArrayList<>() {{
+                add(plugin.getName() + "=" + plugin.getClass().getName() + " and " + readerPluginsInterface.getName() + "=" + readerPluginsInterface.getClass().getName() + " Overlap.");
+            }});
+        }
+        plugins.put(plugin.getName(), plugin);
     }
 
     public void validatorException() throws ValidatorOverlapException {
@@ -44,11 +67,11 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
             throw new ValidatorOverlapException(overlapList);
     }
 
-    private Map<SpotPath, List<MatchesValidation>> validationMap;
+    private Map<SpotPath, ValidationMain> validationMap;
 
     public List<ValidatorFieldException> validation(T t) {
         try {
-            new EngineObject(t, validationMap, new ValidatorResultObject(plugins)).compute();
+            new EngineObject(t, validationMap, new ValidatorResultObject(pluginMap)).compute();
         } catch (ValidatorFieldsException e) {
             return e.getErr();
         }
@@ -56,7 +79,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
     }
 
     public List<ValidatorFieldException> validationMap(Map<String, Object> context) {
-        ValidatorResultObject v = new ValidatorResultObject(plugins);
+        ValidatorResultObject v = new ValidatorResultObject(pluginMap);
         MachModelInfo info = new MachModelInfo(context, validationMap);
         return v.compute(null, info);
     }
@@ -66,7 +89,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
     private Set<String> setFieldMap;
 
     @Override
-    public List<MatchesValidation> resultField(SpotPath path, Field field) {
+    public ValidationMain resultField(SpotPath path, Field field) {
         validatorFieldName(field);
         return resultFieldFiledValidator(path, field);
     }
@@ -92,11 +115,13 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
     }
 
     @Override
-    public void validator(Map<SpotPath, List<MatchesValidation>> fieldMap) {
+    public void validator(Map<SpotPath, ValidationMain> fieldMap) {
 
     }
 
-    private List<MatchesValidation> resultFieldFiledValidator(SpotPath path, Field field) {
+    private Map<String, List<ValidatorPlugin>> pluginMap = new HashMap<>();
+
+    private ValidationMain resultFieldFiledValidator(SpotPath path, Field field) {
         List<MatchesValidation> list = new ArrayList<>();
         if (field.getAnnotation(FiledValidator.class) != null)
             list.add(new MatchesValidation(field.getAnnotation(FiledValidator.class), field));
@@ -105,6 +130,19 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<MatchesVal
             for (FiledValidator filedValidator : field.getAnnotation(FiledValidators.class).value()) {
                 list.add(new MatchesValidation(filedValidator, field));
             }
-        return list;
+        List<ValidatorPlugin> pluginAnnotations = new ArrayList<>();
+        ArrayList<String> pluginAnnotationList = new ArrayList<>();
+        plugins.forEach((key, value) -> {
+            if (field.isAnnotationPresent(value.getAnnotation())) {
+                ValidatorPlugin validatorPlugin = new ValidatorPlugin(value, field.getAnnotation(value.getAnnotation()));
+                pluginAnnotations.add(validatorPlugin);
+                pluginAnnotationList.add(validatorPlugin.getName());
+            }
+        });
+        if (!pluginAnnotations.isEmpty())
+            pluginMap.put(field.getName(), pluginAnnotations);
+
+        ValidationMain validationMain = new ValidationMain(list, pluginAnnotationList, field);
+        return validationMain;
     }
 }

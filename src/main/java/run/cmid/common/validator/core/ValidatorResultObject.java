@@ -1,36 +1,31 @@
 package run.cmid.common.validator.core;
 
 import run.cmid.common.reader.core.MatchValidator;
-import run.cmid.common.reader.model.eumns.ConverterErrorType;
 import run.cmid.common.utils.ReflectLcUtils;
 import run.cmid.common.utils.SpotPath;
 import run.cmid.common.validator.ResultObjectInterface;
-import run.cmid.common.validator.eumns.ValidationType;
 import run.cmid.common.validator.eumns.ValidatorErrorType;
 import run.cmid.common.validator.exception.ValidatorException;
 import run.cmid.common.validator.exception.ValidatorFieldsException;
-import run.cmid.common.validator.model.MachModelInfo;
-import run.cmid.common.validator.model.MatchesValidation;
-import run.cmid.common.validator.model.ValidatorFieldException;
-import run.cmid.common.validator.plugins.ReaderPluginsInterface;
+import run.cmid.common.validator.model.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<MatchesValidation>, MachModelInfo> {
-    private final List<ReaderPluginsInterface> plugins;
+public class ValidatorResultObject<T> implements ResultObjectInterface<T, ValidationMain, MachModelInfo> {
+    private final Map<String, List<ValidatorPlugin>> pluginMap;
 
-    public ValidatorResultObject(List<ReaderPluginsInterface> plugins) {
-        this.plugins = plugins;
+    public ValidatorResultObject(Map<String, List<ValidatorPlugin>> pluginMap) {
+        this.pluginMap = pluginMap;
     }
 
     @Override
-    public void update(T t, Map<SpotPath, List<MatchesValidation>> map) {
+    public void update(T t, Map<SpotPath, ValidationMain> map) {
 
     }
 
     @Override
-    public void addInfo(T t, List<MachModelInfo> list, Map<SpotPath, List<MatchesValidation>> map) {
+    public void addInfo(T t, List<MachModelInfo> list, Map<SpotPath, ValidationMain> map) {
         HashMap<String, Object> result = new HashMap<>();
         Field[] fields = t.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -51,14 +46,14 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<M
     }
 
     public List<ValidatorFieldException> compute(T t, MachModelInfo machModelInfo) {
-        Map<SpotPath, List<MatchesValidation>> map = machModelInfo.getMap();
+        Map<SpotPath, ValidationMain> map = machModelInfo.getMap();
         Map<String, Object> context = machModelInfo.getMapContext();
-        Iterator<Map.Entry<SpotPath, List<MatchesValidation>>> it = map.entrySet().iterator();
+        Iterator<Map.Entry<SpotPath, ValidationMain>> it = map.entrySet().iterator();
         List<ValidatorFieldException> err = new ArrayList<>();
         while (it.hasNext()) {
-            Map.Entry<SpotPath, List<MatchesValidation>> next = it.next();
-            List<MatchesValidation> values = next.getValue();
-            for (MatchesValidation value : values) {
+            Map.Entry<SpotPath, ValidationMain> next = it.next();
+            ValidationMain validationMain = next.getValue();
+            for (MatchesValidation value : validationMain.getValidations()) {
                 try {
                     List<String> list = MatchValidator.validatorFiledRequire(value.getRequires(), context);
                     if (list != null && list.size() != value.getRequires().size()) {//条件全部满足才可执行下部操作
@@ -72,19 +67,19 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<M
                         break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
                     err.add(new ValidatorFieldException(e, value.getName(), value.getFieldName()));
                 }
-                plugins.forEach((val) -> {
-                    Object object = context.get(value.getFieldName());
-                    if (object == null)
-                        return;
+            }
+            Object object = context.get(validationMain.getFieldName());
+            if (object == null)
+                continue;
+            List<ValidatorPlugin> plugins = pluginMap.get(validationMain.getFieldName());
+            if (plugins != null)
+                plugins.forEach((value) -> {
                     try {
-                        if (!value.getField().isAnnotationPresent(val.isSupport()))
-                            return;
-                        val.validator(object, value.getField().getAnnotation(val.isSupport()));
+                        value.getPlugin().validator(object, context, value.getAnnotation());
                     } catch (ValidatorException e) {
-                        err.add(new ValidatorFieldException(e, value.getName(), value.getFieldName()));
+                        err.add(new ValidatorFieldException(e, value.getName(), validationMain.getFieldName()));
                     }
                 });
-            }
         }
         return err;
     }
