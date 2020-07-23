@@ -183,8 +183,8 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             return;
         try {
             if (parameterClasses.isEnum()) {
-                String methodName = (fieldDetail.getEnumFieldName() != null) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumFieldName()) : null;
-                List<String> list = EnumUtil.getEnumNames(parameterClasses, methodName);
+                String methodName = (!fieldDetail.getEnumFieldName().equals("")) ? ReflectLcUtils.methodGetString(fieldDetail.getEnumFieldName()) : fieldDetail.getEnumFieldName();
+                List<String> list = EnumUtil.getEnumNames((Class<Enum>) parameterClasses, methodName);
                 if (list.contains(value)) {
                     Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
                     ReflectUtil.invoke(out, setFunctionValue, en);

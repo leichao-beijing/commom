@@ -35,9 +35,13 @@ public class MatchValidator {
             Object value = dataMap.get(require.getFieldName());
             if (!require.getMessage().equals(""))
                 mgs = require.getMessage();
-            if (FiledValidatorUtils.mode(value, require.getValue(), require, dataMap)) {
-                mgs = (mgs != null) ? ("满足：" + mgs) : FiledValidatorUtils.headMessage(require.getName(), value) + " " + FiledValidatorUtils.message(require.getMode(), require.getValue(), true);
-                list.add(mgs);
+            try {
+                if (FiledValidatorUtils.mode(value, require.getValue(), require, dataMap)) {
+                    mgs = (mgs != null) ? ("满足：" + mgs) : FiledValidatorUtils.headMessage(require.getName(), value) + " " + FiledValidatorUtils.message(require.getMode(), require.getValue(), true);
+                    list.add(mgs);
+                }
+            } catch (ValidatorException e) {
+
             }
         }
         return list;
@@ -92,7 +96,7 @@ public class MatchValidator {
             Object data = dataMap.get(compareField.getFieldName());
             if (!FiledValidatorUtils.compare(value, data, compareField, dataMap)) {
                 if (!compareField.getMessage().equals(""))
-                    msg = "<" + matchesValidation.getName() + ">的值 不满足："+compareField.getMessage();
+                    msg = "<" + matchesValidation.getName() + ">的值 不满足：" + compareField.getMessage();
                 else
                     msg = validationMessages(matchesValidation, value, data, compareField, false);
                 count++;

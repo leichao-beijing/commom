@@ -141,7 +141,7 @@ public class FiledValidatorUtils {
 
     public static Boolean compare(Object object1, Object object2, RegexModeInterface regexMode, Map<String, Object> dataMap) {
         if (regexMode.getMode() != ValidationType.NO_EMPTY && regexMode.getMode() != ValidationType.EMPTY)
-            if (StringUtils.isEmpty(object1))
+            if (StringUtils.isEmpty(object1) && regexMode.getMode() != ValidationType.EMPTY && regexMode.getMode() != ValidationType.NO_EMPTY)
                 throw new ValidatorException(ValidatorErrorType.ON_EMPTY);
         switch (regexMode.getMode()) {
             case LESS_THAN:
