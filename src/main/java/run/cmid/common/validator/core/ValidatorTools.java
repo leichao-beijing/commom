@@ -52,7 +52,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
     /**
      * 添加扩展注解验证
      */
-    public void addPlugins(ReaderPluginsInterface readerPluginsInterface) throws ValidatorErrorException {
+    public ValidatorTools<T> addPlugins(ReaderPluginsInterface readerPluginsInterface) throws ValidatorErrorException {
         ReaderPluginsInterface plugin = plugins.get(readerPluginsInterface.getName());
         if (plugin != null) {
             throw new ValidatorOverlapException(new ArrayList<>() {{
@@ -60,6 +60,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
             }});
         }
         plugins.put(plugin.getName(), plugin);
+        return this;
     }
 
     public void validatorException() throws ValidatorOverlapException {
