@@ -37,7 +37,7 @@ public class MatchValidator {
                 mgs = require.getMessage();
             try {
                 if (FiledValidatorUtils.mode(value, require.getValue(), require, dataMap)) {
-                    mgs = (mgs != null) ? ("满足：" + mgs) : FiledValidatorUtils.headMessage(require.getName(), value) + " " + FiledValidatorUtils.message(require.getMode(), require.getValue(), true);
+                    mgs = (mgs != null) ? (mgs) : FiledValidatorUtils.headMessage(require.getName(), value) + " " + FiledValidatorUtils.message(require.getMode(), require.getValue(), true);
                     list.add(mgs);
                 }
             } catch (ValidatorException e) {

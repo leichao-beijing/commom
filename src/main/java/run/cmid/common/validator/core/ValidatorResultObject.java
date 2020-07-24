@@ -64,7 +64,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, Valida
                     MatchValidator.validatorSize(value, context);
                 } catch (ValidatorException e) {
                     if (!value.isCheck() && e.getType() == ValidatorErrorType.ON_EMPTY)
-                        break;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
+                        continue;//check==false 且  ConverterErrorType.EMPTY 时，忽略empty异常
                     err.add(new ValidatorFieldException(e, value.getName(), value.getFieldName()));
                 }
             }
