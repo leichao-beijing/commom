@@ -1,34 +1,64 @@
 package run.cmdi.common.reader.service;
 
-import cn.hutool.core.io.IoUtil;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
 import run.cmdi.common.reader.core.WorkbookInfo;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ExcelSaveService implements WorkbookInfo {
-    public ExcelSaveService(File outFile) throws IOException {
-        this.outFile = outFile;
-    }
-
-    private File outFile;
-    private FileOutputStream out;
+    @Getter
     private Workbook workbook;
     private final List<ConvertDataToWorkbook> list = new ArrayList<ConvertDataToWorkbook>();
+    private boolean state = false;
+    private InputStream is;
 
-    public <T> ConvertDataToWorkbook buildConvert(String sheetName, Class<T> t) throws IOException {
+    public ExcelSaveService() {
+    }
+
+    public ExcelSaveService(InputStream is) {
+        this.is = is;
+    }
+
+    /**
+     * @param state true HSSF false Excel97-2003;XSSF Excel2007
+     */
+    public ExcelSaveService(boolean state) {
+        this.state = state;
+    }
+
+    /**
+     * @param sheetName
+     * @param t
+     */
+    public <T> ConvertDataToWorkbook buildConvert(String sheetName, Class<T> t) {
         ConvertDataToWorkbook convert = new ConvertDataToWorkbook(this, sheetName, t);
         list.add(convert);
         return convert;
     }
 
-    public void save() throws IOException {
+    /**
+     * @param sheetName
+     * @param t
+     * @param exceptFieldName 输出表格除外的数据对象FieldName
+     */
+    public <T> ConvertDataToWorkbook buildConvert(String sheetName, Class<T> t, Set<String> exceptFieldName) {
+        ConvertDataToWorkbook convert = buildConvert(sheetName, t);
+        exceptFieldName.forEach((val) -> {
+            convert.getMap().remove(val);
+        });
+        return convert;
+    }
+
+    @Override
+    public void save(OutputStream out) throws IOException {
         boolean state = false;
         for (ConvertDataToWorkbook convertDataToWorkbook : list) {
             if (convertDataToWorkbook.isState()) {
@@ -37,34 +67,29 @@ public class ExcelSaveService implements WorkbookInfo {
             }
         }
         if (state) {
-            System.err.println("已将数据保存至：" + outFile.getPath());
             workbook.write(out);
-        }
+        } else
+            throw new IOException("没有添加数据无法进行保存");
     }
 
+    @Override
     public void close() {
-        IoUtil.close(out);
         try {
             if (workbook != null)
                 workbook.close();
         } catch (IOException e) {
-            // e.printStackTrace();
             return;
         }
-
-    }
-
-    @Override
-    public void createFile() throws IOException {
-        if (out == null)
-            this.out = new FileOutputStream(outFile);
-
     }
 
     @Override
     public Workbook createWorkbook() throws IOException {
         if (workbook == null)
-            this.workbook = WorkbookFactory.create(true);
+            if (is != null)
+                workbook = WorkbookFactory.create(is);
+            else
+                workbook = WorkbookFactory.create(state);
         return workbook;
     }
+
 }

@@ -29,17 +29,28 @@ import java.util.*;
 public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAGE, UNIT> implements DataConvertInterface<T> {
 
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
-    private final ArrayList<String> headNames = new ArrayList<String>();
+    //private final ArrayList<String> headNames = new ArrayList<String>();
     private final WorkbookInfo workbookInfo;
     private final HashMap<String, CellStyle> cellStyleMap = new HashMap<String, CellStyle>();
     private int rownum = 0;
     private Sheet sheet;
+    @Getter
     private final Map<String, FieldDetail> map;
     @Getter
     private boolean headState = false;
     @Getter
     private boolean state = false;
     private String sheetName;
+
+    /**
+     * 通过添加fieldName将指定对象从转换中移除
+     */
+    public ConvertDataToWorkbook<T, PAGE, UNIT> exceptFieldName(String... fieldName) {
+        for (int i = 0; i < fieldName.length; i++) {
+            map.remove(fieldName[i]);
+        }
+        return this;
+    }
 
     public ConvertDataToWorkbook(WorkbookInfo workbookInfo, Class<T> clazz)
             throws IOException, ConverterExcelException {
@@ -56,58 +67,49 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         this.workbookInfo = workbookInfo;
         this.sheetName = sheetName;
         this.map = map;
-        headAndFieldDataList();
+        // headAndFieldDataList();
     }
 
     private void createSheet() {
         if (!headState) {
             try {
-                workbookInfo.createFile();
                 sheet = workbookInfo.createWorkbook().createSheet(sheetName);
             } catch (IOException e) {
                 throw new NullPointerException(e.getMessage());
             }
-
-            createHead();
-            createCellStyle(sheet);
+            createHead(map, sheet, rownum);
+            rownum++;
         }
         headState = true;
-    }
-
-    private void createCellStyle(Sheet sheet) {
-        map.forEach((key, value) -> {
-            if (value.getFormat() != null) {
-                CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
-                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(value.getFormat().value()));
-                cellStyleMap.put(value.getFieldName(), cellStyle);
-            }
-        });
     }
 
     private static <T> Map<String, FieldDetail> createFieldDetail(Class<T> classes) {
         ConverterHead head = classes.getAnnotation(ConverterHead.class);
         if (head == null)
-            throw new NullPointerException("@ExcelConverterHead not enable");
+            throw new NullPointerException("@ConverterHead not enable");
         isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。
         ExcelHeadModel headModel = new ExcelHeadModel(head);
         return ConverterFieldDetail.toMap(classes, headModel, null);
     }
 
-    /**
-     * 分析FieldDetail<T> 获取 head和Field 名称List
-     */
-    private void headAndFieldDataList() {
-        map.forEach((key, value) -> {
-            headNames.add(value.getName() == null ? value.getFieldName() : value.getName());
-        });
-    }
-
-    private void createHead() {
-        for (int i = 0; i < headNames.size(); i++) {
+    private void createHead(Map<String, FieldDetail> map, Sheet sheet, int rownum) {
+        int i = 0;
+        Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, FieldDetail> next = it.next();
+            FieldDetail value = next.getValue();
             Cell cell = SheetUtils.getCreateCell(sheet, rownum, i);
-            cell.setCellValue(headNames.get(i));
+            cell.setCellValue(value.getName());
+            value.setPosition(Integer.valueOf(i));
+
+            if (value.getFormat() != null) {//创建样式Map
+                CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(value.getFormat().value()));
+                cellStyleMap.put(value.getFieldName(), cellStyle);
+            }
+            i++;
         }
-        rownum++;
+        return;
     }
 
     public void addObject(Object object) {
