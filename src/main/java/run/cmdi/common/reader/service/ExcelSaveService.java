@@ -1,22 +1,22 @@
 package run.cmdi.common.reader.service;
 
 import lombok.Getter;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import run.cmdi.common.reader.core.ConvertDataToSheetCell;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
 import run.cmdi.common.reader.core.WorkbookInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ExcelSaveService implements WorkbookInfo {
     @Getter
     private Workbook workbook;
-    private final List<ConvertDataToWorkbook> list = new ArrayList<ConvertDataToWorkbook>();
+    private final Map<String, ConvertDataToWorkbook> map = new HashMap<String, ConvertDataToWorkbook>();
     private boolean state = false;
     private InputStream is;
 
@@ -40,8 +40,17 @@ public class ExcelSaveService implements WorkbookInfo {
      */
     public <T> ConvertDataToWorkbook buildConvert(String sheetName, Class<T> t) {
         ConvertDataToWorkbook convert = new ConvertDataToWorkbook(this, sheetName, t);
-        list.add(convert);
+        if (map.get(sheetName) == null)
+            map.put(sheetName, convert);
+        else throw new NullPointerException("override sheetName");
         return convert;
+    }
+
+    /**
+     * 位置
+     */
+    public <T> ConvertDataToSheetCell buildConvert(Class<T> t) {
+        return new ConvertDataToSheetCell<T>(t);
     }
 
     /**
@@ -60,7 +69,10 @@ public class ExcelSaveService implements WorkbookInfo {
     @Override
     public void save(OutputStream out) throws IOException {
         boolean state = false;
-        for (ConvertDataToWorkbook convertDataToWorkbook : list) {
+        Iterator<Map.Entry<String, ConvertDataToWorkbook>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, ConvertDataToWorkbook> next = it.next();
+            ConvertDataToWorkbook convertDataToWorkbook = next.getValue();
             if (convertDataToWorkbook.isState()) {
                 state = true;
                 break;

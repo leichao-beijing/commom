@@ -15,6 +15,7 @@ import run.cmdi.common.reader.model.to.ExcelHeadModel;
 import run.cmdi.common.io.StringUtils;
 import run.cmdi.common.poi.core.SheetUtils;
 import run.cmdi.common.reader.exception.ConverterExcelException;
+import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -132,7 +133,8 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         while (it.hasNext()) {
             Map.Entry<String, FieldDetail> next = it.next();
             FieldDetail tt = next.getValue();
-            Object value = ReflectUtil.invoke(t, ("get" + StrUtil.upperFirst(tt.getFieldName())));
+
+            Object value = ReflectUtil.invoke(t, ReflectLcUtils.methodGetString(tt.getFieldName()));
             if (value == null) {
                 column++;
                 continue;

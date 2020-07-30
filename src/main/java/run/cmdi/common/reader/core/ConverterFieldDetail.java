@@ -15,10 +15,10 @@ import java.util.*;
  * @author leichao
  */
 public class ConverterFieldDetail {
-    public static <T> Map<String, FieldDetail> toMap(Class<T> classes, ExcelHeadModel excelHeadModel,
+    public static <T> Map<String, FieldDetail> toMap(Class<T> clazz, ExcelHeadModel excelHeadModel,
                                                      List<String> indexes) {
         HashMap<String, FieldDetail> map = new HashMap<>();
-        Field[] fields = ReflectUtil.getFields(classes);
+        Field[] fields = ReflectUtil.getFields(clazz);
         FieldDetail fieldDetail;
         boolean check;//TODO 构造fieldDetail
         for (Field field : fields) {
@@ -35,7 +35,7 @@ public class ConverterFieldDetail {
             FormatDate format = field.getAnnotation(FormatDate.class);
 
             if (findColumn != null) {
-                fieldDetail = FieldDetail.build(field, classes, format, findColumn);
+                fieldDetail = FieldDetail.build(field, clazz, format, findColumn);
                 if (check)//将 具有唯一性验证的列 添加列空检查
                     fieldDetail.setCheckColumn(true);
                 map.put(field.getName(), fieldDetail);
@@ -48,7 +48,7 @@ public class ConverterFieldDetail {
                     throw new NullPointerException("@FindColumn no data");
                 }
                 for (int i = 0; i < values.length; i++) {
-                    FieldDetail value = FieldDetail.build(field, classes, format, values[i]);
+                    FieldDetail value = FieldDetail.build(field, clazz, format, values[i]);
                     if (check)
                         value.setCheckColumn(true);
                     fieldDetail = map.get(field.getName());

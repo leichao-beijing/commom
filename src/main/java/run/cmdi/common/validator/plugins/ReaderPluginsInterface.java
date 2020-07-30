@@ -6,12 +6,12 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 public interface ReaderPluginsInterface<T extends Annotation> {
-    public Class<T> getAnnotation();
+     Class<T> getAnnotation();
 
     /**
      * 具有唯一性的name
      */
-    public String getName();
+     String getName();
 
-    public void validator(Object value, Map<String, Object> context, T t) throws ValidatorException;
+     void validator(Object value, Map<String, Object> context, T t) throws ValidatorException;
 }

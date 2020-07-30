@@ -1,16 +1,21 @@
 package run.cmdi.common.reader;
 
+import cn.hutool.poi.excel.ExcelUtil;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.junit.Assert;
 import org.junit.Test;
+import run.cmdi.common.poi.core.PoiReader;
 import run.cmdi.common.poi.core.SheetUtils;
+import run.cmdi.common.reader.core.ConvertDataToSheetCell;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
 import run.cmdi.common.reader.model.ToExcelModel;
 import run.cmdi.common.reader.service.ExcelSaveService;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +30,6 @@ public class ConvertDataToWorkbookTest {
         t = new ToExcelModel("a2", "测试2");
         t.setMessageExcept("除外信息2");
         ex.add(t);
-
 
         Set<String> exceptFieldName = new HashSet<>();
         exceptFieldName.add("messageExcept");
@@ -48,5 +52,25 @@ public class ConvertDataToWorkbookTest {
         Sheet except = workbook.getSheet("except");
         Assert.assertNotNull(except);
         Assert.assertTrue(SheetUtils.getCell(except, new CellAddress("C2")).isEmpty());
+    }
+
+    @Test
+    public void toSheetTest() throws IOException {
+        InputStream is = ClassLoader.getSystemResourceAsStream("data/produceTable.xlsx");
+        PoiReader poiReader = PoiReader.build(is);
+        Sheet sheet = poiReader.getResources().getSheet("Sheet1");
+        ExcelSaveService excelSaveService = new ExcelSaveService();
+        ToExcelModel t = new ToExcelModel("a1", "测试1");
+        t.setMessageExcept("除外信息1");
+        ConvertDataToSheetCell convertOne = excelSaveService.buildConvert(ToExcelModel.class);
+        convertOne.writeSheet(sheet, t);
+
+        FileOutputStream out = new FileOutputStream("D:\\ceshi.xlsx");
+        sheet.getWorkbook().write(out);
+
+        out.close();
+        is.close();
+
+
     }
 }
