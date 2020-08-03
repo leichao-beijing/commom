@@ -1,12 +1,17 @@
 package run.cmdi.common.reader.service;
 
 import lombok.Getter;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.reader.core.ConvertDataToSheetCell;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
 import run.cmdi.common.reader.core.WorkbookInfo;
+import run.cmdi.common.reader.support.SupportConverterDate;
+import run.cmdi.common.reader.support.SupportFormatDate;
+import run.cmdi.common.reader.support.SupportJsonValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +22,23 @@ public class ExcelSaveService implements WorkbookInfo {
     @Getter
     private Workbook workbook;
     private final Map<String, ConvertDataToWorkbook> map = new HashMap<String, ConvertDataToWorkbook>();
-    private boolean state = false;
+    private boolean state = true;
     private InputStream is;
+    @Getter
+    private final Map<String, PluginAnnotation> plugins = new HashMap<>() {{
+        SupportConverterDate converterDate = new SupportConverterDate();
+        SupportFormatDate formatDate = new SupportFormatDate();
+        SupportJsonValue jsonValue = new SupportJsonValue();
+
+        put(converterDate.getName(), converterDate);
+        put(formatDate.getName(), formatDate);
+        put(jsonValue.getName(), jsonValue);
+    }};
+
+    public ExcelSaveService addPlugin(PluginAnnotation plugin) {
+        plugins.put(plugin.getName(), plugin);
+        return this;
+    }
 
     public ExcelSaveService() {
     }
@@ -28,7 +48,7 @@ public class ExcelSaveService implements WorkbookInfo {
     }
 
     /**
-     * @param state true HSSF false Excel97-2003;XSSF Excel2007
+     * @param state false HSSF  Excel97-2003;true XSSF Excel2007
      */
     public ExcelSaveService(boolean state) {
         this.state = state;

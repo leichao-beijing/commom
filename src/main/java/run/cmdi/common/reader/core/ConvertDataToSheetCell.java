@@ -101,7 +101,7 @@ public class ConvertDataToSheetCell<T> {
             cell.setCellValue((Date) value);
             return;
         } else if (NumberUtil.isNumber(value.toString())) {
-            cell.setCellValue((double) value);
+            cell.setCellValue(NumberUtil.add(value.toString()).doubleValue());
             return;
         }
         cell.setCellValue(value.toString());

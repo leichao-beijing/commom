@@ -29,7 +29,7 @@ public class ExcelImageExport {
     public static int readExcel(Path srcPath, File outPath) throws IOException {
         FileInputStream is = new FileInputStream(srcPath.toFile());
         PoiReader poi = PoiReader.build(is, null, new ReaderPoiConfig(), srcPath.toFile());
-        Workbook word = poi.getWorkbook();
+        Workbook word = poi.getResources();
         int size = readWordbookAll(word, srcPath.getFileName().toString(), outPath);
         poi.saveAndClose();
         IoUtil.close(is);

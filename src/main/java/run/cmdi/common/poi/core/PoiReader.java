@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet, Cell>, PageClone<PoiReader> {
-    @Getter
     private final Workbook workbook;
     private final ReaderPoiConfig readerPoiConfig;
     private final File outFile;

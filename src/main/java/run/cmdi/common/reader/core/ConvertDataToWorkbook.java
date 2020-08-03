@@ -8,18 +8,20 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import run.cmdi.common.reader.annotations.ConverterHead;
-import run.cmdi.common.reader.model.FieldDetail;
-import run.cmdi.common.reader.model.eumns.FieldDetailType;
-import run.cmdi.common.reader.model.to.ExcelHeadModel;
-import run.cmdi.common.io.StringUtils;
+import run.cmdi.common.plugin.PluginAnnotation;
+import run.cmdi.common.plugin.PluginMainOne;
 import run.cmdi.common.poi.core.SheetUtils;
+import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.exception.ConverterExcelException;
+import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.to.ExcelHeadModel;
+import run.cmdi.common.reader.pligins.ConvertPluginModel;
 import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -36,7 +38,7 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
     private int rownum = 0;
     private Sheet sheet;
     @Getter
-    private final Map<String, FieldDetail> map;
+    private final Map<String, PluginMainOne<ConvertPluginModel<T>>> map;
     @Getter
     private boolean headState = false;
     @Getter
@@ -55,14 +57,14 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
 
     public ConvertDataToWorkbook(WorkbookInfo workbookInfo, Class<T> clazz)
             throws IOException, ConverterExcelException {
-        this(workbookInfo, null, createFieldDetail(clazz), clazz);
+        this(workbookInfo, null, ConvertPluginModel.buildMap(clazz), clazz);
     }
 
     public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Class<T> clazz) {
-        this(workbookInfo, sheetName, createFieldDetail(clazz), clazz);
+        this(workbookInfo, sheetName, ConvertPluginModel.buildMap(clazz), clazz);
     }
 
-    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Map<String, FieldDetail> map,
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Map<String, PluginMainOne<ConvertPluginModel<T>>> map,
                                  Class<T> clazz) {
         super(clazz);
         this.workbookInfo = workbookInfo;
@@ -84,29 +86,32 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         headState = true;
     }
 
-    private static <T> Map<String, FieldDetail> createFieldDetail(Class<T> classes) {
-        ConverterHead head = classes.getAnnotation(ConverterHead.class);
-        if (head == null)
-            throw new NullPointerException("@ConverterHead not enable");
-        isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。
-        ExcelHeadModel headModel = new ExcelHeadModel(head);
-        return ConverterFieldDetail.toMap(classes, headModel, null);
-    }
+//    private static <T> Map<String, FieldDetail> createFieldDetail(Class<T> classes) {
+//        ConverterHead head = classes.getAnnotation(ConverterHead.class);
+//        if (head == null)
+//            throw new NullPointerException("@ConverterHead not enable");
+//        isIndexMethod(head.indexes(), classes);// 验证index内值是否存在于对象中。
+//        ExcelHeadModel headModel = new ExcelHeadModel(head);
+//        return ConverterFieldDetail.toMap(classes, headModel, null);
+//    }
 
-    private void createHead(Map<String, FieldDetail> map, Sheet sheet, int rownum) {
+    private void createHead(Map<String, PluginMainOne<ConvertPluginModel<T>>> map, Sheet sheet, int rownum) {
         int i = 0;
-        Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
+        Iterator<Map.Entry<String, PluginMainOne<ConvertPluginModel<T>>>> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, FieldDetail> next = it.next();
-            FieldDetail value = next.getValue();
-            Cell cell = SheetUtils.getCreateCell(sheet, rownum, i);
-            cell.setCellValue(value.getName());
-            value.setPosition(Integer.valueOf(i));
+            Map.Entry<String, PluginMainOne<ConvertPluginModel<T>>> next = it.next();
+            PluginMainOne<ConvertPluginModel<T>> value = next.getValue();
 
-            if (value.getFormat() != null) {//创建样式Map
+            ConvertPluginModel cpm = value.getBody();
+
+            Cell cell = SheetUtils.getCreateCell(sheet, rownum, i);
+            cell.setCellValue(cpm.getValue());
+            cpm.setPosition(Integer.valueOf(i));
+
+            if (cpm.getFormat() != null) {//创建样式Map
                 CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
-                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(value.getFormat().value()));
-                cellStyleMap.put(value.getFieldName(), cellStyle);
+                cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(cpm.getFormat()));
+                cellStyleMap.put(cpm.getFieldName(), cellStyle);
             }
             i++;
         }
@@ -126,43 +131,37 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
     public void add(T t) {
         createSheet();
         state = true;
-        String str = null;
+        String str;
         int column = 0;
         Row row = SheetUtils.getCreateRow(sheet, rownum);
-        Iterator<Map.Entry<String, FieldDetail>> it = map.entrySet().iterator();
+        Iterator<Map.Entry<String, PluginMainOne<ConvertPluginModel<T>>>> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, FieldDetail> next = it.next();
-            FieldDetail tt = next.getValue();
-
+            Map.Entry<String, PluginMainOne<ConvertPluginModel<T>>> next = it.next();
+            PluginMainOne<ConvertPluginModel<T>> main = next.getValue();
+            ConvertPluginModel<T> tt = main.getBody();
             Object value = ReflectUtil.invoke(t, ReflectLcUtils.methodGetString(tt.getFieldName()));
             if (value == null) {
                 column++;
                 continue;
             }
             Cell cell = SheetUtils.getCreateCell(row, column);
+            if (main.getPlugins() != null) {
+                boolean state = false;
+                for (String plugin : main.getPlugins()) {
+                    PluginAnnotation pluginMain = workbookInfo.getPlugins().get(plugin);
+                    if(pluginMain==null)
+                        continue;
+                    Annotation ann = tt.getField().getAnnotation(pluginMain.getAnnotation());
+                    pluginMain.plugin(value,cell,ann);
+                }
+                if (state)
+                    continue;
+            }
+
             CellStyle cellStyle = cellStyleMap.get(tt.getFieldName());
             if (cellStyle != null)
                 cell.setCellStyle(cellStyle);
-            if (tt.getType() == FieldDetailType.LIST) {
-                @SuppressWarnings("unchecked")
-                List<Object> list = (List<Object>) value;
-                try {
-                    Object string = list.get(tt.getIndex());
-                    if (StringUtils.isEmpty(string)) {
-                        column++;
-                        continue;
-                    }
-                    try {
-                        cell.setCellValue((Double) converterRegistry.convert(Double.class, string));
-                    } catch (NumberFormatException e) {
-                        cell.setCellValue(string.toString());
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    // TODO: handle exception
-                }
-                column++;
-                continue;
-            }
+
             if (value.getClass().isEnum() && !tt.getEnumFieldName().equals("")) {
                 str = ReflectUtil.invoke(value, ("get" + StrUtil.upperFirst(tt.getEnumFieldName())))
                         .toString();
@@ -175,18 +174,13 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
                 cell.setCellValue((Double) converterRegistry.convert(Double.class, value));
                 column++;
                 continue;
-            }
-            if (value.getClass().equals(Date.class) || value.getClass().equals(Timestamp.class)) {
-
+            } else if (value.getClass().equals(Date.class) || value.getClass().equals(Timestamp.class)) {
                 cell.setCellValue((Date) converterRegistry.convert(Date.class, value));
-
                 column++;
                 continue;
             }
-
             str = converterRegistry.convert(String.class, value);
             cell.setCellValue(str);
-
             column++;
         }
 

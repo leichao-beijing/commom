@@ -13,6 +13,7 @@ import run.cmdi.common.reader.core.ConvertDataToWorkbook;
 import run.cmdi.common.reader.model.ToExcelModel;
 import run.cmdi.common.reader.service.ExcelSaveService;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +53,11 @@ public class ConvertDataToWorkbookTest {
         Sheet except = workbook.getSheet("except");
         Assert.assertNotNull(except);
         Assert.assertTrue(SheetUtils.getCell(except, new CellAddress("C2")).isEmpty());
+
+        FileOutputStream is = new FileOutputStream(new File("D:\\ceshi.xlsx"));
+
+        workbook.write(is);
+        workbook.close();
     }
 
     @Test
@@ -65,10 +71,10 @@ public class ConvertDataToWorkbookTest {
         ConvertDataToSheetCell convertOne = excelSaveService.buildConvert(ToExcelModel.class);
         convertOne.writeSheet(sheet, t);
 
-        FileOutputStream out = new FileOutputStream("D:\\ceshi.xlsx");
-        sheet.getWorkbook().write(out);
+        //FileOutputStream out = new FileOutputStream("D:\\ceshi.xlsx");
+        //sheet.getWorkbook().write(out);
 
-        out.close();
+        //out.close();
         is.close();
 
 

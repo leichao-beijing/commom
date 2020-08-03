@@ -81,7 +81,7 @@ public class ExcelTest {
         ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();
         PoiReader poi = PoiReader.build(ras, null, readerPoiConfig, null);
 
-        Sheet sheet = poi.getWorkbook().getSheetAt(0);
+        Sheet sheet = poi.getResources().getSheetAt(0);
         SheetComment sd = new SheetComment(sheet);
 
         StyleInfo info = new StyleInfo();
