@@ -5,6 +5,8 @@ import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.reader.annotations.FormatDate;
 import run.cmdi.common.validator.exception.ValidatorException;
 
+import java.lang.annotation.Annotation;
+
 public class SupportFormatDate implements PluginAnnotation<FormatDate, Cell> {
     @Override
     public Class<FormatDate> getAnnotation() {
@@ -22,7 +24,7 @@ public class SupportFormatDate implements PluginAnnotation<FormatDate, Cell> {
     }
 
     @Override
-    public boolean plugin(Object value, Cell cell, FormatDate formatDate) throws ValidatorException {
+    public Object plugin(Object value, Cell cell, Annotation formatDate) throws ValidatorException {
         return false;
     }
 }

@@ -76,7 +76,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, Valida
             if (plugins != null)
                 plugins.forEach((value) -> {
                     try {
-                        value.getPlugin().validator(object, context, value.getAnnotation());
+                        value.getPlugin().plugin(object, context, value.getAnnotation());
                     } catch (ValidatorException e) {
                         err.add(new ValidatorFieldException(e, value.getName(), validationMain.getFieldName()));
                     }

@@ -50,6 +50,7 @@ public class EntityBuildings<T, PAGE, UNIT> {
         headModel = new ExcelHeadModel(head);
     }
 
+
     public Map<String, FieldDetail> converterFieldDetailToMap() {
         List<String> indexes = new ArrayList<String>();
         for (List<String> index : this.indexes) {
@@ -67,7 +68,8 @@ public class EntityBuildings<T, PAGE, UNIT> {
      */
     public EntityBuild<T, Sheet, Cell> find(int readHeadRownum, BookPage<Workbook, Sheet, Cell> resource)
             throws ConverterException {
-        HeadInfo<Sheet, Cell> mode = new FindResource(this, headModel, readHeadRownum).find(resource);return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
+        HeadInfo<Sheet, Cell> mode = new FindResource(this, headModel, readHeadRownum).find(resource);
+        return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
     }
 
     protected static <T> void isIndexMethod(Index[] indexes, Class<T> clazz) {

@@ -12,7 +12,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class PluginMain<BODY> {
+public class PluginMain<BODY> implements PluginMainInterface<BODY> {
     public PluginMain(List<BODY> body, List<String> plugins) {
         this.plugins = plugins;
         this.body = body;

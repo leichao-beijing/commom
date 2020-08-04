@@ -1,6 +1,7 @@
 package run.cmdi.common.validator.core;
 
 import lombok.Getter;
+import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.utils.SpotPath;
 import run.cmdi.common.validator.EngineClazz;
 import run.cmdi.common.validator.EngineObject;
@@ -13,9 +14,10 @@ import run.cmdi.common.validator.exception.ValidatorFieldsException;
 import run.cmdi.common.validator.exception.ValidatorNullPointerException;
 import run.cmdi.common.validator.exception.ValidatorOverlapException;
 import run.cmdi.common.validator.model.*;
-import run.cmdi.common.validator.plugins.ReaderPluginsInterface;
 import run.cmdi.common.validator.plugins.ReaderPluginsPastOrPresent;
 
+import javax.validation.constraints.PastOrPresent;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -43,7 +45,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
             throw new ValidatorNullPointerException(errorList);
     }
 
-    private final Map<String, ReaderPluginsInterface> plugins = new HashMap<>() {{
+    private final Map<String, PluginAnnotation<? extends  Annotation, Map<String, Object>>> plugins = new HashMap<>() {{
         ReaderPluginsPastOrPresent readerPluginsPastOrPresent = new ReaderPluginsPastOrPresent();
         put(readerPluginsPastOrPresent.getName(), readerPluginsPastOrPresent);
     }};
@@ -51,8 +53,8 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
     /**
      * 添加扩展注解验证
      */
-    public ValidatorTools<T> addPlugins(ReaderPluginsInterface readerPluginsInterface) throws ValidatorErrorException {
-        ReaderPluginsInterface plugin = plugins.get(readerPluginsInterface.getName());
+    public ValidatorTools<T> addPlugins(PluginAnnotation<? extends  Annotation, Map<String, Object>> readerPluginsInterface) throws ValidatorErrorException {
+        PluginAnnotation<? extends  Annotation, Map<String, Object>> plugin = plugins.get(readerPluginsInterface.getName());
         if (plugin != null) {
             throw new ValidatorOverlapException(new ArrayList<>() {{
                 add(plugin.getName() + "=" + plugin.getClass().getName() + " and " + readerPluginsInterface.getName() + "=" + readerPluginsInterface.getClass().getName() + " Overlap.");

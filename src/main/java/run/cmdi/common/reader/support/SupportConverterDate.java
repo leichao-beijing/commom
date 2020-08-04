@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.validator.exception.ValidatorException;
 
+import java.lang.annotation.Annotation;
 import java.util.Date;
 
 public class SupportConverterDate implements PluginAnnotation<JsonFormat, Cell> {
@@ -26,7 +27,7 @@ public class SupportConverterDate implements PluginAnnotation<JsonFormat, Cell> 
     }
 
     @Override
-    public boolean plugin(Object value, Cell cell, JsonFormat jsonFormat) throws ValidatorException {
-        return false;
+    public Object plugin( Object value, Cell cell, Annotation jsonFormat) throws ValidatorException {
+        return null;
     }
 }

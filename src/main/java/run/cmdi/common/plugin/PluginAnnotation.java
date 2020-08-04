@@ -14,5 +14,6 @@ public interface PluginAnnotation<T extends Annotation, CONTEXT> {
      */
     String getName();
 
-    boolean plugin(Object value, CONTEXT context, T t) throws ValidatorException;
+    Object plugin(Object value, CONTEXT context, Annotation t) throws ValidatorException;
+
 }

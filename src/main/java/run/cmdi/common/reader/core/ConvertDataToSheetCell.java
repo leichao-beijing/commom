@@ -87,7 +87,7 @@ public class ConvertDataToSheetCell<T> {
                 Annotation annotation = field.getAnnotation(supportConverter.getAnnotation());
                 if (annotation == null)
                     continue;
-                if (!supportConverter.plugin(clazzValue, cell, annotation))
+                if (supportConverter.plugin(clazzValue, cell, annotation) == null)
                     state = false;
             }
             if (!state)
