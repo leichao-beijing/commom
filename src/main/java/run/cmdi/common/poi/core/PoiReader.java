@@ -3,7 +3,12 @@ package run.cmdi.common.poi.core;
 import cn.hutool.core.io.IoUtil;
 import lombok.Getter;
 
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.formula.EvaluationWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.core.BookPage;
 import run.cmdi.common.reader.core.ReaderPage;
@@ -41,7 +46,6 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
     public static PoiReader build(Workbook workbook, ReaderPoiConfig readerPoiConfig, File outFile) {
         return new PoiReader(workbook, readerPoiConfig, outFile);
     }
-
 
     private PoiReader(Workbook workbook, ReaderPoiConfig readerPoiConfig, File outFile) {
         super(workbook);
@@ -113,6 +117,7 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
 
     @Override
     public void clone(PoiReader resources, String tag, String tagNew) {
+
         if (equals(resources)) {
             Sheet srcSheet = workbook.getSheet(tag);
             Sheet sheet = workbook.cloneSheet(workbook.getSheetIndex(srcSheet));

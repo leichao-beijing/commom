@@ -1,10 +1,14 @@
 package run.cmdi.common.reader.service;
 
 import lombok.Getter;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.reader.core.ConvertDataToSheetCell;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
@@ -65,7 +69,16 @@ public class ExcelSaveService implements WorkbookInfo {
         else throw new NullPointerException("override sheetName");
         return convert;
     }
+    /**
+     * 自动计算表格内公式
+     */
+    public void autoComputeWork() {
+        if (workbook instanceof HSSFWorkbook)
+            HSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+        if (workbook instanceof XSSFWorkbook)
+            XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
 
+    }
     /**
      * 位置
      */

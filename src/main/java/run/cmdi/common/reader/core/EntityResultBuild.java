@@ -193,7 +193,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             }
 
             if (!value.getClass().equals(parameterClasses)) {
-                Object data = null;
+                Object data;
                 if (ConverterFieldDetail.IsInterface(parameterClasses, Date.class)) {
                     if (fieldDetail.getFormat() == null)
                         data = DateUtil.parse(value.toString());
@@ -205,10 +205,8 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 if (data == null && fieldDetail.isConverterException())
                     throw new ConverterExcelException(ConverterErrorType.CONVERT_ERROR, "数据：" + value + " " + "转换为：" + parameterClasses.getSimpleName() + " 类型失败。" +
                             ((fieldDetail.getFormat() != null) ? "支持要求" + fieldDetail.getFormat() : ""));
-                else {
+                else
                     ReflectUtil.invoke(out, setFunctionValue, data);
-                    return;
-                }
             } else
                 ReflectUtil.invoke(out, setFunctionValue, value);
         } catch (Exception e) {
