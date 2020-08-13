@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.validator.RegexModeInterface;
-import run.cmdi.common.validator.annotations.FiledRequire;
+import run.cmdi.common.validator.annotations.FieldRequire;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +15,12 @@ import java.util.List;
 @Getter
 @Setter
 public class Require implements RegexModeInterface {
-    private Require(FiledRequire filedRequires, String name) {
-        this.fieldName = filedRequires.fieldName();
-        this.message = filedRequires.message();
-        this.mode = filedRequires.mode();
-        this.value = filedRequires.value();
-        this.regex = filedRequires.regex();
+    private Require(FieldRequire fieldRequires, String name) {
+        this.fieldName = fieldRequires.fieldName();
+        this.message = fieldRequires.message();
+        this.mode = fieldRequires.mode();
+        this.value = fieldRequires.value();
+        this.regex = fieldRequires.regex();
         this.name = name;
     }
 
@@ -35,22 +35,22 @@ public class Require implements RegexModeInterface {
     String message = "";
 
     /**
-     * @param filedRequires
+     * @param fieldRequires
      * @param name          当前注解所在field的@NameField.value() 值
      */
-    public static List<Require> builds(FiledRequire[] filedRequires, String name) {
+    public static List<Require> builds(FieldRequire[] fieldRequires, String name) {
         ArrayList<Require> list = new ArrayList<Require>();
-        for (FiledRequire filedRequire : filedRequires) {
-            list.add(Require.build(filedRequire, name));
+        for (FieldRequire fieldRequire : fieldRequires) {
+            list.add(Require.build(fieldRequire, name));
         }
         return list.size() == 0 ? null : list;
     }
 
     /**
-     * @param filedRequire
+     * @param fieldRequire
      * @param name         当前注解所在field的@NameField.value() 值
      */
-    public static Require build(FiledRequire filedRequire, String name) {
-        return new Require(filedRequire, name);
+    public static Require build(FieldRequire fieldRequire, String name) {
+        return new Require(fieldRequire, name);
     }
 }

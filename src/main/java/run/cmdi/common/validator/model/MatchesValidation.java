@@ -6,7 +6,7 @@ import lombok.Setter;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.validator.RegexModeInterface;
 import run.cmdi.common.validator.annotations.FieldName;
-import run.cmdi.common.validator.annotations.FiledValidator;
+import run.cmdi.common.validator.annotations.FieldValidation;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class MatchesValidation implements RegexModeInterface {
-    public MatchesValidation(FiledValidator fieldValidator, Field field) {
+    public MatchesValidation(FieldValidation fieldValidator, Field field) {
         this.name = (field.isAnnotationPresent(FieldName.class)) ? field.getAnnotation(FieldName.class).value() : field.getName();
         this.fieldName = field.getName();
         this.format = (field.isAnnotationPresent(JsonFormat.class)) ? field.getAnnotation(JsonFormat.class).pattern() : null;

@@ -10,12 +10,11 @@ import run.cmdi.common.reader.annotations.Index;
 import run.cmdi.common.reader.enums.*;
 import run.cmdi.common.reader.enums.Project;
 import run.cmdi.common.validator.annotations.FieldName;
-import run.cmdi.common.validator.annotations.FiledRequire;
-import run.cmdi.common.validator.annotations.FiledValidator;
+import run.cmdi.common.validator.annotations.FieldRequire;
+import run.cmdi.common.validator.annotations.FieldValidation;
 import run.cmdi.common.validator.eumns.ValidationType;
-import run.cmdi.common.reader.enums.*;
 import run.cmdi.common.reader.model.eumns.FindModel;
-import run.cmdi.common.validator.annotations.FiledValidators;
+import run.cmdi.common.validator.annotations.FieldValidations;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,11 +39,11 @@ public class ProduceTable {
 
     @FieldName("项目类型")
     @FindColumn(value = "项目类型", checkColumn = true)
-    @FiledValidator(require = {@FiledRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
+    @FieldValidation(require = {@FieldRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
     private Project projectType;
 
-    @FiledValidators({
-            @FiledValidator(value = {"TDL"}, mode = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
+    @FieldValidations({
+            @FieldValidation(value = {"TDL"}, mode = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
     })
     @FieldName("需求号")
     @FindColumn(value = "需求号", checkColumn = true)

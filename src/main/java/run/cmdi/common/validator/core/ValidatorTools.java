@@ -7,8 +7,8 @@ import run.cmdi.common.validator.EngineClazz;
 import run.cmdi.common.validator.EngineObject;
 import run.cmdi.common.validator.FunctionClazzInterface;
 import run.cmdi.common.validator.annotations.FieldName;
-import run.cmdi.common.validator.annotations.FiledValidator;
-import run.cmdi.common.validator.annotations.FiledValidators;
+import run.cmdi.common.validator.annotations.FieldValidation;
+import run.cmdi.common.validator.annotations.FieldValidations;
 import run.cmdi.common.validator.exception.ValidatorErrorException;
 import run.cmdi.common.validator.exception.ValidatorFieldsException;
 import run.cmdi.common.validator.exception.ValidatorNullPointerException;
@@ -16,7 +16,6 @@ import run.cmdi.common.validator.exception.ValidatorOverlapException;
 import run.cmdi.common.validator.model.*;
 import run.cmdi.common.validator.plugins.ReaderPluginsPastOrPresent;
 
-import javax.validation.constraints.PastOrPresent;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -30,11 +29,11 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
     public ValidatorTools(Map<String, ValidationMain> validationStringMap) throws ValidatorErrorException {
         this.validationMap = EngineClazz.getSpotPathMap(validationStringMap);
         HashSet<String> set = new HashSet<>();
-        validationMap.forEach((key, value) -> {
-            if (value.getPluginAnnotationList() != null)
-                value.getPluginAnnotationList().forEach((val) -> {
-                    set.add(val);
-                });
+       validationMap.forEach((key, value) -> {
+                        if (value.getPluginAnnotationList() != null)
+                            value.getPluginAnnotationList().forEach((val) -> {
+                                set.add(val);
+                            });
         });
         ArrayList<String> errorList = new ArrayList<>();
         set.forEach((value) -> {
@@ -125,12 +124,12 @@ public class ValidatorTools<T> implements FunctionClazzInterface<ValidationMain>
 
     private ValidationMain resultFieldFiledValidator(SpotPath path, Field field) {
         List<MatchesValidation> list = new ArrayList<>();
-        if (field.getAnnotation(FiledValidator.class) != null)
-            list.add(new MatchesValidation(field.getAnnotation(FiledValidator.class), field));
+        if (field.getAnnotation(FieldValidation.class) != null)
+            list.add(new MatchesValidation(field.getAnnotation(FieldValidation.class), field));
 
-        if (field.getAnnotation(FiledValidators.class) != null)
-            for (FiledValidator filedValidator : field.getAnnotation(FiledValidators.class).value()) {
-                list.add(new MatchesValidation(filedValidator, field));
+        if (field.getAnnotation(FieldValidations.class) != null)
+            for (FieldValidation fieldValidation : field.getAnnotation(FieldValidations.class).value()) {
+                list.add(new MatchesValidation(fieldValidation, field));
             }
         List<ValidatorPlugin> pluginAnnotations = new ArrayList<>();
         ArrayList<String> pluginAnnotationList = new ArrayList<>();

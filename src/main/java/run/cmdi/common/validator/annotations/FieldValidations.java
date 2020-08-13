@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FiledValidators {
-    FiledValidator[] value() ;
+public @interface FieldValidations {
+    FieldValidation[] value() ;
 }

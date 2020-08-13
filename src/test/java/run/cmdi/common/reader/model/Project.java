@@ -14,7 +14,7 @@ import run.cmdi.common.reader.enums.CooperateContent;
 import run.cmdi.common.reader.enums.TableState;
 import run.cmdi.common.reader.enums.TagState;
 import run.cmdi.common.validator.annotations.FieldName;
-import run.cmdi.common.validator.annotations.FiledValidator;
+import run.cmdi.common.validator.annotations.FieldValidation;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.reader.model.eumns.FindModel;
 
@@ -36,7 +36,7 @@ public class Project {
 
     @FindColumn(value = "序号")
     @FieldName("序号")
-    @FiledValidator(value = "1", mode = ValidationType.NO_EQUALS)
+    @FieldValidation(value = "1", mode = ValidationType.NO_EQUALS)
     private Long id;
 
     //@FindColumn(value = "生产部门", checkColumn = true, matches = {@Match(require={@FiledRequire(fieldName = "id",value = "2")},check = true)})

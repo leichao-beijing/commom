@@ -4,20 +4,11 @@ import run.cmdi.common.validator.eumns.ValidationType;
 
 import java.lang.annotation.*;
 
-/**
- * 生效field的条件
- */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FiledRequire {
-    /**
-     * 默认值：Master.filedName
-     */
+public @interface FieldCompare {
     String fieldName();
-
-    String[] value();
-
 
     ValidationType mode() default ValidationType.EQUALS;//regex
 
@@ -27,4 +18,5 @@ public @interface FiledRequire {
     String regex() default "";
 
     String message() default "";
+
 }

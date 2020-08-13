@@ -10,16 +10,16 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FiledValidator {
+public @interface FieldValidation {
     /**
      * FiledRequire.FieldName 满足条件时执行后续判断
      */
-    FiledRequire[] require() default {};
+    FieldRequire[] require() default {};
 
     /**
      * 判断注解所在值与其他值的关系，不符合抛出异常
      */
-    FiledCompare[] fieldValidation() default {};
+    FieldCompare[] fieldValidation() default {};
 
     String[] value() default {};
 

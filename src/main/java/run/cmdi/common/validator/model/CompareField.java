@@ -3,7 +3,7 @@ package run.cmdi.common.validator.model;
 import lombok.Getter;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.validator.RegexModeInterface;
-import run.cmdi.common.validator.annotations.FiledCompare;
+import run.cmdi.common.validator.annotations.FieldCompare;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
  */
 @Getter
 public class CompareField implements RegexModeInterface {
-    private CompareField(FiledCompare filedCompares, String compareFieldNameSrc, String name) {
-        this.fieldName = filedCompares.fieldName();
-        this.message = filedCompares.message();
-        this.mode = filedCompares.mode();
+    private CompareField(FieldCompare fieldCompares, String compareFieldNameSrc, String name) {
+        this.fieldName = fieldCompares.fieldName();
+        this.message = fieldCompares.message();
+        this.mode = fieldCompares.mode();
         this.compareFieldNameSrc = compareFieldNameSrc;
         this.name = name;
-        this.regex = filedCompares.regex();
+        this.regex = fieldCompares.regex();
     }
 
     private final String compareFieldNameSrc;
@@ -30,14 +30,14 @@ public class CompareField implements RegexModeInterface {
     private final ValidationType mode;
 
     /**
-     * @param filedCompares
+     * @param fieldCompares
      * @param compareFieldNameSrc 注解所在的field的 fieldName
      * @param name                注解所在@FieldName.value()值
      */
-    public static List<CompareField> builds(FiledCompare[] filedCompares, String compareFieldNameSrc, String name) {
+    public static List<CompareField> builds(FieldCompare[] fieldCompares, String compareFieldNameSrc, String name) {
         ArrayList<CompareField> list = new ArrayList<CompareField>();
-        for (FiledCompare filedCompare : filedCompares) {
-            list.add(build(filedCompare, compareFieldNameSrc, name));
+        for (FieldCompare fieldCompare : fieldCompares) {
+            list.add(build(fieldCompare, compareFieldNameSrc, name));
         }
         return list;
     }
@@ -46,7 +46,7 @@ public class CompareField implements RegexModeInterface {
      * @param compareFieldNameSrc 注解所在的field的 fieldName
      * @param name                注解所在@FieldName.value()值
      */
-    public static CompareField build(FiledCompare filedCompare, String compareFieldNameSrc, String name) {
-        return new CompareField(filedCompare, compareFieldNameSrc, name);
+    public static CompareField build(FieldCompare fieldCompare, String compareFieldNameSrc, String name) {
+        return new CompareField(fieldCompare, compareFieldNameSrc, name);
     }
 }
