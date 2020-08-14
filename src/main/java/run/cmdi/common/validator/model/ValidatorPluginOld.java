@@ -8,8 +8,8 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 @Getter
-public class ValidatorPlugin {
-    public ValidatorPlugin(PluginAnnotation<? extends  Annotation, Map<String, Object>> plugin, Annotation annotation) {
+public class ValidatorPluginOld {
+    public ValidatorPluginOld(PluginAnnotation<? extends  Annotation, Map<String, Object>> plugin, Annotation annotation) {
         this.plugin = plugin;
         this.annotation = annotation;
         name = plugin.getName();

@@ -21,6 +21,7 @@ import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.exception.ConverterExceptionUtils;
 import run.cmdi.common.reader.model.entity.EntityResult;
 import run.cmdi.common.utils.ReflectLcUtils;
+import run.cmdi.common.validator.core.Validator;
 import run.cmdi.common.validator.core.ValidatorTools;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.exception.ValidatorOverlapException;
@@ -38,7 +39,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     private final int readHeadRownum;
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
     private final Map<String, FieldDetail> fieldMap;
-    private final ValidatorTools validatorTools;
+    private final Validator validator;
 
     public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) throws ConverterException {
         this.classes = clazz;
@@ -46,14 +47,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         this.indexes = indexes;
         this.readHeadRownum = readHeadRownum;
         this.fieldMap = mode.getMap();
-        try {
-            this.validatorTools = new ValidatorTools(clazz);
-        } catch (ValidatorOverlapException e) {
-            ConverterExceptionUtils utils = ConverterExceptionUtils.build(e.getMessage(), ConverterErrorType.FILED_NAME_OVERLAP);
-            throw utils.exception();
-        }
-
-
+        this.validator =ValidatorTools.buildValidator(clazz) ;//new ValidatorTools(clazz);
     }
 
     /**
@@ -136,7 +130,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
 
-        List<ValidatorFieldException> error = validatorTools.validationMap(rowInfo.getData());
+        List<ValidatorFieldException> error = validator.validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FieldDetail fieldDetail = fieldMap.get(val.getFieldName());
             if (fieldDetail == null) return;

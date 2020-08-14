@@ -1,10 +1,13 @@
 package run.cmdi.common.validator.annotations.support;
 
+import lombok.Getter;
+import lombok.Setter;
 import run.cmdi.common.plugin.ConverterAnnotation;
+import run.cmdi.common.validator.RegexModeInterface;
 import run.cmdi.common.validator.annotations.FieldCompare;
 import run.cmdi.common.validator.eumns.ValidationType;
-
-public class FieldCompareEntity extends ConverterAnnotation<FieldCompare> implements FieldCompare {
+@Getter@Setter
+public class FieldCompareEntity extends ConverterAnnotation<FieldCompare> implements FieldCompare, RegexModeInterface {
     @Override
     public void initialize(FieldCompare fieldCompare) {
         this.fieldName = fieldCompare.fieldName();

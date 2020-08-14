@@ -1,5 +1,8 @@
 package run.cmdi.common.validator.annotations.support;
 
+import lombok.Getter;
+import lombok.Setter;
+import run.cmdi.common.validator.RegexModeInterface;
 import run.cmdi.common.validator.annotations.FieldRequire;
 import run.cmdi.common.validator.annotations.FieldValidation;
 import run.cmdi.common.validator.annotations.FieldCompare;
@@ -8,7 +11,9 @@ import run.cmdi.common.plugin.ConverterAnnotation;
 
 import java.util.List;
 
-public class FiledValidationEntity extends ConverterAnnotation<FieldValidation> implements FieldValidation {
+@Getter
+@Setter
+public class FiledValidationEntity extends ConverterAnnotation<FieldValidation> implements FieldValidation, RegexModeInterface {
     @Override
     public void initialize(FieldValidation fieldValidation) {
         this.require = fieldValidation.require();
@@ -37,6 +42,8 @@ public class FiledValidationEntity extends ConverterAnnotation<FieldValidation> 
     private boolean throwState = false;
     private boolean check = false;
     private boolean converterException = true;
+    private Integer max = -1;
+    private Integer min = -1;
 
     @Override
     public FieldRequire[] require() {

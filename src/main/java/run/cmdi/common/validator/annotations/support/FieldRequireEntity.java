@@ -1,10 +1,13 @@
 package run.cmdi.common.validator.annotations.support;
 
+import lombok.Getter;
+import lombok.Setter;
+import run.cmdi.common.validator.RegexModeInterface;
 import run.cmdi.common.validator.annotations.FieldRequire;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.plugin.ConverterAnnotation;
-
-public class FieldRequireEntity extends ConverterAnnotation<FieldRequire> implements FieldRequire {
+@Getter@Setter
+public class FieldRequireEntity extends ConverterAnnotation<FieldRequire> implements FieldRequire , RegexModeInterface {
     @Override
     public void initialize(FieldRequire fieldRequire) {
         this.fieldName = fieldRequire.fieldName();

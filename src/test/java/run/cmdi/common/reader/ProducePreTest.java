@@ -17,8 +17,8 @@ public class ProducePreTest {
 
     @Test
     public void test() throws IOException {
-        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\git\\produce-pre\\src\\main\\resources\\data\\测试数据.xlsx"));
-        //InputStream is =  getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
+        //InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\git\\produce-pre\\src\\main\\resources\\data\\测试数据.xlsx"));
+        InputStream is =  getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
         ReaderUtils p = new ReaderUtils(Produce.class, is);
         try {
             EntityResults results = p.result(0);

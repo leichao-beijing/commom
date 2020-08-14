@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 public abstract class ConverterAnnotation<T extends Annotation> implements ConverterAnnotationDefault<T> {
 
 
-
     public final static <A extends Annotation, T extends ConverterAnnotation<A>> List<T> build(Supplier<T> fun, A[] a) {
         List<T> list = new ArrayList<T>();
         for (A a1 : a) {
@@ -27,11 +26,12 @@ public abstract class ConverterAnnotation<T extends Annotation> implements Conve
      *
      * @return false 未找到对应注解类
      */
-    public final static boolean instance(Field field, ConverterAnnotation converterAnnotation) {
-        Annotation annotation = field.getAnnotation(converterAnnotation.annotationType());
+    public final static <T extends ConverterAnnotation> T instance(Field field, Class<T> clazz) {
+        T value = ReflectUtil.newInstanceIfPossible(clazz);
+        Annotation annotation = field.getAnnotation(value.annotationType());
         if (annotation == null)
-            return false;
-        converterAnnotation.initialize(annotation);
-        return true;
+            return null;
+        value.initialize(annotation);
+        return value;
     }
 }

@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import run.cmdi.common.io.StringUtils;
 import run.cmdi.common.reader.core.MatchValidator;
+import run.cmdi.common.validator.plugins.ValueFieldName;
 import run.cmdi.common.validator.eumns.ValidationType;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.eumns.ValidatorErrorType;
@@ -14,8 +15,8 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class FiledValidatorUtils {
-    public static String headMessage(String tagName, Object value) {
-        return "<" + tagName + ">的值[" + value + "]";
+    public static String headMessage(ValueFieldName valueFieldName) {
+        return "<" + valueFieldName.getName() + ">的值[" + valueFieldName.getValue() + "]";
     }
 
     /**
@@ -40,7 +41,7 @@ public class FiledValidatorUtils {
      * @param dataMap
      * @return value== NULL or "" 时不进行判断返回null  , values.length==0返回true
      */
-    public static boolean mode(Object value, String[] values, RegexModeInterface regexMode, Map<String, Object> dataMap) {
+    public static boolean mode(Object value, String[] values, RegexModeInterface regexMode, Map<String, ValueFieldName> dataMap) {
         ValidationType mode = regexMode.getMode();
         List<String> list = Arrays.asList(values);
         switch (mode) {
@@ -137,7 +138,7 @@ public class FiledValidatorUtils {
         }
     }
 
-    public static Boolean compare(Object object1, Object object2, RegexModeInterface regexMode, Map<String, Object> dataMap) {
+    public static Boolean compare(Object object1, Object object2, RegexModeInterface regexMode, Map<String, ValueFieldName> dataMap) {
         if (regexMode.getMode() != ValidationType.NO_EMPTY && regexMode.getMode() != ValidationType.EMPTY)
             if (StringUtils.isEmpty(object1) && regexMode.getMode() != ValidationType.EMPTY && regexMode.getMode() != ValidationType.NO_EMPTY)
                 throw new ValidatorException(ValidatorErrorType.ON_EMPTY);

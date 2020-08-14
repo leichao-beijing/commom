@@ -11,7 +11,7 @@ public interface ConverterAnnotationDefault<T extends Annotation> extends Annota
     /**
      * 具有唯一性的name
      */
-    default String getName() {
+    default String getKeyName() {
         return getClass().getName();
     }
 

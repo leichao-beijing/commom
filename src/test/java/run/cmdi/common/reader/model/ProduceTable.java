@@ -42,9 +42,9 @@ public class ProduceTable {
     @FieldValidation(require = {@FieldRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
     private Project projectType;
 
-    @FieldValidations({
-            @FieldValidation(value = {"TDL"}, mode = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
-    })
+//    @FieldValidations({
+//            @FieldValidation(value = {"TDL"}, mode = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
+//    })
     @FieldName("需求号")
     @FindColumn(value = "需求号", checkColumn = true)
     private String demandId;

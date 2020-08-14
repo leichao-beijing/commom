@@ -1,5 +1,6 @@
 package run.cmdi.common.reader;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import run.cmdi.common.poi.model.StyleInfo;
 import run.cmdi.common.reader.core.EntityBuild;
 import run.cmdi.common.reader.model.ProduceTable;
 import run.cmdi.common.reader.model.entity.EntityResults;
+import run.cmdi.common.validator.core.Validator;
 import run.cmdi.common.validator.core.ValidatorTools;
 import run.cmdi.common.validator.model.ValidatorFieldException;
 import run.cmdi.common.reader.exception.ConverterException;
@@ -26,17 +28,16 @@ import java.util.List;
 /**
  * @author leichao
  */
+@Slf4j
 public class ExcelTest {
     @Test
-    public void validatorTest() throws IOException, ConverterException, ValidatorOverlapException {
+    public void validatorTest() throws IOException, ConverterException {
         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
-        ValidatorTools<ProduceTable> validator = new ValidatorTools<ProduceTable>(ProduceTable.class);
+        Validator<ProduceTable> validator = ValidatorTools.buildValidator(ProduceTable.class);//new ValidatorTools<ProduceTable>(ProduceTable.class);
 
         result.getCellErrorList().forEach((val) -> {
             System.err.println(val.getMessage());
         });
-
-
         result.getResultList().forEach((val) -> {
             List<ValidatorFieldException> error = validator.validation(val.getValue());
 
@@ -44,7 +45,7 @@ public class ExcelTest {
                 System.err.println(ee.getType() + ">>>>" + ee.getMessage() + ">>>" + val.getValue().getDemandId());
             }
         });
-
+      log.info("validatorTest done");
     }
 
     @Test

@@ -3,6 +3,7 @@ package run.cmdi.common.reader;
 import org.junit.Assert;
 import org.junit.Test;
 import run.cmdi.common.utils.RegexReplace;
+import run.cmdi.common.validator.plugins.ValueFieldName;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,9 +22,9 @@ public class RegexReplaceTest {
 
     @Test
     public void replaceValueTest() {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(FIELD_VALUE_1, "value1");
-        map.put(FIELD_VALUE_2, "value2");
+        HashMap<String, ValueFieldName> map = new HashMap<>();
+        map.put(FIELD_VALUE_1, ValueFieldName.build("value1", "value1", "value1"));
+        map.put(FIELD_VALUE_2, ValueFieldName.build("value2", "value2", "value2"));
         String desValue = RegexReplace.replaceValue(map, TEST_REGEX_VALUE);
         Assert.assertEquals("RegexReplace.replaceValue error", desValue, "value1112121212value2");
     }
