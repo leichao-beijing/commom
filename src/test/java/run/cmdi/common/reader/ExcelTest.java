@@ -17,7 +17,6 @@ import run.cmdi.common.validator.model.ValidatorFieldException;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.service.ExcelEntityBuildings;
 import run.cmdi.common.validator.exception.ValidatorException;
-import run.cmdi.common.validator.exception.ValidatorOverlapException;
 
 import java.awt.Color;
 import java.io.File;
@@ -117,7 +116,7 @@ public class ExcelTest {
 
         });
         result.getResultList().forEach((var) -> {
-            System.err.print(var.getFiledNull() + " ");
+            System.err.print(var.getFieldNull() + " ");
             System.err.print(var.getValue().getDesignerDoneDate() + " ");
             System.err.print(var.getValue().getList() + " ");
             System.err.println(var.getValue().getEngineeringSort());

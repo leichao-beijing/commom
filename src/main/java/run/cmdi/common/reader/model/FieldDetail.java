@@ -46,7 +46,7 @@ public class FieldDetail {
         this.values = (findColumn.value().length != 0) ? Arrays.asList(findColumn.value())
                 : Arrays.asList(field.getName());
         if (field.getType().isEnum()) {
-            List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
+            List<Field> list = ReflectLcUtils.getAnnotationInField(field.getType(), JsonValue.class);
             if (list.size() != 0)
                 enumFieldName = list.get(0).getName();
         }

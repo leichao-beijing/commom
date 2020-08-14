@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface FieldValidation {
     /**
-     * FiledRequire.FieldName 满足条件时执行后续判断
+     * FieldRequire.FieldName 满足条件时执行后续判断
      */
     FieldRequire[] require() default {};
 
@@ -26,7 +26,7 @@ public @interface FieldValidation {
     ValidationType mode() default ValidationType.EXECUTE;//regex
 
     /**
-     * filedName 符合正则时生效。不存在时忽略
+     * fieldName 符合正则时生效。不存在时忽略
      */
     String regex() default "";
 

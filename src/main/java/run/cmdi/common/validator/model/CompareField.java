@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * filedName or  filedName 数据比较
+ * fieldName or  fieldName 数据比较
  */
 @Getter
 public class CompareField implements RegexModeInterface {

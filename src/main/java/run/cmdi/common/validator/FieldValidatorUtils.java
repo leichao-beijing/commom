@@ -14,7 +14,7 @@ import run.cmdi.common.validator.eumns.ValidatorErrorType;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class FiledValidatorUtils {
+public class FieldValidatorUtils {
     public static String headMessage(ValueFieldName valueFieldName) {
         return "<" + valueFieldName.getName() + ">的值[" + valueFieldName.getValue() + "]";
     }

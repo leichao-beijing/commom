@@ -81,9 +81,6 @@ public class ProduceTable {
     @FindColumn(value = "合作类型", checkColumn = true)
     private Cooperate cooperateType;
 
-    //    @FindColumn(value = "合作单位", checkColumn = true, matches = {
-//            @Match(require = {@FiledRequire(fieldName = "cooperateType", value = "自有")}, value = "/")
-//    })
     @FindColumn(value = "合作单位", checkColumn = true)
     private String cooperateProvider;
 

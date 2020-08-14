@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FiledValidationEntity extends ConverterAnnotation<FieldValidation> implements FieldValidation, RegexModeInterface {
+public class FieldValidationEntity extends ConverterAnnotation<FieldValidation> implements FieldValidation, RegexModeInterface {
     @Override
     public void initialize(FieldValidation fieldValidation) {
         this.require = fieldValidation.require();

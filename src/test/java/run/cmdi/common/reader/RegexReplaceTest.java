@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RegexReplaceTest {
-    private static final String FIELD_VALUE_1 = "FiledName1";
-    private static final String FIELD_VALUE_2 = "filedName2";
+    private static final String FIELD_VALUE_1 = "FieldName1";
+    private static final String FIELD_VALUE_2 = "fieldName2";
     private static final String TEST_REGEX_VALUE = "{{" + FIELD_VALUE_1 + "}}112121212{{" + FIELD_VALUE_2 + "}}";
 
     @Test

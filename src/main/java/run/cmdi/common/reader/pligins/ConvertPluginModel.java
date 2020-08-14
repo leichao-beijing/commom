@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.plugin.PluginAnnotation;
-import run.cmdi.common.plugin.PluginMain;
 import run.cmdi.common.plugin.PluginMainOne;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.annotations.FieldName;
@@ -51,7 +50,7 @@ public class ConvertPluginModel<T> {
                         pluginsValue.add(plugin.getName());
                 });
             if (field.getType().isEnum()) {
-                List<Field> list = ReflectLcUtils.getAnnotationInFiled(field.getType(), JsonValue.class);
+                List<Field> list = ReflectLcUtils.getAnnotationInField(field.getType(), JsonValue.class);
                 if (list.size() != 0)
                     convertPluginModel.setEnumFieldName(list.get(0).getName());
             }

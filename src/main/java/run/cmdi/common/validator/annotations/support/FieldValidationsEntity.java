@@ -10,14 +10,14 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FiledValidationsEntity extends ConverterAnnotation<FieldValidations> implements FieldValidations {
+public class FieldValidationsEntity extends ConverterAnnotation<FieldValidations> implements FieldValidations {
     @Override
-    public void initialize(FieldValidations filedValidations) {
-        this.value = filedValidations.value();
-        this.fieldValidationEntities = build(FiledValidationEntity::new, value);
+    public void initialize(FieldValidations fieldValidations) {
+        this.value = fieldValidations.value();
+        this.fieldValidationEntities = build(FieldValidationEntity::new, value);
     }
 
-    private List<FiledValidationEntity> fieldValidationEntities;
+    private List<FieldValidationEntity> fieldValidationEntities;
     private FieldValidation[] value = new FieldValidation[0];
 
     @Override

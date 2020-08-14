@@ -18,13 +18,11 @@ import run.cmdi.common.io.EnumUtil;
 import run.cmdi.common.io.StringUtils;
 import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.exception.ConverterException;
-import run.cmdi.common.reader.exception.ConverterExceptionUtils;
 import run.cmdi.common.reader.model.entity.EntityResult;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.core.Validator;
 import run.cmdi.common.validator.core.ValidatorTools;
 import run.cmdi.common.validator.exception.ValidatorException;
-import run.cmdi.common.validator.exception.ValidatorOverlapException;
 import run.cmdi.common.validator.model.ValidatorFieldException;
 
 import java.util.*;
@@ -95,7 +93,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             List<QepeatResponse> qepeats = Compares.repeatDataAll(entityResults.getResultList(), (s) -> {
                 String value = "";
                 for (String string : index) {
-                    if (s.getFiledNull().contains(string))
+                    if (s.getFieldNull().contains(string))
                         return null;
                     String methodName = "get" + StrUtil.upperFirst(string);
                     Object obj = ReflectUtil.invoke(s.getValue(), methodName);
@@ -149,10 +147,10 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                         new CellAddress(rowInfo.getRownum(), fieldDetail.getPosition()));
             } catch (ValidatorException e) {
                 checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e.getType(), e.getMessage()));
-                tag.getFiledNull().add(name);
+                tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
                 checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e));
-                tag.getFiledNull().add(name);
+                tag.getFieldNull().add(name);
             }
             fieldDetail.setConverterException(true);//初始化异常状态
         }

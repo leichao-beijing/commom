@@ -39,7 +39,6 @@ public class Project {
     @FieldValidation(value = "1", mode = ValidationType.NO_EQUALS)
     private Long id;
 
-    //@FindColumn(value = "生产部门", checkColumn = true, matches = {@Match(require={@FiledRequire(fieldName = "id",value = "2")},check = true)})
     @FindColumn(value = "生产部门", checkColumn = true)
     @Name("生产部门")
     private String production;
@@ -110,10 +109,6 @@ public class Project {
     private Cooperate cooperateType;
 
     @FindColumn(value = "合作单位")
-    // matches = {
-    //            @Match(require = {@FiledRequire(fieldName = "cooperateType", value = {"工时定额", "单项目合作", "多项目合作"})}),
-    //            @Match(require = {@FiledRequire(fieldName = "cooperateType", value = "自有")}, value = "/", converterException = false),
-    //    }
     private String cooperateProvider;
 
     @FindColumn(value = "合作内容", checkColumn = true)

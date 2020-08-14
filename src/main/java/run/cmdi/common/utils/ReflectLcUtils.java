@@ -15,7 +15,7 @@ import run.cmdi.common.io.StringUtils;
  * @author leichao
  */
 public class ReflectLcUtils {
-    public static <T extends Annotation> List<Field> getAnnotationInFiled(Class<?> classes, Class<T> annotationClass) {
+    public static <T extends Annotation> List<Field> getAnnotationInField(Class<?> classes, Class<T> annotationClass) {
         Field[] fields = classes.getDeclaredFields();
         ArrayList<Field> list = new ArrayList<Field>();
         for (Field field : fields) {

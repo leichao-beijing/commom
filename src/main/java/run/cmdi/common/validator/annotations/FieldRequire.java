@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface FieldRequire {
     /**
-     * 默认值：Master.filedName
+     * 默认值：Master.fieldName
      */
     String fieldName();
 
