@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface Validator<T> {
 
-    Validator<T> addValidatorsMap(Map<String, ValidatorPlugin> validationStringMap);
+    Validator<T> addValidatorsMap(Map<String, List<ValidatorPlugin>> validationStringMap);
 
     /**
      * 添加扩展注解验证

@@ -34,12 +34,14 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
     private ValidatorTools() {
     }
 
-    public ValidatorTools<T> addValidatorsMap(Map<String, ValidatorPlugin> validationStringMap) {
+    public ValidatorTools<T> addValidatorsMap(Map<String, List<ValidatorPlugin>> validationStringMap) {
         validationStringMap.forEach((key, value) -> {
+            if (value == null)
+                return;
             List<ValidatorPlugin> list = validationMap.get(key);
             if (list == null)
                 list = new ArrayList<>();
-            list.add(value);
+            list.addAll(value);
         });
         return this;
     }

@@ -27,7 +27,7 @@ public class NumberFormat {
      */
     public static BigDecimal roundingEndZeroToOne(BigDecimal value, int digit) {
         value = rounding(value, digit);
-        BigDecimal tmp = value.add(BigDecimal.ONE);
+        BigDecimal tmp = value.add(BigDecimal.ZERO);
         for (int i = 0; i < digit; i++) {
             value = value.multiply(BigDecimal.TEN);
         }

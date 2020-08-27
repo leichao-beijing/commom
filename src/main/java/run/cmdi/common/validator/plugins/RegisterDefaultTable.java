@@ -76,6 +76,8 @@ public class RegisterDefaultTable implements ValidatorPlugin {
                 err.addAll(validator(value, context, fieldValidationEntity));
             }
         }
+        if (fieldValidationEntity != null)
+            err.addAll(validator(value, context, fieldValidationEntity));
         return err;
     }
 }

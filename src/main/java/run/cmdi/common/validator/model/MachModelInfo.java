@@ -20,10 +20,11 @@ public class MachModelInfo {
 
 
     public void addValue(String fieldName, Object value) {
-        List<ValidatorPlugin> list = validatorMap.get(fieldName);
+        List<ValidatorPlugin> list = validatorMap.get(new SpotPath(fieldName));
         if (list == null || list.size() == 0)
             valueContext.put(fieldName, ValueFieldName.build(fieldName, fieldName, value));
         else
             valueContext.put(fieldName, ValueFieldName.build(fieldName, list.get(0).getName(), value));
+
     }
 }

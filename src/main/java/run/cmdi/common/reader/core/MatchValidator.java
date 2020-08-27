@@ -121,8 +121,8 @@ public class MatchValidator {
         if (list == null)
             list = new ArrayList<>();
         //Object value = dataMap.get(fieldNameValue.getFieldName());
-        if (StringUtils.isBlack(valueFieldName.getFieldName())) {
-            throw new ValidatorException(ValidatorErrorType.ON_EMPTY, fieldValidationEntity.getKeyName() + " " + ValidatorErrorType.ON_EMPTY.getTypeName());
+        if (StringUtils.isBlack(valueFieldName.getValue())) {
+            throw new ValidatorException(ValidatorErrorType.ON_EMPTY,valueFieldName.getName()+ " " + ValidatorErrorType.ON_EMPTY.getTypeName());
         }
         if (fieldValidationEntity.getMode() == ValidationType.REGEX) {
             if (!validationRegex(valueFieldName.getValue().toString(), fieldValidationEntity.getRegex(), dataMap)) {
