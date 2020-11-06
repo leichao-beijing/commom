@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.plugin.PluginMainOne;
+import run.cmdi.common.reader.annotations.IgnoreReader;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.annotations.FieldName;
 
@@ -37,6 +38,8 @@ public class ConvertPluginModel<T> {
         Map<String, PluginMainOne<ConvertPluginModel<T>>> map = new LinkedHashMap<>();
         List<String> pluginsValue = new ArrayList<>();
         for (Field field : fields) {
+            if (field.isAnnotationPresent(IgnoreReader.class))
+                continue;
             FieldName fieldName = field.getAnnotation(FieldName.class);
             ConvertPluginModel<T> convertPluginModel;
 

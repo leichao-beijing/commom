@@ -2,6 +2,7 @@ package run.cmdi.common.reader;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.IndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import run.cmdi.common.poi.core.PoiReader;
@@ -107,7 +108,7 @@ public class ExcelTest {
 
     @Test
     public void produce() throws IOException, ConverterException {
-        EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
+         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
         result.getErrorType().forEach((ss) -> {
             System.err.println(ss);
         });

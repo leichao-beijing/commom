@@ -18,8 +18,6 @@ public interface ConverterAnnotationDefault<T extends Annotation> extends Annota
 
     /**
      * 通过 注解T 对对象内数据进行初始化操作
-     *
-     * @return
      */
     void initialize(T t);
 

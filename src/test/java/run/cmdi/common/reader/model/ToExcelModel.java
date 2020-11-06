@@ -6,6 +6,7 @@ import lombok.ToString;
 import run.cmdi.common.reader.annotations.CellPosition;
 import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.annotations.FindColumn;
+import run.cmdi.common.reader.annotations.IgnoreReader;
 import run.cmdi.common.validator.annotations.FieldName;
 
 @ConverterHead(maxWrongCount = 1)
@@ -32,4 +33,7 @@ public class ToExcelModel {
     @FieldName("这是除外信息")
     @FindColumn(value = "这是除外信息")
     private String messageExcept;
+
+    @IgnoreReader
+    private boolean state = true;
 }

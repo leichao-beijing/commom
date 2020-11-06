@@ -13,6 +13,7 @@ public class StringUtils {
         for (T t : list) {
             newList.add(t);
         }
+
         return newList;
     }
 
