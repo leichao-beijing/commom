@@ -10,6 +10,7 @@ public class ObjectUtils {
     private static String SET = "set";
     private static String IS = "is";
     private static String GET_CLASS = "getClass";
+
     /**
      * 对父类的克隆
      *
@@ -37,7 +38,7 @@ public class ObjectUtils {
 
     private static <P, OUT extends P> OUT cloneParent(P parentObject, OUT out) {
         Method[] methods = ReflectUtil.getMethods(parentObject.getClass());
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (Method method : methods) {
             if (method.getName().equals(GET_CLASS))
                 continue;
@@ -64,6 +65,7 @@ public class ObjectUtils {
                 return;
             ReflectUtil.invoke(out, methodName, val);
         });
+        list.clear();
         return out;
     }
 }
