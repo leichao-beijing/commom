@@ -65,13 +65,13 @@ public class ExcelTest {
     public void poiReaderClone() throws IOException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();
-        PoiReader poi = PoiReader.build(ras, null, readerPoiConfig, null);
+        PoiReader poi = PoiReader.build(ras, null, readerPoiConfig);
         poi.saveAndClose(new File("D:\\xxx.xls"));
 
         InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
 
         ReaderPoiConfig readerPoiConfig1 = new ReaderPoiConfig();
-        PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig, null);
+        PoiReader poi1 = PoiReader.build(ras1, null, readerPoiConfig);
 
     }
 
@@ -80,7 +80,7 @@ public class ExcelTest {
     public void poiReader() throws IOException {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         ReaderPoiConfig readerPoiConfig = new ReaderPoiConfig();
-        PoiReader poi = PoiReader.build(ras, null, readerPoiConfig, null);
+        PoiReader poi = PoiReader.build(ras, null, readerPoiConfig);
 
         Sheet sheet = poi.getResources().getSheetAt(0);
         SheetComment sd = new SheetComment(sheet);

@@ -54,13 +54,14 @@ public class EntityResults<T, PAGE, UNIT> {
         }
     }
 
-    public void addResult(EntityResult<T, PAGE, UNIT> result) {
+    public void addResult(EntityResult<T, PAGE, UNIT> result, boolean state) {
         if (result.getCellErrorList() != null) {
             result.upDateErrorType();
             cellErrorList.addAll(result.getCellErrorList());
         }
         if (result.getErrorType() != null)
             errorType.addAll(result.getErrorType());
-        resultList.add(result.getResult());
+        if (!state || result.getCellErrorList().isEmpty())
+            resultList.add(result.getResult());
     }
 }

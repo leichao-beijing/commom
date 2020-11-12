@@ -29,7 +29,7 @@ public class FunctionTable {
     private String functionProcessDescription;// 功能过程
 
     @FindColumn(value = {"子过程描述"}, checkColumn = true)
-    private String subprocessDescription;// 子过程描述
+    private String subProcessDescription;// 子过程描述
 
     @FindColumn(value = {"数据移动类型"}, checkColumn = true)
     private String mobileType;// 数据移动类型

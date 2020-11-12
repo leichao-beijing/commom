@@ -2,9 +2,11 @@ package run.cmdi.common.reader.core;
 
 import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.annotations.Index;
 import run.cmdi.common.reader.model.FieldDetail;
@@ -33,6 +35,10 @@ public class EntityBuildings<T, PAGE, UNIT> {
     private final ExcelHeadModel headModel;
     @Getter
     private final List<List<String>> indexes;
+    @Getter
+    private final ReaderPoiConfig readerPoiConfig;
+
+
     // @Getter
     //@Setter
     //private String sheetName;
@@ -40,14 +46,15 @@ public class EntityBuildings<T, PAGE, UNIT> {
     /**
      * @param clazz
      */
-    public EntityBuildings(Class<T> clazz) {
+    public EntityBuildings(Class<T> clazz, ReaderPoiConfig readerPoiConfig) {
         this.clazz = clazz;
         ConverterHead head = clazz.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ConverterHead not enable");
         isIndexMethod(head.indexes(), clazz);// 验证index内值是否存在于对象中。
         this.indexes = getIndexList(head.indexes());
-        headModel = new ExcelHeadModel(head);
+        this.headModel = new ExcelHeadModel(head);
+        this.readerPoiConfig = readerPoiConfig;
     }
 
 
@@ -66,10 +73,10 @@ public class EntityBuildings<T, PAGE, UNIT> {
      * @param resource       实现 BookResources 接口的方法。
      * @throws ConverterExcelException
      */
-    public EntityBuild<T, Sheet, Cell> find(int readHeadRownum, BookPage<Workbook, Sheet, Cell> resource)
+    public EntityBuild<T, Sheet, Cell> find(BookPage<Workbook, Sheet, Cell> resource, int readHeadRownum)
             throws ConverterException {
         HeadInfo<Sheet, Cell> mode = new FindResource(this, headModel, readHeadRownum).find(resource);
-        return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum);
+        return new EntityResultBuild<T, Sheet, Cell>(clazz, mode, indexes, readHeadRownum, readerPoiConfig);
     }
 
     protected static <T> void isIndexMethod(Index[] indexes, Class<T> clazz) {

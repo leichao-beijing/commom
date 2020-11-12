@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.poi.ss.util.CellAddress;
 import run.cmdi.common.compare.Compares;
 import run.cmdi.common.compare.model.LocationTag;
+import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.model.FieldDetail;
 import run.cmdi.common.reader.model.HeadInfo;
 import run.cmdi.common.reader.model.entity.CellAddressAndMessage;
@@ -38,14 +39,16 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
     private final Map<String, FieldDetail> fieldMap;
     private final Validator validator;
+    private final ReaderPoiConfig config;
 
-    public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum) throws ConverterException {
+    public EntityResultBuild(Class<T> clazz, HeadInfo<PAGE, UNIT> mode, List<List<String>> indexes, int readHeadRownum, ReaderPoiConfig config) throws ConverterException {
         this.classes = clazz;
         this.mode = mode;
         this.indexes = indexes;
         this.readHeadRownum = readHeadRownum;
         this.fieldMap = mode.getMap();
-        this.validator =ValidatorTools.buildValidator(clazz) ;//new ValidatorTools(clazz);
+        this.validator = ValidatorTools.buildValidator(clazz);//new ValidatorTools(clazz);
+        this.config = config;
     }
 
     /**
@@ -67,7 +70,12 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
      */
     @Override
     public EntityResults<T, PAGE, UNIT> build() {
-        return build(0, mode.getReaderPage().length());
+        int row;
+        if (!config.isStartRow())
+            row = config.getStartRowNum();
+        else
+            row = readHeadRownum + 1;
+        return build(row, mode.getReaderPage().length());
     }
 
     @Override
@@ -75,10 +83,10 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         end = Math.min(end, mode.getReaderPage().length());
         start = Math.max(0, start);
         EntityResults<T, PAGE, UNIT> entityResults = new EntityResults<T, PAGE, UNIT>(start, end, mode.getReaderPage(), mode);
-        for (int i = 0; i < end; i++) {
+        for (int i = start; i < end; i++) {
             EntityResult<T, PAGE, UNIT> t = build(i);
             if (t != null) {
-                entityResults.addResult(t);
+                entityResults.addResult(t,config.isSkipErrorResult());
             }
         }
         entityResults.upDateErrorType();
@@ -127,7 +135,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
-
         List<ValidatorFieldException> error = validator.validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FieldDetail fieldDetail = fieldMap.get(val.getFieldName());
@@ -135,7 +142,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val.getType(), val.getMessage()));
         });
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
-
         while (it.hasNext()) {
             Map.Entry<String, Object> next = it.next();
             String name = next.getKey();

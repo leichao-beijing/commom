@@ -1,4 +1,4 @@
-package run.cmdi.common.number;
+package run.cmdi.common.utils;
 
 import run.cmdi.common.validator.eumns.Value;
 

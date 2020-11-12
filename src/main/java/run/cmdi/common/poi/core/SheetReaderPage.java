@@ -1,5 +1,6 @@
 package run.cmdi.common.poi.core;
 
+import cn.hutool.core.date.DateTime;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.SheetUtil;
@@ -55,7 +56,7 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
         switch (type) {
             case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell))
-                    return cell.getDateCellValue();
+                    return new DateTime(cell.getDateCellValue());
                 else {
                     int valueInteger = (int) cell.getNumericCellValue();
                     double valueDouble = cell.getNumericCellValue();

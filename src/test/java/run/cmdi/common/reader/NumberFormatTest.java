@@ -2,7 +2,7 @@ package run.cmdi.common.reader;
 
 import org.junit.Assert;
 import org.junit.Test;
-import run.cmdi.common.number.NumberFormat;
+import run.cmdi.common.utils.NumberFormat;
 
 import java.math.BigDecimal;
 

@@ -28,10 +28,12 @@ public class ExcelImageExport {
 
     public static int readExcel(Path srcPath, File outPath) throws IOException {
         FileInputStream is = new FileInputStream(srcPath.toFile());
-        PoiReader poi = PoiReader.build(is, null, new ReaderPoiConfig(), srcPath.toFile());
+        PoiReader poi = PoiReader.build(is, null, new ReaderPoiConfig());
         Workbook word = poi.getResources();
         int size = readWordbookAll(word, srcPath.getFileName().toString(), outPath);
-        poi.saveAndClose();
+        FileOutputStream fos = new FileOutputStream(srcPath.toFile());
+        poi.saveAndClose(fos);
+        fos.close();
         IoUtil.close(is);
         return size;
     }

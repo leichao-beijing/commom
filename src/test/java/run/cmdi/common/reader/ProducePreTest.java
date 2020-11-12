@@ -18,16 +18,19 @@ public class ProducePreTest {
     @Test
     public void test() throws IOException {
         //InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\git\\produce-pre\\src\\main\\resources\\data\\测试数据.xlsx"));
-        InputStream is =  getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
         ReaderUtils p = new ReaderUtils(Produce.class, is);
+        EntityResults results = null;
+        List<CellAddressAndMessage> errorList = null;
         try {
-            EntityResults results = p.result(0);
-            List<CellAddressAndMessage> errorList = results.getCellErrorList();
+            results = p.result(0);
+            errorList = results.getCellErrorList();
             errorList.forEach((val) -> {
                 System.err.println(val.getMessage() + ">>" + val + ">>");
             });
         } catch (ConverterException ex) {
             System.err.println(ex.getErrorMap());
         }
+        System.err.println(">>>");
     }
 }

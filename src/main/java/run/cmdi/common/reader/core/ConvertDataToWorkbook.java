@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.plugin.PluginMainOne;
 import run.cmdi.common.poi.core.SheetUtils;
+import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.model.FieldDetail;
@@ -66,7 +67,16 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
 
     public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Map<String, PluginMainOne<ConvertPluginModel<T>>> map,
                                  Class<T> clazz) {
-        super(clazz);
+        super(clazz, new ReaderPoiConfig());
+        this.workbookInfo = workbookInfo;
+        this.sheetName = sheetName;
+        this.map = map;
+        // headAndFieldDataList();
+    }
+
+    public ConvertDataToWorkbook(WorkbookInfo workbookInfo, String sheetName, Map<String, PluginMainOne<ConvertPluginModel<T>>> map,
+                                 Class<T> clazz, ReaderPoiConfig readerPoiConfig) {
+        super(clazz, readerPoiConfig);
         this.workbookInfo = workbookInfo;
         this.sheetName = sheetName;
         this.map = map;
@@ -149,10 +159,10 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
                 boolean state = false;
                 for (String plugin : main.getPlugins()) {
                     PluginAnnotation pluginMain = workbookInfo.getPlugins().get(plugin);
-                    if(pluginMain==null)
+                    if (pluginMain == null)
                         continue;
                     Annotation ann = tt.getField().getAnnotation(pluginMain.getAnnotation());
-                    pluginMain.plugin(value,cell,ann);
+                    pluginMain.plugin(value, cell, ann);
                 }
                 if (state)
                     continue;

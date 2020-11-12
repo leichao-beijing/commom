@@ -13,10 +13,7 @@ import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.core.BookPage;
 import run.cmdi.common.reader.core.ReaderPage;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,34 +21,34 @@ import java.util.List;
 public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet, Cell>, PageClone<PoiReader> {
     private final Workbook workbook;
     private final ReaderPoiConfig readerPoiConfig;
-    private final File outFile;
+    //private final File outFile;
 
     public static PoiReader build(InputStream is, ReaderPoiConfig readerPoiConfig) throws IOException {
         Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is));
-        PoiReader poiReader = new PoiReader(workbook, readerPoiConfig, null);
+        PoiReader poiReader = new PoiReader(workbook, readerPoiConfig);
         return poiReader;
     }
 
     public static PoiReader build(InputStream is) throws IOException {
         Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is));
-        PoiReader poiReader = new PoiReader(workbook, new ReaderPoiConfig(), null);
+        PoiReader poiReader = new PoiReader(workbook, new ReaderPoiConfig());
         return poiReader;
     }
 
-    public static PoiReader build(InputStream is, String password, ReaderPoiConfig readerPoiConfig, File outFile) throws IOException {
+    public static PoiReader build(InputStream is, String password, ReaderPoiConfig readerPoiConfig) throws IOException {
         Workbook workbook = WorkbookFactory.create(IoUtil.toMarkSupportStream(is), password);
-        return new PoiReader(workbook, readerPoiConfig, outFile);
+        return new PoiReader(workbook, readerPoiConfig);
     }
 
-    public static PoiReader build(Workbook workbook, ReaderPoiConfig readerPoiConfig, File outFile) {
-        return new PoiReader(workbook, readerPoiConfig, outFile);
+    public static PoiReader build(Workbook workbook, ReaderPoiConfig readerPoiConfig) {
+        return new PoiReader(workbook, readerPoiConfig);
     }
 
-    private PoiReader(Workbook workbook, ReaderPoiConfig readerPoiConfig, File outFile) {
+    private PoiReader(Workbook workbook, ReaderPoiConfig readerPoiConfig) {
         super(workbook);
         this.workbook = workbook;
         this.readerPoiConfig = readerPoiConfig;
-        this.outFile = outFile;
+        //this.outFile = outFile;
     }
 
     @Override
@@ -84,15 +81,15 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
             list.add(new SheetReaderPage(it.next(), null, readerPoiConfig));
         return list;
     }
+//
 
     /**
      * 文件保存至outFile内。关闭workbook和FileOutputStream
+     * 只对workbook流进行关闭
      */
-    public void saveAndClose() throws IOException {
-        FileOutputStream fos = new FileOutputStream(outFile);
+    public void saveAndClose(OutputStream fos) throws IOException {
         workbook.write(fos);
         workbook.close();
-        fos.close();
     }
 
     /**
@@ -117,7 +114,6 @@ public class PoiReader extends StylePalette implements BookPage<Workbook, Sheet,
 
     @Override
     public void clone(PoiReader resources, String tag, String tagNew) {
-
         if (equals(resources)) {
             Sheet srcSheet = workbook.getSheet(tag);
             Sheet sheet = workbook.cloneSheet(workbook.getSheetIndex(srcSheet));

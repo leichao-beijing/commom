@@ -15,7 +15,7 @@ import run.cmdi.common.reader.model.eumns.FindModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FindColumn {
-    //FindColumn
+
     String[] value() default {};
 
 
