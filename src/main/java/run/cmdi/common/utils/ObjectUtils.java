@@ -63,7 +63,7 @@ public class ObjectUtils {
             Object result = ReflectUtil.invoke(parentObject, val);
             if (result == null)
                 return;
-            ReflectUtil.invoke(out, methodName, val);
+            ReflectUtil.invoke(out, methodName, result);
         });
         list.clear();
         return out;
