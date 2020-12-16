@@ -27,7 +27,7 @@ public class SupportConverterDate implements PluginAnnotation<JsonFormat, Cell> 
     }
 
     @Override
-    public Object plugin( Object value, Cell cell, Annotation jsonFormat) throws ValidatorException {
-        return null;
+    public boolean plugin( Object value, Cell cell, Annotation jsonFormat) throws ValidatorException {
+        return false;
     }
 }

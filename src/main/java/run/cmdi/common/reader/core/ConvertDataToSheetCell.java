@@ -14,7 +14,6 @@ import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.security.interfaces.RSAKey;
 import java.util.*;
 
 /**
@@ -82,16 +81,21 @@ public class ConvertDataToSheetCell<T> {
             Field field = ReflectUtil.getField(t.getClass(), value);
             org.apache.poi.ss.util.CellAddress cellAddress = new org.apache.poi.ss.util.CellAddress(key);
             Cell cell = SheetUtils.getCreateCell(sheet, cellAddress.getRow(), cellAddress.getColumn());
-            boolean state = true;
+            int skip = 0;
+            int i = 0;
             for (PluginAnnotation supportConverter : supportConverters) {
+                //加载注册的转换器
                 Annotation annotation = field.getAnnotation(supportConverter.getAnnotation());
                 if (annotation == null)
                     continue;
-                if (supportConverter.plugin(clazzValue, cell, annotation) == null)
-                    state = false;
+                i++;
+                if (!supportConverter.plugin(clazzValue, cell, annotation))
+                    skip++;
+
             }
-            if (!state)
+            if (i != 0 && skip == i)//执行成功后将跳过默认转换器
                 return;
+            //默认转换器
             converterDefault(clazzValue, cell);
         });
     }

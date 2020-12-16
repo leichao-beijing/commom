@@ -7,14 +7,14 @@ import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.annotations.FindColumn;
 import run.cmdi.common.reader.annotations.FindColumns;
 import run.cmdi.common.reader.annotations.Index;
-import run.cmdi.common.reader.enums.*;
 import run.cmdi.common.reader.enums.Project;
+import run.cmdi.common.reader.enums.*;
+import run.cmdi.common.reader.model.eumns.FindModel;
 import run.cmdi.common.validator.annotations.FieldName;
+import run.cmdi.common.validator.annotations.FieldNameList;
 import run.cmdi.common.validator.annotations.FieldRequire;
 import run.cmdi.common.validator.annotations.FieldValidation;
 import run.cmdi.common.validator.eumns.ValidationType;
-import run.cmdi.common.reader.model.eumns.FindModel;
-import run.cmdi.common.validator.annotations.FieldValidations;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +42,7 @@ public class ProduceTable {
     @FieldValidation(require = {@FieldRequire(fieldName = "demandId", value = "NR20011647", mode = ValidationType.EQUALS)}, throwState = true, message = "demandId：值不可以为 NR20011647")
     private Project projectType;
 
-//    @FieldValidations({
+    //    @FieldValidations({
 //            @FieldValidation(value = {"TDL"}, mode = ValidationType.REGEX, regex = "^[a-zA-Z0-9]*$", message = "格式正确"),
 //    })
     @FieldName("需求号")
@@ -131,13 +131,15 @@ public class ProduceTable {
     @FindColumn(value = "错误信息")
     private String errorMessage;
 
-
     @FindColumns({@FindColumn(value = "合同编号"), @FindColumn(value = "是否已计提"), @FindColumn(value = "计提内部立项编号"),
             @FindColumn(value = "计提内部立项名称"), @FindColumn(value = "计提合作单位"), @FindColumn(value = "结算勘察设计费"),
             @FindColumn(value = "计提金额(元)"), @FindColumn(value = "是否已结算"), @FindColumn(value = "确认单编号"), @FindColumn(value = "备注2"),
             @FindColumn(value = "是否自有或多项目转为单项目"), @FindColumn(value = "是否在14年8月已核对"), @FindColumn(value = "是否漏报产值"),
             @FindColumn(value = "签字标签"), @FindColumn(value = "原勘察设计费（元）"), @FindColumn(value = "原自有产值"),
             @FindColumn(value = "原预估合作费")})
+    @FieldNameList({
+            @FieldName("合同编号"), @FieldName("合同编号1")
+    })
     private ArrayList<String> list;
 
     public ProduceTable() {

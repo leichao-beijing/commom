@@ -25,7 +25,7 @@ public class SupportJsonValue implements PluginAnnotation<JsonValue, Cell> {
     }
 
     @Override
-    public Object plugin(Object value, Cell cell, Annotation jsonValue) throws ValidatorException {
+    public boolean plugin(Object value, Cell cell, Annotation jsonValue) throws ValidatorException {
         return false;
     }
 }

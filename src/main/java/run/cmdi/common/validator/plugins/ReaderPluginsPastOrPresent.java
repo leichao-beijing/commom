@@ -28,7 +28,7 @@ public class ReaderPluginsPastOrPresent implements PluginAnnotation<PastOrPresen
     }
 
     @Override
-    public Object plugin(Object value, Map<String, Object> stringObjectMap, Annotation pastOrPresent) throws ValidatorException {
+    public boolean plugin(Object value, Map<String, Object> stringObjectMap, Annotation pastOrPresent) throws ValidatorException {
         Date date;
         if (!value.getClass().isAssignableFrom(Date.class)) {
             try {

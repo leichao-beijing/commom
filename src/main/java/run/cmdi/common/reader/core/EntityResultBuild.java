@@ -102,11 +102,11 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 String value = "";
                 for (String string : index) {
                     if (s.getFieldNull().contains(string))
-                        return null;
+                        continue;
                     String methodName = "get" + StrUtil.upperFirst(string);
                     Object obj = ReflectUtil.invoke(s.getValue(), methodName);
                     if (obj == null)
-                        return null;
+                        continue;
                     value = value + obj.toString();
                 }
                 return value;

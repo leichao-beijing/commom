@@ -14,6 +14,9 @@ public interface PluginAnnotation<T extends Annotation, CONTEXT> {
      */
     String getName();
 
-    Object plugin(Object value, CONTEXT context, Annotation t) throws ValidatorException;
+    /**
+     * @return false 执行默认转换器
+     */
+    boolean plugin(Object value, CONTEXT context, Annotation t) throws ValidatorException;
 
 }

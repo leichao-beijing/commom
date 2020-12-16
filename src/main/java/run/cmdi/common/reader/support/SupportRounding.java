@@ -23,7 +23,7 @@ public class SupportRounding implements PluginAnnotation<Rounding, Cell> {
     }
 
     @Override
-    public Object plugin(Object value, Cell cell, Annotation t) throws ValidatorException {
-        return null;
+    public boolean plugin(Object value, Cell cell, Annotation t) throws ValidatorException {
+        return false;
     }
 }

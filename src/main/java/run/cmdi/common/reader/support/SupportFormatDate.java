@@ -24,7 +24,7 @@ public class SupportFormatDate implements PluginAnnotation<FormatDate, Cell> {
     }
 
     @Override
-    public Object plugin(Object value, Cell cell, Annotation formatDate) throws ValidatorException {
+    public boolean plugin(Object value, Cell cell, Annotation formatDate) throws ValidatorException {
         return false;
     }
 }
