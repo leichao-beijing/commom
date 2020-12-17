@@ -178,6 +178,8 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
     }
 
     private void putValue(Object value, Cell cell, ConvertPlugin<T> tt, List<String> list) {
+        if (value == null)
+            return;
         CellStyle cellStyle = cellStyleMap.get(tt.getFieldName());
         if (cellStyle != null)
             cell.setCellStyle(cellStyle);
