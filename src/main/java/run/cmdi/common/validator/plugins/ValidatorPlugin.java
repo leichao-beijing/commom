@@ -12,5 +12,13 @@ public interface ValidatorPlugin extends FieldName {
 
     boolean isSupport();
 
-    List<ValidatorFieldException> validator(ValueFieldName value,Map<String, ValueFieldName> context);
+    /**
+     * 转换异常抛出状态 true抛出 false忽略
+     */
+    default boolean isConverterException() {
+        return true;
+    }
+
+
+    List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context);
 }

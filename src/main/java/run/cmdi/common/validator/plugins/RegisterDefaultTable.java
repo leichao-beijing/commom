@@ -24,7 +24,13 @@ public class RegisterDefaultTable implements ValidatorPlugin {
     private FieldRequireEntity fieldRequireEntity;
     private FieldValidationEntity fieldValidationEntity;
     private FieldValidationsEntity fieldValidations;
-    //private PastOrPresentEntity pastOrPresentEntity;
+
+    @Override
+    public boolean isConverterException() {
+        return converterState;
+    }
+
+    private boolean converterState = true;
 
     @Override
     public void instanceAnnotationInfo(Field field) {
@@ -38,8 +44,19 @@ public class RegisterDefaultTable implements ValidatorPlugin {
         else
             this.name = this.fieldName;
 
-        if (fieldValidationEntity != null || fieldValidations != null)
+        if (fieldValidationEntity != null) {
+            this.state = true;
+            this.converterState = fieldValidationEntity.isConverterException();
+        }
+        if (fieldValidations != null) {
             state = true;
+            if (converterState)
+                for (FieldValidationEntity validationEntity : fieldValidations.getFieldValidationEntities()) {
+                    converterState = validationEntity.isConverterException();
+                    if (!converterState)
+                        break;
+                }
+        }
 
     }
 
@@ -49,6 +66,7 @@ public class RegisterDefaultTable implements ValidatorPlugin {
     public boolean isSupport() {
         return state;
     }
+
 
     private List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context, FieldValidationEntity fieldValidationEntity) {
         List<ValidatorFieldException> err = new ArrayList<>();

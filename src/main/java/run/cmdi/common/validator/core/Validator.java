@@ -10,6 +10,8 @@ public interface Validator<T> {
 
     Validator<T> addValidatorsMap(Map<String, List<ValidatorPlugin>> validationStringMap);
 
+    boolean isConverter(String fieldName);
+
     /**
      * 添加扩展注解验证
      */

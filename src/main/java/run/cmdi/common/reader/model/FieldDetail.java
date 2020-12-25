@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import run.cmdi.common.reader.annotations.FindColumn;
-import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.reader.annotations.FormatDate;
+import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.reader.model.eumns.FindModel;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.annotations.FieldName;
@@ -55,6 +55,7 @@ public class FieldDetail {
             this.name = fieldName.value();
         else
             this.name = field.getName();
+        //converterException = findColumn.converterException();
     }
 
     private List<FieldDetail> otherDetails;
@@ -83,9 +84,9 @@ public class FieldDetail {
     private String name;
     @Setter
     private Integer position = -1;
-    /**
-     * 是否触发转换异常。
-     */
+    //    /**
+//     * 是否触发转换异常。
+//     */
     @Setter
     private boolean converterException = true;
 }

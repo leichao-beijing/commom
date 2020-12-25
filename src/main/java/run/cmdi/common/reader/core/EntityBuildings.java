@@ -38,11 +38,6 @@ public class EntityBuildings<T, PAGE, UNIT> {
     @Getter
     private final ReaderPoiConfig readerPoiConfig;
 
-
-    // @Getter
-    //@Setter
-    //private String sheetName;
-
     /**
      * @param clazz
      */

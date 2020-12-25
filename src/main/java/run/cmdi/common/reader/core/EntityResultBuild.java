@@ -7,19 +7,19 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.poi.ss.util.CellAddress;
 import run.cmdi.common.compare.Compares;
 import run.cmdi.common.compare.model.LocationTag;
-import run.cmdi.common.poi.model.ReaderPoiConfig;
-import run.cmdi.common.reader.model.FieldDetail;
-import run.cmdi.common.reader.model.HeadInfo;
-import run.cmdi.common.reader.model.entity.CellAddressAndMessage;
-import run.cmdi.common.reader.model.entity.EntityResults;
-import run.cmdi.common.reader.model.eumns.ConverterErrorType;
-import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.compare.model.QepeatResponse;
 import run.cmdi.common.io.EnumUtil;
 import run.cmdi.common.io.StringUtils;
+import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.exception.ConverterException;
+import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.HeadInfo;
+import run.cmdi.common.reader.model.entity.CellAddressAndMessage;
 import run.cmdi.common.reader.model.entity.EntityResult;
+import run.cmdi.common.reader.model.entity.EntityResults;
+import run.cmdi.common.reader.model.eumns.ConverterErrorType;
+import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.core.Validator;
 import run.cmdi.common.validator.core.ValidatorTools;
@@ -49,6 +49,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         this.fieldMap = mode.getMap();
         this.validator = ValidatorTools.buildValidator(clazz);//new ValidatorTools(clazz);
         this.config = config;
+
     }
 
     /**
@@ -86,7 +87,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         for (int i = start; i < end; i++) {
             EntityResult<T, PAGE, UNIT> t = build(i);
             if (t != null) {
-                entityResults.addResult(t,config.isSkipErrorResult());
+                entityResults.addResult(t, config.isSkipErrorResult());
             }
         }
         entityResults.upDateErrorType();
@@ -141,6 +142,7 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
             if (fieldDetail == null) return;
             checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), val.getType(), val.getMessage()));
         });
+
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Object> next = it.next();
@@ -155,10 +157,12 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
                 checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
-                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e));
-                tag.getFieldNull().add(name);
+                if (validator.isConverter(name)) {
+                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldDetail.getPosition(), e));
+                    tag.getFieldNull().add(name);
+                }
             }
-            fieldDetail.setConverterException(true);//初始化异常状态
+            //fieldDetail.setConverterException(true);//初始化异常状态
         }
         return new EntityResult<T, PAGE, UNIT>(readHeadRownum, rowInfo.getRownum(), mode, tag, checkErrorList);// size == 0 ? null : tag;
     }

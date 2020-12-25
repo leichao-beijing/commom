@@ -7,12 +7,12 @@ import run.cmdi.common.validator.EngineClazz;
 import run.cmdi.common.validator.EngineObject;
 import run.cmdi.common.validator.FunctionClazzInterface;
 import run.cmdi.common.validator.annotations.FieldName;
-import run.cmdi.common.validator.plugins.RegisterDefaultTable;
-import run.cmdi.common.validator.plugins.RegisterPastOrPresentTable;
-import run.cmdi.common.validator.plugins.ValidatorPlugin;
 import run.cmdi.common.validator.exception.ValidatorFieldsException;
 import run.cmdi.common.validator.model.MachModelInfo;
 import run.cmdi.common.validator.model.ValidatorFieldException;
+import run.cmdi.common.validator.plugins.RegisterDefaultTable;
+import run.cmdi.common.validator.plugins.RegisterPastOrPresentTable;
+import run.cmdi.common.validator.plugins.ValidatorPlugin;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -89,10 +89,20 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
         plugins.forEach((clazz) -> {
             ValidatorPlugin plugin = ReflectUtil.newInstanceIfPossible(clazz);
             plugin.instanceAnnotationInfo(field);
-            if (plugin.isSupport())
+            if (plugin.isSupport()) {
                 list.add(plugin);
+                converterMap.put(field.getName(), plugin.isConverterException());
+            }
         });
         return list;
+    }
+
+    @Getter
+    private Map<String, Boolean> converterMap = new HashMap<>();
+
+    public boolean isConverter(String fieldName) {
+        Boolean bool = converterMap.get(fieldName);
+        return (bool == null) ? true : bool;  //默认对异常进行响应
     }
 
     private void validatorFieldName(Field field) {

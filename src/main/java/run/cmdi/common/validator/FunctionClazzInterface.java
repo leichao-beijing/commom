@@ -1,9 +1,9 @@
 package run.cmdi.common.validator;
 
+import run.cmdi.common.utils.SpotPath;
+
 import java.lang.reflect.Field;
 import java.util.Map;
-
-import run.cmdi.common.utils.SpotPath;
 
 /**
  * @author leichao
@@ -15,8 +15,11 @@ public interface FunctionClazzInterface<T> {
      */
     T resultField(SpotPath path, Field field);
 
+
     /**
      * 对数据进行校验，存在问题时抛出异常
      */
     void validator(Map<SpotPath, T> fieldMap);
+
+
 }

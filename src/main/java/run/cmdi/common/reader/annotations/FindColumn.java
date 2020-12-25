@@ -1,12 +1,8 @@
 package run.cmdi.common.reader.annotations;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import run.cmdi.common.reader.model.eumns.FindModel;
+
+import java.lang.annotation.*;
 
 /**
  * @author leichao
@@ -25,4 +21,9 @@ public @interface FindColumn {
      * true时，找不到这列时将抛出异常
      */
     boolean checkColumn() default false;
+
+//    /**
+//     * true时，将不会抛出转换异常
+//     */
+//    boolean converterException() default true;
 }
