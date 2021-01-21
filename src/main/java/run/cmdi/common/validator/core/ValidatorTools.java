@@ -64,7 +64,6 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
             new EngineObject(t, validationMap, new ValidatorResultObject()).compute();
         } catch (ValidatorFieldsException e) {
             return e.getErr();
-
         }
         return new ArrayList<>();
     }

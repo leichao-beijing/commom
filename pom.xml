@@ -18,8 +18,14 @@
         <maven.compiler.target>12</maven.compiler.target>
         <argLine>-Dfile.encoding=UTF-8</argLine>
     </properties>
-
     <dependencies>
+
+        <dependency>
+            <groupId>com.github.albfernandez</groupId>
+            <artifactId>juniversalchardet</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -49,6 +55,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

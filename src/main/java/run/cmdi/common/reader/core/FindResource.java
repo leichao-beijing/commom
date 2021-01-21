@@ -1,15 +1,12 @@
 package run.cmdi.common.reader.core;
 
-import run.cmdi.common.compare.model.LocationTag;
-import run.cmdi.common.reader.model.FieldDetail;
-import run.cmdi.common.reader.model.HeadInfo;
-import run.cmdi.common.reader.model.eumns.ConverterErrorType;
-import run.cmdi.common.reader.model.eumns.FieldDetailType;
-import run.cmdi.common.reader.model.eumns.FindModel;
-import run.cmdi.common.reader.model.to.ExcelHeadModel;
+import run.cmdi.common.convert.ConvertPage;
+import run.cmdi.common.convert.InputStreamConvert;
+import run.cmdi.common.convert.TypeAnalysis;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.exception.ConverterExceptionUtils;
-import run.cmdi.common.reader.model.eumns.*;
+import run.cmdi.common.reader.model.eumns.ConverterErrorType;
+import run.cmdi.common.reader.model.to.ExcelHeadModel;
 
 import java.util.*;
 
@@ -20,7 +17,6 @@ import java.util.*;
  */
 public class FindResource<RESOURCES, PAGE, UNIT> {
     private EntityBuildings entityBuildings;
-    //private final Map<String, FieldDetail> map;
     private int readHeadRownum = 0;
     private final ExcelHeadModel headModel;
     /**
@@ -41,134 +37,64 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
     public FindResource(EntityBuildings entityBuildings, ExcelHeadModel headModel, int readHeadRownum) {
         this(entityBuildings, headModel);
         this.readHeadRownum = readHeadRownum;
+
     }
 
-    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources) throws ConverterException {
-        return find(bookResources, headModel.getBookTagName());
+    public FieldInfos find(InputStreamConvert inputStreamConvert) throws ConverterException {
+        return find(inputStreamConvert, headModel.getBookTagName());
     }
 
-
-    @SuppressWarnings("rawtypes")
-    public HeadInfo find(BookPage<RESOURCES, PAGE, UNIT> bookResources, String name) throws ConverterException {
-        List<HeadInfo> list = new ArrayList<HeadInfo>();
-        @SuppressWarnings("unchecked")
-        List<ReaderPage<PAGE, UNIT>> resource = bookResources.bookList();
+    public FieldInfos find(InputStreamConvert inputStreamConvert, String name) throws ConverterException {
+        List<FieldInfos> list = new ArrayList<>();
+        TypeAnalysis page = inputStreamConvert.buildAnalysis();
+        List<FieldInfo> infoList = entityBuildings.getClazzConvert().getConfig().getList();
         if (!name.equals(""))
-            list.add(find(bookResources.book(name)));
-        else
-            for (ReaderPage readerPage : resource) {
-                try {
-                    list.add(find(readerPage));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    //ConverterExcelException
-                }
-            }
-        Collections.sort(list);
+            list.add(find(page.buildPage(name), readHeadRownum, infoList));
+        else {
+            List<ConvertPage> values = page.buildPageList();
+            values.forEach(val -> list.add(find(val, readHeadRownum, infoList)));
+        }
         if (list.size() == 0) {
             ConverterExceptionUtils.build(ConverterErrorType.NOT_FINDS_SHEET.getTypeName(), ConverterErrorType.NOT_FINDS_SHEET).throwException();
         }
-        HeadInfo model = list.get(list.size() - 1);
-        if (model.getEx() != null) {
-            throw model.getEx();
+        Collections.sort(list, new Comparator<FieldInfos>() {
+            @Override
+            public int compare(FieldInfos o1, FieldInfos o2) {
+                if (o1.getMap().size() < o2.getMap().size()) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+        FieldInfos infos = list.get(list.size() - 1);
+        if (infos.getException() != null) {
+            throw infos.getException();
         }
-        int size = model.getSize();
+        int size = infos.getMap().size();
         if (size < wrongCount)
             ConverterExceptionUtils.build("最少匹配到" + wrongCount + "列数据，当前匹配到了" + size, ConverterErrorType.FIND_FIELD_COUNT_WRONG).throwException();
-        model.getReaderPage().info(model);
-        return model;
+        return infos;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public HeadInfo<PAGE, UNIT> find(ReaderPage<PAGE, UNIT> readerPage) {
-
-        Map map = entityBuildings.converterFieldDetailToMap();
-        List tmp = readerPage.readRowList(readHeadRownum);
-        ConverterException ex = null;
-        try {
-            matchCompare(map, tmp);//TODO 头信息匹配
-        } catch (ConverterException e) {
-            ex = e;
-        }
-        HeadInfo info = new HeadInfo(map, readerPage);
-        info.setEx(ex);
-        return info;
-
-    }
-
-    private static boolean matchCompare(FieldDetail detail, List<Object> des) {
-        if (detail.getModel() == FindModel.EQUALS) {
-            for (String valueValue : detail.getValues()) {
-                for (int i = 0; i < des.size(); i++) {
-                    if (des.get(i) == null)
-                        continue;
-                    boolean bool = valueValue.equals(des.get(i).toString());
-                    if (bool) {//TODO setPosition
-                        detail.setPosition(i);
-                        detail.setMatchValue(des.get(i).toString());
-                        return true;
-                    }
+    public FieldInfos find(ConvertPage page, int readHeadRownum, List<FieldInfo> infoList) {
+        Map<Integer, FieldInfo> resultInfo = new HashMap<>();
+        FieldInfos infos = new FieldInfos(resultInfo, page, entityBuildings.getClazzConvert().getConfig(), readHeadRownum);
+        List list = page.getValues(readHeadRownum);
+        for (int i = 0; i < list.size(); i++) {
+            Object val = list.get(i);
+            if (val == null)
+                continue;
+            Integer index = Integer.valueOf(i);
+            infoList.forEach((info) -> {
+                if (info.isState())
+                    return;
+                if (info.match(val.toString())) {
+                    info.setState(true);
+                    info.setIndex(index);
+                    resultInfo.put(index, info);
                 }
-            }
+            });
         }
-        if (detail.getModel() == FindModel.INCLUDE) {
-            for (String valueValue : detail.getValues()) {
-                for (int i = 0; i < des.size(); i++) {
-                    boolean bool = (des.get(i).toString().indexOf(valueValue) != -1);
-                    if (bool) {
-                        detail.setPosition(i);
-                        detail.setMatchValue(des.get(i).toString());
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 对数据进行匹配
-     */
-    public static void matchCompare(
-            Map<String, FieldDetail> map, List<Object> des) throws ConverterException {
-        List<String> nullList = new ArrayList<>();
-        map.forEach((key, value) -> {
-            if (value.getType() == FieldDetailType.LIST)
-                value.getOtherDetails().forEach((va) -> {
-                    matchCompare(va, des);
-                });
-            else if (!matchCompare(value, des))
-                nullList.add(key);
-        });
-        ConverterExceptionUtils utilsException = ConverterExceptionUtils.build();
-
-        nullList.forEach((key) -> {
-            FieldDetail f = map.get(key);
-            if (f.isCheckColumn())
-                utilsException.addError(f.getName(), ConverterErrorType.NOT_FIND_CHECK_COLUMN);
-            map.remove(key);
-        });
-
-        utilsException.throwException();
-        List<Map.Entry<String, FieldDetail>> list = new ArrayList<Map.Entry<String, FieldDetail>>(map.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<String, FieldDetail>>() {
-            //升序排序
-            public int compare(Map.Entry<String, FieldDetail> o1,
-                               Map.Entry<String, FieldDetail> o2) {
-                return o1.getValue().getPosition().compareTo(o2.getValue().getPosition());
-            }
-        });
-    }
-
-
-    /**
-     * 将 List<FieldDetail<T>> 重构成带坐标的List<LocationTag<FieldDetail<T>>> 数据
-     */
-    private List<LocationTag<FieldDetail>> toLocationTag(List<FieldDetail> findList) {
-        List<LocationTag<FieldDetail>> list = new ArrayList<>();
-        for (int i = 0; i < findList.size(); i++) {
-            list.add(new LocationTag<FieldDetail>(i, findList.get(i)));
-        }
-        return list;
+        return infos;
     }
 }

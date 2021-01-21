@@ -14,5 +14,5 @@ public class ReaderPoiConfig {
     //数据读取默认起始行
     private int startRowNum = 0;
     //对验证出现问题行数据进行跳过，不进行实例化.不生成结果对象
-    private boolean skipErrorResult = true;
+    private boolean skipErrorResult = false;
 }

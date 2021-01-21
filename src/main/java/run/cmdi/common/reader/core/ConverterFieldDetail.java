@@ -3,10 +3,10 @@ package run.cmdi.common.reader.core;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmdi.common.reader.annotations.FindColumn;
 import run.cmdi.common.reader.annotations.FindColumns;
+import run.cmdi.common.reader.annotations.FormatDate;
 import run.cmdi.common.reader.model.FieldDetail;
 import run.cmdi.common.reader.model.to.ExcelHeadModel;
 import run.cmdi.common.reader.model.to.FindSheetModel;
-import run.cmdi.common.reader.annotations.FormatDate;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -15,11 +15,13 @@ import java.util.*;
  * @author leichao
  */
 public class ConverterFieldDetail {
+
     public static <T> Map<String, FieldDetail> toMap(Class<T> clazz, ExcelHeadModel excelHeadModel,
                                                      List<String> indexes) {
         HashMap<String, FieldDetail> map = new HashMap<>();
         Field[] fields = ReflectUtil.getFields(clazz);
         FieldDetail fieldDetail;
+
         boolean check;//TODO 构造fieldDetail
         for (Field field : fields) {
             check = false;
@@ -61,7 +63,6 @@ public class ConverterFieldDetail {
             }
         }
         return map;
-
     }
 
     public static <T> FindSheetModel<T> toFindModel(Class<T> classes, ExcelHeadModel excelHeadModel) {

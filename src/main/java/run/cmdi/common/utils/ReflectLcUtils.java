@@ -1,15 +1,13 @@
 package run.cmdi.common.utils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmdi.common.io.StringUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * @author leichao
@@ -114,4 +112,12 @@ public class ReflectLcUtils {
         return ob;
     }
 
+//    public static <T extends Annotation> void toAnnotationMap(Field field) {
+//        Map<Class<? extends T>, Annotation> map = new HashMap<>();
+//        Annotation[] annotations = field.getAnnotations();
+//        for (Annotation annotation : annotations) {
+//            Class<? extends Annotation> ss = annotation.getClass();
+//            map.put(ss,annotation);
+//        }
+//    }
 }

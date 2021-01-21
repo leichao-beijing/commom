@@ -30,23 +30,23 @@ import java.util.List;
  */
 @Slf4j
 public class ExcelTest {
-    @Test
-    public void validatorTest() throws IOException, ConverterException {
-        EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
-        Validator<ProduceTable> validator = ValidatorTools.buildValidator(ProduceTable.class);//new ValidatorTools<ProduceTable>(ProduceTable.class);
-
-        result.getCellErrorList().forEach((val) -> {
-            System.err.println(val.getMessage());
-        });
-        result.getResultList().forEach((val) -> {
-            List<ValidatorFieldException> error = validator.validation(val.getValue());
-
-            for (ValidatorException ee : error) {
-                System.err.println(ee.getType() + ">>>>" + ee.getMessage() + ">>>" + val.getValue().getDemandId());
-            }
-        });
-      log.info("validatorTest done");
-    }
+//    @Test
+//    public void validatorTest() throws IOException, ConverterException {
+//        EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
+//        Validator<ProduceTable> validator = ValidatorTools.buildValidator(ProduceTable.class);//new ValidatorTools<ProduceTable>(ProduceTable.class);
+//
+//        result.getCellErrorList().forEach((val) -> {
+//            System.err.println(val.getMessage());
+//        });
+//        result.getResultList().forEach((val) -> {
+//            List<ValidatorFieldException> error = validator.validation(val.getValue());
+//
+//            for (ValidatorException ee : error) {
+//                System.err.println(ee.getType() + ">>>>" + ee.getMessage() + ">>>" + val.getValue().getDemandId());
+//            }
+//        });
+//      log.info("validatorTest done");
+//    }
 
     @Test
     public void cloneTest() throws IOException {
@@ -106,30 +106,30 @@ public class ExcelTest {
     }
 
 
-    @Test
-    public void produce() throws IOException, ConverterException {
-         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
-        result.getErrorType().forEach((ss) -> {
-            System.err.println(ss);
-        });
-        result.getCellErrorList().forEach((value) -> {
-            System.err.println(value + ">>" + value.getMessage());
+//    @Test
+//    public void produce() throws IOException, ConverterException {
+//         EntityResults<ProduceTable, Sheet, Cell> result = getProduceTableTestData();
+//        result.getErrorType().forEach((ss) -> {
+//            System.err.println(ss);
+//        });
+//        result.getCellErrorList().forEach((value) -> {
+//            System.err.println(value + ">>" + value.getMessage());
+//
+//        });
+//        result.getResultList().forEach((var) -> {
+//            System.err.print(var.getFieldNull() + " ");
+//            System.err.print(var.getValue().getDesignerDoneDate() + " ");
+//            System.err.print(var.getValue().getList() + " ");
+//            System.err.println(var.getValue().getEngineeringSort());
+//        });
+//    }
 
-        });
-        result.getResultList().forEach((var) -> {
-            System.err.print(var.getFieldNull() + " ");
-            System.err.print(var.getValue().getDesignerDoneDate() + " ");
-            System.err.print(var.getValue().getList() + " ");
-            System.err.println(var.getValue().getEngineeringSort());
-        });
-    }
 
-
-    private EntityResults<ProduceTable, Sheet, Cell> getProduceTableTestData() throws IOException, ConverterException {
-        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
-        ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
-        Workbook workbook = new XSSFWorkbook(ras);
-        EntityBuild<ProduceTable, Sheet, Cell> e = ee.find(workbook);
-        return e.build();
-    }
+//    private EntityResults<ProduceTable, Sheet, Cell> getProduceTableTestData() throws IOException, ConverterException {
+//        InputStream ras = getClass().getClassLoader().getResourceAsStream("data/produceTable.xlsx");
+//        ExcelEntityBuildings<ProduceTable> ee = new ExcelEntityBuildings<ProduceTable>(ProduceTable.class);
+//        Workbook workbook = new XSSFWorkbook(ras);
+//        EntityBuild<ProduceTable, Sheet, Cell> e = ee.find(workbook);
+//        return e.build();
+//    }
 }

@@ -29,7 +29,7 @@ import java.util.*;
  * @author leichao
  */
 
-public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAGE, UNIT> implements DataConvertInterface<T> {
+public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T> implements DataConvertInterface<T> {
 
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
     //private final ArrayList<String> headNames = new ArrayList<String>();
@@ -125,15 +125,15 @@ public class ConvertDataToWorkbook<T, PAGE, UNIT> extends EntityBuildings<T, PAG
         return;
     }
 
-
-    public void addObject(Object object) {
-        if (!object.getClass().equals(getClazz())) {
-            throw new NullPointerException("[" + getClazz() + " ]to[ " + object.getClass() + "] is error");
-        }
-        @SuppressWarnings("unchecked")
-        T t = (T) object;
-        add(t);
-    }
+//
+//    public void addObject(Object object) {
+//        if (!object.getClass().equals(getClazz())) {
+//            throw new NullPointerException("[" + getClazz() + " ]to[ " + object.getClass() + "] is error");
+//        }
+//        @SuppressWarnings("unchecked")
+//        T t = (T) object;
+//        add(t);
+//    }
 
     @Override
     public void add(T t) {

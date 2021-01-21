@@ -49,7 +49,6 @@ public class EntityResultBuild<T, PAGE, UNIT> implements EntityBuild<T, PAGE, UN
         this.fieldMap = mode.getMap();
         this.validator = ValidatorTools.buildValidator(clazz);//new ValidatorTools(clazz);
         this.config = config;
-
     }
 
     /**
