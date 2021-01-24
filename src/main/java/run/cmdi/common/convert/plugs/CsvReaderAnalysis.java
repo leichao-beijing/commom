@@ -4,32 +4,31 @@ import cn.hutool.core.text.csv.CsvData;
 import cn.hutool.core.text.csv.CsvUtil;
 import org.mozilla.universalchardet.UniversalDetector;
 import run.cmdi.common.convert.BuildPage;
-import run.cmdi.common.convert.ConvertPage;
-import run.cmdi.common.convert.TypeAnalysis;
+import run.cmdi.common.convert.ReaderPageInterface;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypeAnalysisCsv implements TypeAnalysis<InputStream> , BuildPage {
+public class CsvReaderAnalysis implements ReaderPageInterface<InputStream>, BuildPage {
     @Override
-    public ConvertPage buildPage() {
-        return new ConvertPageCsv(csvData);
+    public ConvertOutPageCsv buildPage() {
+        return new ConvertOutPageCsv(csvData);
     }
 
     @Override
-    public ConvertPage buildPage(String pageName) {
+    public ConvertOutPageCsv buildPage(String pageName) {
         throw new NullPointerException(" csv not Support " + pageName);
     }
 
     @Override
-    public ConvertPage buildPage(Integer pageIndex) {
+    public ConvertOutPageCsv buildPage(Integer pageIndex) {
         return buildPage();
     }
 
     @Override
-    public List<ConvertPage> buildPageList() {
-        List<ConvertPage> list = new ArrayList<>();
+    public List<ConvertOutPageCsv> buildPageList() {
+        List<ConvertOutPageCsv> list = new ArrayList<>();
         list.add(buildPage());
         return list;
     }

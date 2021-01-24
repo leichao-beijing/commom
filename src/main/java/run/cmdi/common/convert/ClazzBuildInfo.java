@@ -2,32 +2,54 @@ package run.cmdi.common.convert;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
-import run.cmdi.common.reader.annotations.ConverterHead;
-import run.cmdi.common.reader.annotations.FindColumn;
-import run.cmdi.common.reader.annotations.FindColumns;
-import run.cmdi.common.reader.annotations.FormatDate;
+import org.apache.poi.hssf.record.ObjRecord;
+import run.cmdi.common.reader.annotations.*;
 import run.cmdi.common.reader.core.FieldConfig;
 import run.cmdi.common.reader.core.FieldInfo;
+import run.cmdi.common.validator.core.Validator;
+import run.cmdi.common.validator.core.ValidatorTools;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ClazzConvert {
-    public ClazzConvert(Class clazz) {
-        this.config = analysisClass(clazz);
-        //verifyIndex();
+public class ClazzBuildInfo<T> {
+
+    public static <T> ClazzBuildInfo<T> build(Class<T> t) {
+        return new ClazzBuildInfo<T>(t);
+    }
+
+    private ClazzBuildInfo(Class clazz) {
+        this.clazz = clazz;
+        this.config = analysisClass(clazz, this);
     }
 
     @Getter
+    private final Class clazz;
+    @Getter
     private final FieldConfig config;
+    @Getter
+    private int maxWrongCount;
+    @Getter
+    private boolean skipNoAnnotationField;
+    @Getter
+    private String bookTagName;
+    @Getter
+    private int startRow = -1;
+    @Getter
+    private Validator validator;
 
-    private static FieldConfig analysisClass(Class<?> clazz) {
+    private void setHeadInfo(ConverterHead head) {
+        this.skipNoAnnotationField = head.skipNoAnnotationField();
+        this.maxWrongCount = head.maxWrongCount();
+        this.bookTagName = head.bookTagName();
+    }
+
+    private static FieldConfig analysisClass(Class<?> clazz, ClazzBuildInfo clazzBuildInfo) {
         ConverterHead head = clazz.getAnnotation(ConverterHead.class);
         if (head == null)
             throw new NullPointerException("@ConverterHead not enable");
-
         List<FieldInfo> list = new ArrayList<>();
         FieldConfig config = new FieldConfig(list, head.indexes());
         List<String> filedList = new ArrayList<>();
@@ -40,6 +62,8 @@ public class ClazzConvert {
         List<String> values = config.getSetIndex().stream().filter((index) -> !filedList.contains(index)).collect(Collectors.toList());
         if (!values.isEmpty())
             throw new NullPointerException("index;" + values.toString() + " Set method no find.");
+        clazzBuildInfo.setHeadInfo(head);
+        clazzBuildInfo.validator = ValidatorTools.buildValidator(clazz);
         return config;
     }
 

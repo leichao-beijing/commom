@@ -3,7 +3,7 @@ package run.cmdi.common.reader.core;
 import run.cmdi.common.reader.model.HeadInfo;
 
 import java.util.List;
-
+@Deprecated
 public interface ReaderPage<PAGE, UNIT> {
     PAGE getPage();
 

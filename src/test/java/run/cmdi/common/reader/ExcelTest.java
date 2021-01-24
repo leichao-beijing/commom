@@ -5,7 +5,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.IndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
+import run.cmdi.common.convert.plugs.PoiReaderConvert;
 import run.cmdi.common.poi.core.PoiReader;
+import run.cmdi.common.poi.core.PoiReaderBuild;
 import run.cmdi.common.poi.core.SheetComment;
 import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.poi.model.StyleInfo;
@@ -21,6 +23,7 @@ import run.cmdi.common.validator.exception.ValidatorException;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -50,15 +53,17 @@ public class ExcelTest {
 
     @Test
     public void cloneTest() throws IOException {
+        PoiReaderConvert c1;
+        PoiReaderConvert c2;
         InputStream ras1 = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         InputStream ras2 = getClass().getClassLoader().getResourceAsStream("data/testFunction-2.xlsx");
-        PoiReader srcPoi = PoiReader.build(ras1);
-        PoiReader desPoi = PoiReader.build(ras2);
-        srcPoi.clone(desPoi, "sheet1", "填写注意事项");
+        PoiReaderBuild srcPoi = PoiReaderBuild.build(c1 = PoiReaderConvert.reader(ras1));
+        PoiReaderBuild desPoi = PoiReaderBuild.build(c2 = PoiReaderConvert.reader(ras2));
+        srcPoi.clone(desPoi.getWorkbook(), "sheet1", "填写注意事项");
 
-        // desPoi.saveAndClose(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx"));
-        srcPoi.close();
-        desPoi.close();
+        //c2.getWorkbook().write(new FileOutputStream(new File("C:\\Users\\lei_c\\Desktop\\测试\\clone.xlsx")));
+        c2.close();
+        c1.close();
     }
 
     @Test

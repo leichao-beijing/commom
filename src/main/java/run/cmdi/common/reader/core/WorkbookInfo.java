@@ -13,6 +13,7 @@ import run.cmdi.common.plugin.PluginAnnotation;
  * @author leichao
  * @date 2020-04-27 07:42:58
  */
+@Deprecated
 public interface WorkbookInfo {
 
     void close();

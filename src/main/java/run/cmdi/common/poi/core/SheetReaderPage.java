@@ -22,10 +22,7 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
         if (sheet == null)
             throw new NullPointerException((tagName == null) ? "" : tagName + " no find");
         this.sheet = sheet;
-        if (readerPoiConfig.isCellRangeState())
-            this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
-        else
-            this.cellRangeMap = null;
+        this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
         this.length = sheet.getLastRowNum();
     }
 

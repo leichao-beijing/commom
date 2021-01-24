@@ -2,6 +2,7 @@ package run.cmdi.common.reader.core;
 
 import java.util.List;
 
+@Deprecated
 public interface BookPage<RESOURCES, PAGE, UNIT> {
     RESOURCES getResources();
 

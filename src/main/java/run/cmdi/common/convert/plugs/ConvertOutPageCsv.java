@@ -1,21 +1,20 @@
 package run.cmdi.common.convert.plugs;
 
 import cn.hutool.core.text.csv.CsvData;
-import cn.hutool.core.text.csv.CsvRow;
-import run.cmdi.common.convert.ConvertPage;
+import run.cmdi.common.convert.ConvertOutPage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConvertPageCsv implements ConvertPage<Object> {
-    public ConvertPageCsv(CsvData csvData) {
+public class ConvertOutPageCsv implements ConvertOutPage<List> {
+    public ConvertOutPageCsv(CsvData csvData) {
         this.csvData = csvData;
     }
 
     private CsvData csvData;
 
     @Override
-    public List<Object> getValues(Integer index) {
+    public List getValues(Integer index) {
         if (index == null)
             throw new NullPointerException("index is null");
         List rawList = csvData.getRow(index).getRawList();
@@ -23,7 +22,7 @@ public class ConvertPageCsv implements ConvertPage<Object> {
     }
 
     @Override
-    public List<List<Object>> getAll() {
+    public List getAll() {
         List list = new ArrayList();
         csvData.getRows().forEach(value ->
                 list.add(value)

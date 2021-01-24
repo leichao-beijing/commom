@@ -1,7 +1,7 @@
 package run.cmdi.common.reader;
 
 import org.junit.Test;
-import run.cmdi.common.convert.InputStreamConvert;
+import run.cmdi.common.convert.ReaderFactory;
 import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.core.EntityBuildings;
 import run.cmdi.common.reader.core.EntityResultBuildConvert;
@@ -19,7 +19,7 @@ public class ProducePreTest {
     public void test() throws IOException, ConverterException {
         //InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\git\\produce-pre\\src\\main\\resources\\data\\测试数据.xlsx"));
         InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
-        InputStreamConvert convert = new InputStreamConvert(is);
+        ReaderFactory convert = new ReaderFactory(is);
 
         EntityBuildings<Produce> entityBuildings = new EntityBuildings(Produce.class, new ReaderPoiConfig());
         EntityResultBuildConvert result = entityBuildings.find(convert, 0);

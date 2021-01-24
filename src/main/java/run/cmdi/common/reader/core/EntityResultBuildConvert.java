@@ -28,26 +28,21 @@ import java.util.stream.IntStream;
 /**
  * @author leichao
  */
-public class EntityResultBuildConvert<T, PAGE, UNIT> {
+public class EntityResultBuildConvert<T> {
     private final Class<T> classes;
     private final FieldInfos filedInfos;
-
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
-    private final Validator validator;
-    private final ReaderPoiConfig config;
 
-    public EntityResultBuildConvert(Class<T> clazz, FieldInfos filedInfos, ReaderPoiConfig config) throws ConverterException {
+    public EntityResultBuildConvert(Class<T> clazz, FieldInfos filedInfos) throws ConverterException {
         this.classes = clazz;
         this.filedInfos = filedInfos;
-        this.validator = ValidatorTools.buildValidator(clazz);//new ValidatorTools(clazz);
-        this.config = config;
     }
 
     /**
      * @param rownum 等于头读取行时返回bull
      */
     //@Override
-    public EntityResultConvert<T, PAGE, UNIT> build(int rownum) {
+    public EntityResultConvert<T> build(int rownum) {
         if (filedInfos.getReadHeadRownum() == rownum)
             return null;
         RowInfo rowInfo = readRow(rownum);
@@ -61,24 +56,24 @@ public class EntityResultBuildConvert<T, PAGE, UNIT> {
      * 构建表内全部内容
      */
     // @Override
-    public EntityResultsConvert<T, PAGE, UNIT> build() {
+    public EntityResultsConvert<T> build() {
         int row;
-        if (!config.isStartRow())
-            row = config.getStartRowNum();
+        if (filedInfos.getStartRow() != -1 && filedInfos.getReadHeadRownum() != filedInfos.getStartRow())
+            row = filedInfos.getStartRow();
         else
             row = filedInfos.getReadHeadRownum() + 1;
         return build(row, filedInfos.getPage().size());
     }
 
     //@Override
-    public EntityResultsConvert<T, PAGE, UNIT> build(int start, int end) {
+    public EntityResultsConvert<T> build(int start, int end) {
         end = Math.min(end, filedInfos.getPage().size());
         start = Math.max(0, start);
-        EntityResultsConvert<T, PAGE, UNIT> entityResults = new EntityResultsConvert<T, PAGE, UNIT>(start, end, filedInfos);
+        EntityResultsConvert<T> entityResults = new EntityResultsConvert<T>(start, end, filedInfos);
         for (int i = start; i < end; i++) {
-            EntityResultConvert<T, PAGE, UNIT> t = build(i);
+            EntityResultConvert<T> t = build(i);
             if (t != null) {
-                entityResults.addResult(t, config.isSkipErrorResult());
+                entityResults.addResult(t, filedInfos.isSkipErrorResult());
             }
             System.err.println("");
         }
@@ -109,7 +104,7 @@ public class EntityResultBuildConvert<T, PAGE, UNIT> {
         return list.toString();
     }
 
-    private void verificationIndex(EntityResultsConvert<T, PAGE, UNIT> entityResults) {
+    private void verificationIndex(EntityResultsConvert<T> entityResults) {
         ArrayList<CellAddressAndMessage> list = new ArrayList<CellAddressAndMessage>();
         List<LocationTag<T>> resultValues = entityResults.getResultList();
         HashMap<Integer, HashMap<String, Integer>> overMap = new HashMap<>();
@@ -136,12 +131,12 @@ public class EntityResultBuildConvert<T, PAGE, UNIT> {
     /**
      * 当所有内容均未匹配时，返回null;
      */
-    private EntityResultConvert<T, PAGE, UNIT> build(RowInfo rowInfo, Class<T> classes) {
+    private EntityResultConvert<T> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
         List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
-        List<ValidatorFieldException> error = validator.validationMap(rowInfo.getData());
+        List<ValidatorFieldException> error = filedInfos.getValidator().validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FieldInfo fieldInfo = filedInfos.getFileInfo(val.getFieldName());
             if (fieldInfo == null) return;
@@ -161,7 +156,7 @@ public class EntityResultBuildConvert<T, PAGE, UNIT> {
                 checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
-                if (validator.isConverter(name)) {
+                if (filedInfos.getValidator().isConverter(name)) {
                     checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldInfo.getIndex(), e));
                     tag.getFieldNull().add(name);
                 }
@@ -235,8 +230,8 @@ public class EntityResultBuildConvert<T, PAGE, UNIT> {
                     for (int i1 = 0; i1 < i; i1++)
                         value.add("");
                     value.add(row.get(key));
-                }else
-                    value.set(info.getListIndex(),row.get(key));
+                } else
+                    value.set(info.getListIndex(), row.get(key));
             }
         });
         return mapInfo;

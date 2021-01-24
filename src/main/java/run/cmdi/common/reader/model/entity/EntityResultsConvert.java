@@ -15,7 +15,7 @@ import java.util.Set;
  * @author leichao
  */
 @Getter
-public class EntityResultsConvert<T, PAGE, UNIT> {
+public class EntityResultsConvert<T> {
     public EntityResultsConvert(int readHeadRownum, int sheetMaxRow, FieldInfos filedInfos) {
         this.readHeadRownum = readHeadRownum;
         this.sheetMaxRow = sheetMaxRow;
@@ -54,7 +54,7 @@ public class EntityResultsConvert<T, PAGE, UNIT> {
         }
     }
 
-    public void addResult(EntityResultConvert<T, PAGE, UNIT> result, boolean state) {
+    public void addResult(EntityResultConvert<T> result, boolean state) {
         if (result.getCellErrorList() != null) {
             result.upDateErrorType();
             cellErrorList.addAll(result.getCellErrorList());

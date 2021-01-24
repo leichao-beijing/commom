@@ -1,12 +1,12 @@
 package run.cmdi.common.reader.core;
 
-import run.cmdi.common.convert.ConvertPage;
-import run.cmdi.common.convert.InputStreamConvert;
-import run.cmdi.common.convert.TypeAnalysis;
+import run.cmdi.common.convert.ClazzBuildInfo;
+import run.cmdi.common.convert.ConvertOutPage;
+import run.cmdi.common.convert.ReaderFactory;
+import run.cmdi.common.convert.ReaderPageInterface;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.exception.ConverterExceptionUtils;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
-import run.cmdi.common.reader.model.to.ExcelHeadModel;
 
 import java.util.*;
 
@@ -15,43 +15,25 @@ import java.util.*;
  *
  * @author leichao
  */
-public class FindResource<RESOURCES, PAGE, UNIT> {
-    private EntityBuildings entityBuildings;
-    private int readHeadRownum = 0;
-    private final ExcelHeadModel headModel;
-    /**
-     * 系统允许最大的无法找到列的数量，超出该数量时将抛出异常
-     */
-    private final int wrongCount;
+public class FindResource {
+    private final ClazzBuildInfo clazzBuildInfo;
 
-    public FindResource(EntityBuildings entityBuildings, ExcelHeadModel headModel) {
-        this.entityBuildings = entityBuildings;
-        this.wrongCount = headModel.getMaxWrongCount();
-        this.headModel = headModel;
+    public FindResource(ClazzBuildInfo clazzBuildInfo) {
+        this.clazzBuildInfo = clazzBuildInfo;
     }
 
-    /**
-     * @param entityBuildings
-     * @param readHeadRownum  获取匹配头文件的行数，默认值 0 行。
-     */
-    public FindResource(EntityBuildings entityBuildings, ExcelHeadModel headModel, int readHeadRownum) {
-        this(entityBuildings, headModel);
-        this.readHeadRownum = readHeadRownum;
-
+    public FieldInfos find(ReaderFactory readerFactory, int readHeadRownum) throws ConverterException {
+        return find(readerFactory, clazzBuildInfo.getBookTagName(), readHeadRownum);
     }
 
-    public FieldInfos find(InputStreamConvert inputStreamConvert) throws ConverterException {
-        return find(inputStreamConvert, headModel.getBookTagName());
-    }
-
-    public FieldInfos find(InputStreamConvert inputStreamConvert, String name) throws ConverterException {
+    public FieldInfos find(ReaderFactory readerFactory, String name, int readHeadRownum) throws ConverterException {
         List<FieldInfos> list = new ArrayList<>();
-        TypeAnalysis page = inputStreamConvert.buildAnalysis();
-        List<FieldInfo> infoList = entityBuildings.getClazzConvert().getConfig().getList();
+        ReaderPageInterface page = readerFactory.buildAnalysis();
+        List<FieldInfo> infoList = clazzBuildInfo.getConfig().getList();
         if (!name.equals(""))
             list.add(find(page.buildPage(name), readHeadRownum, infoList));
         else {
-            List<ConvertPage> values = page.buildPageList();
+            List<ConvertOutPage> values = page.buildPageList();
             values.forEach(val -> list.add(find(val, readHeadRownum, infoList)));
         }
         if (list.size() == 0) {
@@ -66,19 +48,23 @@ public class FindResource<RESOURCES, PAGE, UNIT> {
                 return 0;
             }
         });
-        FieldInfos infos = list.get(list.size() - 1);
-        if (infos.getException() != null) {
-            throw infos.getException();
-        }
+
+        FieldInfos infos = list.remove(list.size() - 1);
+        list.clear();
+//        if (infos.getException() != null) {
+//            throw infos.getException();
+//        }
         int size = infos.getMap().size();
-        if (size < wrongCount)
-            ConverterExceptionUtils.build("最少匹配到" + wrongCount + "列数据，当前匹配到了" + size, ConverterErrorType.FIND_FIELD_COUNT_WRONG).throwException();
+        if (size < clazzBuildInfo.getMaxWrongCount())
+            ConverterExceptionUtils.build("最少匹配到" + clazzBuildInfo.getMaxWrongCount() + "列数据，当前匹配到了" + size, ConverterErrorType.FIND_FIELD_COUNT_WRONG).throwException();
+        infos.setHeadInfo(clazzBuildInfo);
         return infos;
     }
 
-    public FieldInfos find(ConvertPage page, int readHeadRownum, List<FieldInfo> infoList) {
+    public FieldInfos find(ConvertOutPage<List> page, int readHeadRownum, List<FieldInfo> infoList) {
         Map<Integer, FieldInfo> resultInfo = new HashMap<>();
-        FieldInfos infos = new FieldInfos(resultInfo, page, entityBuildings.getClazzConvert().getConfig(), readHeadRownum);
+        FieldInfos infos = new FieldInfos(resultInfo, page, clazzBuildInfo.getConfig(), readHeadRownum);
+
         List list = page.getValues(readHeadRownum);
         for (int i = 0; i < list.size(); i++) {
             Object val = list.get(i);

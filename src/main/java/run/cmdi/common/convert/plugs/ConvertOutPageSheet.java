@@ -1,10 +1,11 @@
 package run.cmdi.common.convert.plugs;
 
 import cn.hutool.core.date.DateTime;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.SheetUtil;
-import run.cmdi.common.convert.ConvertPage;
+import run.cmdi.common.convert.ConvertOutPage;
 import run.cmdi.common.poi.core.SheetUtils;
 
 import java.util.ArrayList;
@@ -12,11 +13,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class ConvertPageSheet implements ConvertPage {
+public class ConvertOutPageSheet implements ConvertOutPage<List>{
+    @Getter
     private final Sheet sheet;
+    @Getter
     private final HashMap<CellAddress, CellAddress> cellRangeMap;
 
-    public ConvertPageSheet(Sheet sheet) {
+    public ConvertOutPageSheet(Sheet sheet) {
         this.sheet = sheet;
         this.cellRangeMap = SheetUtils.computeRangeCellMap(sheet);
     }

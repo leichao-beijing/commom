@@ -1,5 +1,6 @@
 package run.cmdi.common.reader.core;
 
+import lombok.Delegate;
 import run.cmdi.common.reader.model.entity.EntityResults;
 import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.model.entity.EntityResult;
@@ -7,6 +8,7 @@ import run.cmdi.common.reader.model.entity.EntityResult;
 /**
  * @author leichao
  */
+@Deprecated
 public interface EntityBuild<T, PAGE, UNIT> {
 
     public EntityResults<T, PAGE, UNIT> build();

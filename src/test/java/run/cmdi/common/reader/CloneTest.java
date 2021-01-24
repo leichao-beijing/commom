@@ -9,11 +9,8 @@ public class CloneTest {
     @Test
     public void test() {
         A a = new A();
-
         B va = ObjectUtils.cloneParent(a, B.class);
-
         System.err.println("");
-
     }
 }
 

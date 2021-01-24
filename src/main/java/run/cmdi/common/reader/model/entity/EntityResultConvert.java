@@ -15,27 +15,15 @@ import java.util.Set;
  * @author leichao
  */
 @Getter
-public class EntityResultConvert<T, PAGE, UNIT> {
+public class EntityResultConvert<T> {
     public EntityResultConvert(int rownum,  LocationTag<T> result, List<CellAddressAndMessage> cellErrorList) {
-        //this.readHeadRownum = readHeadRownum;
         this.rownum = rownum;
-        //this.readerPage = mode.getReaderPage();
-        //this.mode = mode;
         this.result = result;
         this.cellErrorList = cellErrorList;
     }
 
     private Set<String> errorType = new HashSet<>();
 
-    //private final HeadInfo<PAGE, UNIT> mode;
-    /**
-     * 读取头的起始行数
-     */
-    //private final int readHeadRownum;
-    /**
-     * 匹配对应的sheet
-     */
-    //private final ReaderPage<PAGE, UNIT> readerPage;
     /***
      * 读取的当前行号
      */

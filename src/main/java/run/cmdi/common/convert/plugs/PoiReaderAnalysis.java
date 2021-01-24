@@ -1,16 +1,19 @@
 package run.cmdi.common.convert.plugs;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import run.cmdi.common.convert.ConvertPage;
-import run.cmdi.common.convert.TypeAnalysis;
+import run.cmdi.common.convert.ReaderPageInterface;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypeAnalysisWorkBook implements TypeAnalysis<InputStream> {
+public class PoiReaderAnalysis implements ReaderPageInterface<InputStream> {
+    @Getter
+    @Setter
     private Workbook workbook;
 
     @Override
@@ -24,25 +27,25 @@ public class TypeAnalysisWorkBook implements TypeAnalysis<InputStream> {
     }
 
     @Override
-    public ConvertPage buildPage() {
-        return new ConvertPageSheet(workbook.getSheetAt(workbook.getActiveSheetIndex()));
+    public ConvertOutPageSheet buildPage() {
+        return new ConvertOutPageSheet(workbook.getSheetAt(workbook.getActiveSheetIndex()));
     }
 
     @Override
-    public ConvertPage buildPage(String pageName) {
-        return new ConvertPageSheet(workbook.getSheet(pageName));
+    public ConvertOutPageSheet buildPage(String pageName) {
+        return new ConvertOutPageSheet(workbook.getSheet(pageName));
     }
 
     @Override
-    public ConvertPage buildPage(Integer pageIndex) {
-        return new ConvertPageSheet(workbook.getSheetAt(pageIndex));
+    public ConvertOutPageSheet buildPage(Integer pageIndex) {
+        return new ConvertOutPageSheet(workbook.getSheetAt(pageIndex));
     }
 
     @Override
-    public List<ConvertPage> buildPageList() {
-        List<ConvertPage> list = new ArrayList<>();
+    public List<ConvertOutPageSheet> buildPageList() {
+        List<ConvertOutPageSheet> list = new ArrayList<>();
         workbook.forEach(sheet -> {
-            list.add(new ConvertPageSheet(sheet));
+            list.add(new ConvertOutPageSheet(sheet));
         });
         return list;
     }

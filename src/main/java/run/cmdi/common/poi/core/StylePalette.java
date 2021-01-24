@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -15,6 +16,7 @@ import run.cmdi.common.poi.model.StyleInfo;
 
 public class StylePalette {
     private final FormatPalette formatPalette;
+    @Getter
     private final Workbook workbook;
     private Map<StyleInfo, CellStyle> map = new HashMap<>();
 

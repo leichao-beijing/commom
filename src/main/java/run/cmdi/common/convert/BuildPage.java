@@ -1,16 +1,15 @@
 package run.cmdi.common.convert;
 
-import java.io.InputStream;
 import java.util.List;
 
 public interface BuildPage<T>   {
-    ConvertPage<T> buildPage();
+    ConvertOutPage<T> buildPage();
 
-    ConvertPage<T> buildPage(String pageName);
+    ConvertOutPage<T> buildPage(String pageName);
 
-    ConvertPage<T> buildPage(Integer pageIndex);
+    ConvertOutPage<T> buildPage(Integer pageIndex);
 
-    List<ConvertPage> buildPageList();
+    List<ConvertOutPage> buildPageList();
 
     int size();
 }
