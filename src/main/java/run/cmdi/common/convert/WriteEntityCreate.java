@@ -3,6 +3,10 @@ package run.cmdi.common.convert;
 import java.io.IOException;
 
 public class WriteEntityCreate<IN> extends WriteEntity<IN> implements CreateEntityInterface {
+    WriteEntityCreate(Class<IN> t) {
+        super(t);
+    }
+
     public static void toCsv(String encoding) {
     }
 

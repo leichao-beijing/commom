@@ -7,7 +7,7 @@ import org.apache.poi.ss.util.SheetUtil;
 import run.cmdi.common.compare.model.LocationTagError;
 import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.core.ReaderPage;
-import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.FieldDetailOld;
 import run.cmdi.common.reader.model.HeadInfo;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 import run.cmdi.common.reader.exception.ConverterExcelException;
@@ -120,10 +120,10 @@ public class SheetReaderPage implements ReaderPage<Sheet, Cell> {
     }
 
     private Map<ConverterErrorType, String> computeErrorType(
-            List<LocationTagError<FieldDetail, ConverterExcelException>> columnErrorList) {
+            List<LocationTagError<FieldDetailOld, ConverterExcelException>> columnErrorList) {
         EnumMap<ConverterErrorType, String> errorTypeMap = new EnumMap<ConverterErrorType, String>(
                 ConverterErrorType.class);
-        for (LocationTagError<FieldDetail, ConverterExcelException> locationTagError : columnErrorList) {
+        for (LocationTagError<FieldDetailOld, ConverterExcelException> locationTagError : columnErrorList) {
             if (errorTypeMap.get(locationTagError.getEx().getType()) == null) {
                 errorTypeMap.put(locationTagError.getEx().getType(), locationTagError.getEx().getMessage());
                 continue;

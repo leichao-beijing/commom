@@ -11,6 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FindColumn {
+    String name() default "";
 
     String[] value() default {};
 

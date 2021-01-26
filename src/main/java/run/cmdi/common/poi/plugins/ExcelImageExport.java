@@ -1,5 +1,9 @@
 package run.cmdi.common.poi.plugins;
 
+import cn.hutool.core.io.IoUtil;
+import org.apache.poi.ss.usermodel.*;
+import run.cmdi.common.convert.plugs.PoiReaderConvert;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,17 +11,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
-
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.ObjectData;
-import org.apache.poi.ss.usermodel.Picture;
-import org.apache.poi.ss.usermodel.PictureData;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import cn.hutool.core.io.IoUtil;
-import run.cmdi.common.poi.core.PoiReader;
-import run.cmdi.common.poi.model.ReaderPoiConfig;
 
 /**
  * Excel内图片文件导出功能
@@ -28,11 +21,12 @@ public class ExcelImageExport {
 
     public static int readExcel(Path srcPath, File outPath) throws IOException {
         FileInputStream is = new FileInputStream(srcPath.toFile());
-        PoiReader poi = PoiReader.build(is, null, new ReaderPoiConfig());
-        Workbook word = poi.getResources();
-        int size = readWordbookAll(word, srcPath.getFileName().toString(), outPath);
+        PoiReaderConvert convert = PoiReaderConvert.reader(is);
+        Workbook workbook = convert.getWorkbook();
+        int size = readWordbookAll(workbook, srcPath.getFileName().toString(), outPath);
         FileOutputStream fos = new FileOutputStream(srcPath.toFile());
-        poi.saveAndClose(fos);
+        workbook.close();
+        convert.close();
         fos.close();
         IoUtil.close(is);
         return size;

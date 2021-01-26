@@ -5,6 +5,7 @@ import run.cmdi.common.convert.ClazzBuildInfo;
 import run.cmdi.common.convert.ReaderFactory;
 import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.exception.ConverterException;
+import run.cmdi.common.reader.model.FindFieldInfos;
 
 /**
  * 通过对象class检索Excel内对应sheet
@@ -35,7 +36,7 @@ public class EntityBuildings<T> {
 
     public EntityResultBuildConvert find(ReaderFactory resource, int readHeadRownum)
             throws ConverterException {
-        FieldInfos filedInfos = new FindResource(clazzBuildInfo).find(resource, readHeadRownum);
+        FindFieldInfos filedInfos = new FindResource(clazzBuildInfo).find(resource, readHeadRownum);
         return new EntityResultBuildConvert(clazz, filedInfos);
     }
 }

@@ -7,17 +7,16 @@ import cn.hutool.core.util.StrUtil;
 import run.cmdi.common.compare.model.LocationTag;
 import run.cmdi.common.io.EnumUtil;
 import run.cmdi.common.io.StringUtils;
-import run.cmdi.common.poi.model.ReaderPoiConfig;
 import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.exception.ConverterException;
+import run.cmdi.common.reader.model.FindFieldInfo;
+import run.cmdi.common.reader.model.FindFieldInfos;
 import run.cmdi.common.reader.model.entity.CellAddressAndMessage;
 import run.cmdi.common.reader.model.entity.EntityResultConvert;
 import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.utils.ReflectLcUtils;
-import run.cmdi.common.validator.core.Validator;
-import run.cmdi.common.validator.core.ValidatorTools;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.model.ValidatorFieldException;
 
@@ -30,10 +29,10 @@ import java.util.stream.IntStream;
  */
 public class EntityResultBuildConvert<T> {
     private final Class<T> classes;
-    private final FieldInfos filedInfos;
+    private final FindFieldInfos filedInfos;
     private final ConverterRegistry converterRegistry = ConverterRegistry.getInstance();
 
-    public EntityResultBuildConvert(Class<T> clazz, FieldInfos filedInfos) throws ConverterException {
+    public EntityResultBuildConvert(Class<T> clazz, FindFieldInfos filedInfos) throws ConverterException {
         this.classes = clazz;
         this.filedInfos = filedInfos;
     }
@@ -41,14 +40,12 @@ public class EntityResultBuildConvert<T> {
     /**
      * @param rownum 等于头读取行时返回bull
      */
-    //@Override
     public EntityResultConvert<T> build(int rownum) {
         if (filedInfos.getReadHeadRownum() == rownum)
             return null;
         RowInfo rowInfo = readRow(rownum);
         if (rowInfo == null)
             return null;
-
         return build(rowInfo, classes);
     }
 
@@ -65,7 +62,6 @@ public class EntityResultBuildConvert<T> {
         return build(row, filedInfos.getPage().size());
     }
 
-    //@Override
     public EntityResultsConvert<T> build(int start, int end) {
         end = Math.min(end, filedInfos.getPage().size());
         start = Math.max(0, start);
@@ -75,7 +71,6 @@ public class EntityResultBuildConvert<T> {
             if (t != null) {
                 entityResults.addResult(t, filedInfos.isSkipErrorResult());
             }
-            System.err.println("");
         }
         entityResults.upDateErrorType();
         verificationIndex(entityResults);
@@ -138,9 +133,9 @@ public class EntityResultBuildConvert<T> {
 
         List<ValidatorFieldException> error = filedInfos.getValidator().validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
-            FieldInfo fieldInfo = filedInfos.getFileInfo(val.getFieldName());
-            if (fieldInfo == null) return;
-            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldInfo.getIndex(), val.getType(), val.getMessage()));
+            FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
+            if (findFieldInfo == null) return;
+            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage()));
         });
 
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
@@ -149,15 +144,15 @@ public class EntityResultBuildConvert<T> {
             String name = next.getKey();
             Object value = next.getValue();
             String methodName = "set" + ReflectLcUtils.upperCase(name);
-            FieldInfo fieldInfo = filedInfos.getFileInfo(name);//; fieldMap.get(name);
+            FindFieldInfo findFieldInfo = filedInfos.getFileInfo(name);//; fieldMap.get(name);
             try {
-                cellValueToClass(value, out, methodName, fieldInfo);
+                cellValueToClass(value, out, methodName, findFieldInfo);
             } catch (ValidatorException e) {
-                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldInfo.getIndex(), e.getType(), e.getMessage()));
+                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
                 if (filedInfos.getValidator().isConverter(name)) {
-                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), fieldInfo.getIndex(), e));
+                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
                     tag.getFieldNull().add(name);
                 }
             }
@@ -171,33 +166,33 @@ public class EntityResultBuildConvert<T> {
      * @param value
      * @param out              输出的对象的实例
      * @param setFunctionValue set方法的构造名称
-     * @param fieldInfo
+     * @param findFieldInfo
      */
     public void cellValueToClass(Object value, Object out, String setFunctionValue,
-                                 FieldInfo fieldInfo) throws ConverterExcelException {
+                                 FindFieldInfo findFieldInfo) throws ConverterExcelException {
         if (value == null) return;
         Class<?> parameterClasses = ReflectLcUtils.getMethodParameterTypeFirst(out.getClass(), setFunctionValue);
-        if (StringUtils.isEmpty(value) && fieldInfo.getType() != FieldDetailType.LIST)
+        if (StringUtils.isEmpty(value) && findFieldInfo.getType() != FieldDetailType.LIST)
             return;
         try {
             if (parameterClasses.isEnum()) {
-                String methodName = (!fieldInfo.getEnumFieldName().equals("")) ? ReflectLcUtils.methodGetString(fieldInfo.getEnumFieldName()) : fieldInfo.getEnumFieldName();
+                String methodName = (!findFieldInfo.getEnumFieldName().equals("")) ? ReflectLcUtils.methodGetString(findFieldInfo.getEnumFieldName()) : findFieldInfo.getEnumFieldName();
                 List<String> list = EnumUtil.getEnumNames((Class<Enum>) parameterClasses, methodName);
                 if (list.contains(value)) {
                     Object en = EnumUtil.isEnumName(parameterClasses, value.toString(), methodName);
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
                 } else//todo 处理
-                    throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR, fieldInfo.getName() + " 只能输入：" + list.toString());
+                    throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR, findFieldInfo.getName() + " 只能输入：" + list.toString());
             }
 
             if (!value.getClass().equals(parameterClasses)) {
                 Object data;
-                if (ConverterFieldDetail.IsInterface(parameterClasses, Date.class)) {
-                    if (fieldInfo.getFormatDate() == null)
+                if (ReflectLcUtils.IsInterface(parameterClasses, Date.class)) {
+                    if (findFieldInfo.getFormatDate() == null)
                         data = DateUtil.parse(value.toString());
                     else
-                        data = DateUtil.parse(value.toString(), fieldInfo.getFormatDate());
+                        data = DateUtil.parse(value.toString(), findFieldInfo.getFormatDate());
                 } else
                     data = converterRegistry.convert(parameterClasses, value);
                 if (data != null)
@@ -205,7 +200,8 @@ public class EntityResultBuildConvert<T> {
             } else
                 ReflectUtil.invoke(out, setFunctionValue, value);
         } catch (Exception e) {
-            fieldInfo.exception(e);
+            e.printStackTrace();
+            findFieldInfo.exception(e);
         }
     }
 
@@ -217,21 +213,22 @@ public class EntityResultBuildConvert<T> {
 
     private Map<String, Object> buildRowMap(List<Object> row) {
         Map<String, Object> mapInfo = new HashMap<>();
+
         filedInfos.getMap().forEach((key, info) -> {
             if (info.getType() == FieldDetailType.SINGLE)
-                mapInfo.put(info.getFileName(), row.get(key));
+                mapInfo.put(info.getFieldName(), row.get(key));
             else if (info.getType() == FieldDetailType.LIST) {
-                List value = (List) mapInfo.get(info.getFileName());
-                if (value == null) mapInfo.put(info.getFileName(), value = new ArrayList<>());
-                if (info.getListIndex() == value.size())
-                    value.add(row.get(info.getListIndex()));
-                else if (info.getListIndex() > value.size()) {
-                    int i = info.getListIndex() - value.size();
+                List value = (List) mapInfo.get(info.getFieldName());
+                if (value == null) mapInfo.put(info.getFieldName(), value = new ArrayList<>());
+                if (info.getIndex() == value.size())
+                    value.add(row.get(info.getIndex()));
+                else if (info.getIndex() > value.size()) {
+                    int i = info.getIndex() - value.size();
                     for (int i1 = 0; i1 < i; i1++)
                         value.add("");
                     value.add(row.get(key));
                 } else
-                    value.set(info.getListIndex(), row.get(key));
+                    value.set(info.getIndex(), row.get(key));
             }
         });
         return mapInfo;

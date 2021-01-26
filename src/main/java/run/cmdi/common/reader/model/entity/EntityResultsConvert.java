@@ -2,7 +2,7 @@ package run.cmdi.common.reader.model.entity;
 
 import lombok.Getter;
 import run.cmdi.common.compare.model.LocationTag;
-import run.cmdi.common.reader.core.FieldInfos;
+import run.cmdi.common.reader.model.FindFieldInfos;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Getter
 public class EntityResultsConvert<T> {
-    public EntityResultsConvert(int readHeadRownum, int sheetMaxRow, FieldInfos filedInfos) {
+    public EntityResultsConvert(int readHeadRownum, int sheetMaxRow, FindFieldInfos filedInfos) {
         this.readHeadRownum = readHeadRownum;
         this.sheetMaxRow = sheetMaxRow;
         this.filedInfos = filedInfos;
@@ -31,7 +31,7 @@ public class EntityResultsConvert<T> {
     /**
      * 匹配对应的sheet
      */
-    private final FieldInfos filedInfos;
+    private final FindFieldInfos filedInfos;
     /***
      * sheet最大有效行数
      */
@@ -39,7 +39,7 @@ public class EntityResultsConvert<T> {
     /**
      * check Error CellAddress Map
      */
-    private final List<CellAddressAndMessage> cellErrorList = new ArrayList<CellAddressAndMessage>();
+    private final List<CellAddressAndMessage> cellErrorList = new ArrayList<>();
 
     /**
      * 返回结果List

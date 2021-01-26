@@ -4,7 +4,7 @@ import java.util.List;
 
 import lombok.Getter;
 import run.cmdi.common.compare.model.LocationTag;
-import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.FieldDetailOld;
 import run.cmdi.common.reader.model.to.AddressCell;
 
 /**
@@ -12,11 +12,11 @@ import run.cmdi.common.reader.model.to.AddressCell;
  */
 @Getter
 public class FieldDetailErrorList<T> {
-    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetail>> checkNullList) {
+    public FieldDetailErrorList(LocationTag<T> tag, List<AddressCell<FieldDetailOld>> checkNullList) {
         this.tag = tag;
         this.checkNullList = checkNullList;
     }
 
     private LocationTag<T> tag;
-    private List<AddressCell<FieldDetail>> checkNullList;
+    private List<AddressCell<FieldDetailOld>> checkNullList;
 }

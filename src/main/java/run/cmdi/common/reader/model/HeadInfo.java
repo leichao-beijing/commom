@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class HeadInfo<PAGE, UNIT> implements Comparable<HeadInfo> {
-    public HeadInfo(Map<String, FieldDetail> map, ReaderPage<PAGE, UNIT> readerPage) {
+    public HeadInfo(Map<String, FieldDetailOld> map, ReaderPage<PAGE, UNIT> readerPage) {
         this.map = map;
         size = map.size();
         this.readerPage = readerPage;
@@ -26,7 +26,7 @@ public class HeadInfo<PAGE, UNIT> implements Comparable<HeadInfo> {
     private ReaderPage<PAGE, UNIT> readerPage;
     private ConverterException ex;
     private int size;
-    private Map<String, FieldDetail> map;
+    private Map<String, FieldDetailOld> map;
 
     public int compareTo(HeadInfo headInfo) {
         if (this.size < headInfo.getSize()) {
@@ -36,15 +36,15 @@ public class HeadInfo<PAGE, UNIT> implements Comparable<HeadInfo> {
     }
 
     public Integer getTag(String fieldName) {
-        FieldDetail fieldDetail = getCompareResponse(fieldName);
-        if (fieldDetail == null)
+        FieldDetailOld fieldDetailOld = getCompareResponse(fieldName);
+        if (fieldDetailOld == null)
             return null;
-        if (fieldDetail.getPosition() == -1)
+        if (fieldDetailOld.getPosition() == -1)
             return null;
-        return fieldDetail.getPosition();
+        return fieldDetailOld.getPosition();
     }
 
-    public FieldDetail getCompareResponse(String fieldName) {
+    public FieldDetailOld getCompareResponse(String fieldName) {
 
         return map.get(fieldName);
     }

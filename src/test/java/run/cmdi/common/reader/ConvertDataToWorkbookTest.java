@@ -1,14 +1,11 @@
 package run.cmdi.common.reader;
 
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.poi.excel.ExcelUtil;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.junit.Assert;
 import org.junit.Test;
-import run.cmdi.common.poi.core.PoiReader;
+import run.cmdi.common.convert.plugs.PoiReaderConvert;
 import run.cmdi.common.poi.core.SheetUtils;
 import run.cmdi.common.reader.core.ConvertDataToSheetCell;
 import run.cmdi.common.reader.core.ConvertDataToWorkbook;
@@ -65,20 +62,13 @@ public class ConvertDataToWorkbookTest {
     @Test
     public void toSheetTest() throws IOException {
         InputStream is = ClassLoader.getSystemResourceAsStream("data/produceTable.xlsx");
-        PoiReader poiReader = PoiReader.build(is);
-        Sheet sheet = poiReader.getResources().getSheet("Sheet1");
+        PoiReaderConvert convert = PoiReaderConvert.reader(is);
+        Sheet sheet = convert.getWorkbook().getSheet("Sheet1");
         ExcelSaveService excelSaveService = new ExcelSaveService();
         ToExcelModel t = new ToExcelModel("a1", "测试1");
         t.setMessageExcept("除外信息1");
         ConvertDataToSheetCell convertOne = excelSaveService.buildConvert(ToExcelModel.class);
         convertOne.writeSheet(sheet, t);
-
-        //FileOutputStream out = new FileOutputStream("D:\\ceshi.xlsx");
-        //sheet.getWorkbook().write(out);
-
-        //out.close();
         is.close();
-
-
     }
 }

@@ -1,7 +1,6 @@
 package run.cmdi.common.convert.plugs;
 
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import run.cmdi.common.poi.core.PoiReader;
 
 import java.io.IOException;
 import java.io.InputStream;

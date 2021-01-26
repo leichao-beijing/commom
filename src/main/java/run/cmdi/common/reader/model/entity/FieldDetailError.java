@@ -3,7 +3,7 @@ package run.cmdi.common.reader.model.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.FieldDetailOld;
 
 /**
  * @param <T> 读取原型的数据类型泛型
@@ -14,11 +14,11 @@ import run.cmdi.common.reader.model.FieldDetail;
 @ToString
 public class FieldDetailError<T> {
 
-    public FieldDetailError(FieldDetail t, String errorMessage) {
+    public FieldDetailError(FieldDetailOld t, String errorMessage) {
         this.t = t;
         this.errorMessage = errorMessage;
     }
 
     private final String errorMessage;
-    private final FieldDetail t;
+    private final FieldDetailOld t;
 }

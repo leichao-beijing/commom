@@ -6,7 +6,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.FieldDetailOld;
 
 /**
  * @author leichao
@@ -14,10 +14,10 @@ import run.cmdi.common.reader.model.FieldDetail;
 @Getter
 @Setter
 public class FindSheetModel<T> {
-    public FindSheetModel(Map<String, FieldDetail> map) {
+    public FindSheetModel(Map<String, FieldDetailOld> map) {
         this.map = map;
     }
 
     private Sheet findSheet;
-    private final Map<String, FieldDetail> map;
+    private final Map<String, FieldDetailOld> map;
 }

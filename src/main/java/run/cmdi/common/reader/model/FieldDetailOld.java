@@ -21,21 +21,21 @@ import java.util.List;
  */
 @Getter
 @ToString
-public class FieldDetail {
+public class FieldDetailOld {
 
-    public static FieldDetail build(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn) {
-        return new FieldDetail(field, parentClass, format, findColumn);
+    public static FieldDetailOld build(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn) {
+        return new FieldDetailOld(field, parentClass, format, findColumn);
     }
 
-    public void converterList(FieldDetail fieldDetail, int index) {
+    public void converterList(FieldDetailOld fieldDetailOld, int index) {
         this.type = FieldDetailType.LIST;
         if (otherDetails == null)
             otherDetails = new ArrayList<>();
-        fieldDetail.setIndex(index);
-        otherDetails.add(fieldDetail);
+        fieldDetailOld.setIndex(index);
+        otherDetails.add(fieldDetailOld);
     }
 
-    private FieldDetail(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn) {
+    private FieldDetailOld(Field field, Class<?> parentClass, FormatDate format, FindColumn findColumn) {
         this.format = format;
         this.field = field;
         this.fieldName = field.getName();
@@ -58,7 +58,7 @@ public class FieldDetail {
         //converterException = findColumn.converterException();
     }
 
-    private List<FieldDetail> otherDetails;
+    private List<FieldDetailOld> otherDetails;
     private final FindModel model;
     private final List<String> values;
     @Setter

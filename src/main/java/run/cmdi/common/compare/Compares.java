@@ -15,7 +15,7 @@ import run.cmdi.common.compare.model.LocationTag;
 import run.cmdi.common.compare.model.LocationTagError;
 import run.cmdi.common.compare.model.CompareState;
 import run.cmdi.common.compare.model.QepeatResponse;
-import run.cmdi.common.reader.model.FieldDetail;
+import run.cmdi.common.reader.model.FieldDetailOld;
 import run.cmdi.common.reader.model.entity.CompareResponseAndErrorList;
 
 /**
@@ -221,10 +221,8 @@ public class Compares {
         CompareState<LocationTag<D1>> desCompareState;
         for (int i = 0; i < srcCompareStateList.size(); i++) {
             srcCompareState = srcCompareStateList.get(i);
-            if (srcCompareState.getValue().getValue().getClass().isAssignableFrom(FieldDetail.class)) {
-                FieldDetail f = (FieldDetail) srcCompareState.getValue().getValue();
-                if (f.getFieldName().equals("externalWorkDay"))
-                    System.err.println("");
+            if (srcCompareState.getValue().getValue().getClass().isAssignableFrom(FieldDetailOld.class)) {
+                FieldDetailOld f = (FieldDetailOld) srcCompareState.getValue().getValue();
             }
             for (int a = 0; a < desCompareStateList.size(); a++) {
                 desCompareState = desCompareStateList.get(a);

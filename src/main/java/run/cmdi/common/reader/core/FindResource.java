@@ -6,6 +6,8 @@ import run.cmdi.common.convert.ReaderFactory;
 import run.cmdi.common.convert.ReaderPageInterface;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.exception.ConverterExceptionUtils;
+import run.cmdi.common.reader.model.FindFieldInfo;
+import run.cmdi.common.reader.model.FindFieldInfos;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 
 import java.util.*;
@@ -22,26 +24,26 @@ public class FindResource {
         this.clazzBuildInfo = clazzBuildInfo;
     }
 
-    public FieldInfos find(ReaderFactory readerFactory, int readHeadRownum) throws ConverterException {
+    public FindFieldInfos find(ReaderFactory readerFactory, int readHeadRownum) throws ConverterException {
         return find(readerFactory, clazzBuildInfo.getBookTagName(), readHeadRownum);
     }
 
-    public FieldInfos find(ReaderFactory readerFactory, String name, int readHeadRownum) throws ConverterException {
-        List<FieldInfos> list = new ArrayList<>();
+    public FindFieldInfos find(ReaderFactory readerFactory, String name, int readHeadRownum) throws ConverterException {
+        List<FindFieldInfos> list = new ArrayList<>();
         ReaderPageInterface page = readerFactory.buildAnalysis();
-        List<FieldInfo> infoList = clazzBuildInfo.getConfig().getList();
+        FindFieldConfig config = clazzBuildInfo.getConfig();
         if (!name.equals(""))
-            list.add(find(page.buildPage(name), readHeadRownum, infoList));
+            list.add(find(page.buildPage(name), readHeadRownum, config));
         else {
             List<ConvertOutPage> values = page.buildPageList();
-            values.forEach(val -> list.add(find(val, readHeadRownum, infoList)));
+            values.forEach(val -> list.add(find(val, readHeadRownum, config)));
         }
         if (list.size() == 0) {
             ConverterExceptionUtils.build(ConverterErrorType.NOT_FINDS_SHEET.getTypeName(), ConverterErrorType.NOT_FINDS_SHEET).throwException();
         }
-        Collections.sort(list, new Comparator<FieldInfos>() {
+        Collections.sort(list, new Comparator<FindFieldInfos>() {
             @Override
-            public int compare(FieldInfos o1, FieldInfos o2) {
+            public int compare(FindFieldInfos o1, FindFieldInfos o2) {
                 if (o1.getMap().size() < o2.getMap().size()) {
                     return -1;
                 }
@@ -49,7 +51,7 @@ public class FindResource {
             }
         });
 
-        FieldInfos infos = list.remove(list.size() - 1);
+        FindFieldInfos infos = list.remove(list.size() - 1);
         list.clear();
 //        if (infos.getException() != null) {
 //            throw infos.getException();
@@ -61,26 +63,21 @@ public class FindResource {
         return infos;
     }
 
-    public FieldInfos find(ConvertOutPage<List> page, int readHeadRownum, List<FieldInfo> infoList) {
-        Map<Integer, FieldInfo> resultInfo = new HashMap<>();
-        FieldInfos infos = new FieldInfos(resultInfo, page, clazzBuildInfo.getConfig(), readHeadRownum);
-
+    public FindFieldInfos find(ConvertOutPage<List> page, int readHeadRownum, FindFieldConfig config) {
+        Map<Integer, FindFieldInfo> resultInfo = new HashMap<>();
+        FindFieldInfos infos = new FindFieldInfos(resultInfo, page, clazzBuildInfo.getConfig(), readHeadRownum);
         List list = page.getValues(readHeadRownum);
-        for (int i = 0; i < list.size(); i++) {
-            Object val = list.get(i);
-            if (val == null)
-                continue;
-            Integer index = Integer.valueOf(i);
-            infoList.forEach((info) -> {
-                if (info.isState())
-                    return;
-                if (info.match(val.toString())) {
-                    info.setState(true);
-                    info.setIndex(index);
-                    resultInfo.put(index, info);
+        config.getMap().forEach((fieldName, info) -> {
+            for (int i = 0; i < list.size(); i++) {
+                Object headValue = list.get(i);
+                FindFieldInfo val = info.matchInfo(headValue);
+                if (val != null) {
+                    val.setAddress(i);
+                    resultInfo.put(i, val);
+                    break;
                 }
-            });
-        }
+            }
+        });
         return infos;
     }
 }

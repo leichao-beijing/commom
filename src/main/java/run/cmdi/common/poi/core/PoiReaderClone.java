@@ -6,14 +6,14 @@ import run.cmdi.common.convert.plugs.PoiReaderConvert;
 import java.io.*;
 import java.util.Iterator;
 
-public class PoiReaderBuild extends StylePalette implements PageClone<Workbook> {
+public class PoiReaderClone extends StylePalette implements PageClone<Workbook> {
 
-    public static PoiReaderBuild build(PoiReaderConvert poiReaderConvert) throws IOException {
-        PoiReaderBuild poiReader = new PoiReaderBuild(poiReaderConvert);
+    public static PoiReaderClone build(PoiReaderConvert poiReaderConvert) throws IOException {
+        PoiReaderClone poiReader = new PoiReaderClone(poiReaderConvert);
         return poiReader;
     }
 
-    private PoiReaderBuild(PoiReaderConvert poiReaderConvert) {
+    private PoiReaderClone(PoiReaderConvert poiReaderConvert) {
         super(poiReaderConvert.getWorkbook());
         this.poiReaderConvert = poiReaderConvert;
     }

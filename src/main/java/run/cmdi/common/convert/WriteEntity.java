@@ -4,6 +4,10 @@ import java.io.InputStream;
 
 public class WriteEntity<IN> implements WriteValueInterface<IN> {
 
+    WriteEntity(Class<IN> t) {
+
+    }
+
     public static void toCsv(InputStream is) {
     }
 
@@ -12,7 +16,7 @@ public class WriteEntity<IN> implements WriteValueInterface<IN> {
 
     @Override
     public void add(IN value) {
-    //<list<object>> add<List>
+        //<list<object>> add<List>
     }
 
     @Override

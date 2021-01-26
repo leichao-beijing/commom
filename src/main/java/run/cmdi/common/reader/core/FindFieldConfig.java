@@ -2,19 +2,19 @@ package run.cmdi.common.reader.core;
 
 import lombok.Getter;
 import run.cmdi.common.reader.annotations.Index;
+import run.cmdi.common.reader.model.FindFieldInfo;
 
 import java.util.*;
 
-public class FieldConfig {
-    public FieldConfig(List<FieldInfo> list, Index[] indexes) {
-        this.list = list;
+public class FindFieldConfig {
+    public FindFieldConfig(Map<String, FindFieldInfo> map, Index[] indexes) {
+        this.map = map;
         this.setIndex = toIndexSet(indexes);
         this.listIndex = toIndexList(indexes);
-     }
+    }
 
     @Getter
-    private final List<FieldInfo> list;
-
+    private final Map<String, FindFieldInfo> map;
     @Getter
     private final Set<String> setIndex;
     @Getter

@@ -111,7 +111,20 @@ public class ReflectLcUtils {
         }
         return ob;
     }
-
+    /**
+     * 验证classes 中是否存在interfaceClasses接口类
+     */
+    public static boolean IsInterface(Class<?> classes, Class<?> interfaceClasses) {
+        Class<?>[] is = classes.getInterfaces();
+        if (classes.equals(interfaceClasses)) {
+            return true;
+        }
+        for (Class<?> i : is) {
+            if (i.equals(interfaceClasses))
+                return true;
+        }
+        return false;
+    }
 //    public static <T extends Annotation> void toAnnotationMap(Field field) {
 //        Map<Class<? extends T>, Annotation> map = new HashMap<>();
 //        Annotation[] annotations = field.getAnnotations();
