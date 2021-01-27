@@ -2,6 +2,7 @@ package run.cmdi.common.convert.plugs;
 
 import cn.hutool.core.text.csv.CsvData;
 import cn.hutool.core.text.csv.CsvUtil;
+import org.apache.commons.io.output.WriterOutputStream;
 import org.mozilla.universalchardet.UniversalDetector;
 import run.cmdi.common.convert.BuildPage;
 import run.cmdi.common.convert.ReaderPageInterface;

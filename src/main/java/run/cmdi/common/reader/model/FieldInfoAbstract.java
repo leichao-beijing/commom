@@ -2,6 +2,7 @@ package run.cmdi.common.reader.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import run.cmdi.common.convert.RegisterAnnotationInterface;
 import run.cmdi.common.reader.annotations.FindColumn;
 import run.cmdi.common.reader.annotations.FindColumns;
 import run.cmdi.common.reader.annotations.RegisterAnnotation;
@@ -10,9 +11,9 @@ import java.lang.reflect.Field;
 
 @Getter
 @Setter
-public class FieldInfoAbstract {
+public class FieldInfoAbstract implements RegisterAnnotationInterface {
     private String name;
-    private String fileName;
+    private String fieldName;
     private String format;
 
     @RegisterAnnotation
