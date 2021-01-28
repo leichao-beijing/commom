@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RegisterAnnotationUtils<T> {
@@ -21,7 +22,7 @@ public class RegisterAnnotationUtils<T> {
      * @param bool          true时,未匹配到任何 注解的对象将被抛弃并return null
      */
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, boolean bool) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        Map<String, CONFIG> result = new HashMap<>();
+        Map<String, CONFIG> result = new LinkedHashMap<>();
         Map<Method, Class> parameterMap = parameterMap(configClazz);
         if (parameterMap.isEmpty())
             throw new NullPointerException("@RegisterAnnotation no find");
