@@ -16,15 +16,15 @@ public class FieldInfoAbstract implements RegisterAnnotationInterface {
     private String fieldName;
     private String format;
 
-    @RegisterAnnotation
+    @RegisterAnnotation(3)
     public void findColumn(FindColumn findColumn) {
     }
 
-    @RegisterAnnotation
+    @RegisterAnnotation(2)
     public void findColumns(FindColumns findColumn) {
     }
 
-    @RegisterAnnotation
+    @RegisterAnnotation(4)
     public void findColumns(Field findColumn) {
     }
 }

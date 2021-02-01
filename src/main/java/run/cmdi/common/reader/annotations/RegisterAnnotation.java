@@ -11,4 +11,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RegisterAnnotation {
+    /**
+     * 数值越大越最后处理
+     */
+    int value() default 0;
 }

@@ -3,13 +3,17 @@ package run.cmdi.common.convert;
 import cn.hutool.core.text.csv.CsvData;
 import cn.hutool.core.text.csv.CsvUtil;
 import cn.hutool.core.text.csv.CsvWriter;
+import lombok.Getter;
 import org.mozilla.universalchardet.UniversalDetector;
+import run.cmdi.common.convert.model.WriterFieldInfo;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
-public class WriterCsv implements WriterEntity<String> {
+public class WriterCsv implements WriterEntity<WriterFieldInfo> {
     public WriterCsv(InputStream is) throws IOException {
         this.encoded = UniversalDetector.detectCharset(is);
         if (encoded == null)
@@ -19,6 +23,15 @@ public class WriterCsv implements WriterEntity<String> {
         BufferedReader reader = new BufferedReader(isr);
         CsvData csvData = CsvUtil.getReader().read(reader);
         csvData.getRows().forEach(v -> add(v.getRawList()));
+    }
+
+    private static Map<String, SimpleDateFormat> FORMAT_MAP = new ConcurrentHashMap<>();
+
+    private static SimpleDateFormat getSimpleDateFormat(String formatString) {
+        SimpleDateFormat sdf = FORMAT_MAP.get(formatString);
+        if (sdf == null)
+            FORMAT_MAP.put(formatString, sdf = new SimpleDateFormat(formatString));
+        return sdf;
     }
 
     public WriterCsv(String encoded) {
@@ -35,21 +48,29 @@ public class WriterCsv implements WriterEntity<String> {
     private Map<Integer, Map<Integer, String>> storage = new TreeMap<>(COMPARATOR);
 
     @Override
-    public void add(int rownum, int column, Object value, String s) {
+    public void add(int rownum, int column, Object value, WriterFieldInfo info) {
+        if (count < rownum) {
+            this.count = rownum + 1;
+        }
         Map<Integer, String> row = storage.get(rownum);
         if (row == null)
             storage.put(rownum, row = new TreeMap<>(COMPARATOR));
         if (value == null)
             row.put(column, "");
-        else
+        else if (value.getClass().isAssignableFrom(Date.class)) {
+            String result = getSimpleDateFormat(info.getFormatDate()).format(value);
+            row.put(column, result);
+        } else
             row.put(column, value.toString());
     }
 
-    private void add(int row, List<String> list) {
-        TreeMap map = new TreeMap<>(COMPARATOR);
-        IntStream.range(0, list.size()).forEach(i -> map.put(i, list.get(i)));
-        storage.put(row, map);
+    @Override
+    public void add(int column, Object value, WriterFieldInfo info) {
+        add(Integer.valueOf(count), column, value, info);
     }
+
+    @Getter
+    private Integer count = 0;
 
     private void add(List<String> list) {
         TreeMap map = new TreeMap<>(COMPARATOR);
@@ -57,7 +78,8 @@ public class WriterCsv implements WriterEntity<String> {
             String value = list.get(i);
             map.put(i, value == null ? "" : value);
         });
-        storage.put(storage.size(), map);
+        storage.put(count, map);
+        count++;
     }
 
     private String[] toValues(Map<Integer, String> map) {
@@ -90,7 +112,6 @@ public class WriterCsv implements WriterEntity<String> {
             for (; index > line; line++) writer.writeLine();
             writer.write(toValues(next.getValue()));
             line++;
-
         }
     }
 
