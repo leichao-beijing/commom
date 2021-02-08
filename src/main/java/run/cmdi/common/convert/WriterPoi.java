@@ -41,11 +41,11 @@ public class WriterPoi implements WriterEntity<WriterFieldInfo> {
             cell = row.createCell(column);
         if (value.getClass().isAssignableFrom(Date.class)) {
             cell.setCellValue((Date) value);
-            if (info.getFormatDate() != null)
+            if (info != null && info.getFormatDate() != null)
                 cell.setCellFormula(info.getFormatDate());
         } else if (NumberUtil.isNumber(value.toString())) {
             cell.setCellValue(NumberUtil.add(value.toString()).doubleValue());
-            if (info.getFormatDate() != null)
+            if (info != null && info.getFormatDate() != null)
                 cell.setCellFormula(info.getFormatDate());
         } else
             cell.setCellValue(value.toString());

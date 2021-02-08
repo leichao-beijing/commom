@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.reader.annotations.RegisterAnnotation;
+import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -54,9 +55,9 @@ public class RegisterAnnotationUtils<T> {
                 Annotation annotation = field.getAnnotation(value);
                 if (annotation == null)
                     continue;
-                ReflectUtil.invoke(config, method.get(), annotation);
+                ReflectUtil.invoke(config, ReflectLcUtils.methodSetString(method.get().getName()), annotation);
             } else if (value.isAssignableFrom(Field.class)) {
-                ReflectUtil.invoke(config, method.get(), field);
+                ReflectUtil.invoke(config, ReflectLcUtils.methodSetString(method.get().getName()), field);
                 continue;
             } else continue;
             state = true;
