@@ -47,11 +47,11 @@ public class EntityResults<T, PAGE, UNIT> {
     private final List<LocationTag<T>> resultList = new ArrayList<LocationTag<T>>();
 
     public void upDateErrorType() {
-        if (cellErrorList.size() != 0) {
-            for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx().getTypeName());
-            }
-        }
+//        if (cellErrorList.size() != 0) {
+//            for (CellAddressAndMessage message : cellErrorList) {
+//                errorType.add(message.getEx().getTypeName());
+//            }
+//        }
     }
 
     public void addResult(EntityResult<T, PAGE, UNIT> result, boolean state) {

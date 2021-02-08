@@ -12,6 +12,7 @@ import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 public class ProducePreTest {
 
@@ -24,7 +25,7 @@ public class ProducePreTest {
         EntityBuildings<Produce> entityBuildings = new EntityBuildings(Produce.class, new ReaderPoiConfig());
         EntityResultBuildConvert result = entityBuildings.find(convert, 0);
         EntityResultsConvert build = result.build();
-        List list1 = build.getCellErrorList();
+        Map list1 = build.getTableErrorMap();
         List<Produce> list = build.getResultList();
         System.err.println(">>>");
     }

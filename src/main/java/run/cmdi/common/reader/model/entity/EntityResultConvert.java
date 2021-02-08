@@ -7,6 +7,7 @@ import run.cmdi.common.reader.model.HeadInfo;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 @Getter
 public class EntityResultConvert<T> {
-    public EntityResultConvert(int rownum,  LocationTag<T> result, List<CellAddressAndMessage> cellErrorList) {
+    public EntityResultConvert(int rownum, LocationTag<T> result, Map<Integer, CellAddressAndMessage> cellErrorList) {
         this.rownum = rownum;
         this.result = result;
         this.cellErrorList = cellErrorList;
@@ -31,7 +32,7 @@ public class EntityResultConvert<T> {
     /**
      * check Error CellAddress Map
      */
-    private final List<CellAddressAndMessage> cellErrorList;
+    private final Map<Integer, CellAddressAndMessage> cellErrorList;
 
     /**
      * 返回结果List
@@ -42,9 +43,10 @@ public class EntityResultConvert<T> {
 
     public void upDateErrorType() {
         if (cellErrorList.size() != 0) {
-            for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx().getTypeName());
-            }
+            cellErrorList.forEach((v,k)->errorType.addAll(k.getSetEx()));
+//            for (CellAddressAndMessage message : cellErrorList) {
+//                errorType.add(message.getEx().getTypeName());
+//            }
         }
     }
 }

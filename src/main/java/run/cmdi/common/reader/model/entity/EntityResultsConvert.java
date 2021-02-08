@@ -4,10 +4,7 @@ import lombok.Getter;
 import run.cmdi.common.compare.model.LocationTag;
 import run.cmdi.common.reader.model.FindFieldInfos;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 多行数据
@@ -39,25 +36,26 @@ public class EntityResultsConvert<T> {
     /**
      * check Error CellAddress Map
      */
-    private final List<CellAddressAndMessage> cellErrorList = new ArrayList<>();
+    private final Map<Integer, Map<Integer, CellAddressAndMessage>> tableErrorMap = new HashMap<>();
 
+    private final List<CellAddressAndMessage> heardErrorList = new ArrayList<>();
     /**
      * 返回结果List
      */
     private final List<LocationTag<T>> resultList = new ArrayList<LocationTag<T>>();
 
     public void upDateErrorType() {
-        if (cellErrorList.size() != 0) {
-            for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx().getTypeName());
-            }
-        }
+//        if (tableErrorMap.size() != 0) {
+//            for (CellAddressAndMessage message : cellErrorMap) {
+//                errorType.add(message.getEx().getTypeName());
+//            }
+//        }
     }
 
     public void addResult(EntityResultConvert<T> result, boolean state) {
         if (result.getCellErrorList() != null) {
             result.upDateErrorType();
-            cellErrorList.addAll(result.getCellErrorList());
+            tableErrorMap.put(result.getRownum(), result.getCellErrorList());
         }
         if (result.getErrorType() != null)
             errorType.addAll(result.getErrorType());

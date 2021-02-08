@@ -71,8 +71,11 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
     public List<ValidatorFieldException> validationMap(Map<String, Object> data) {
         ValidatorResultObject v = new ValidatorResultObject();
         MachModelInfo info = new MachModelInfo(validationMap);
-        data.forEach((key, value) -> {
-            info.addValue(key, value);
+//        data.forEach((key, value) -> {
+//            info.addValue(key, value);
+//        });
+        validationMap.forEach((key, value) -> {
+            info.addValue(key.getName(), data.get(key));
         });
         return v.compute(null, info);
     }

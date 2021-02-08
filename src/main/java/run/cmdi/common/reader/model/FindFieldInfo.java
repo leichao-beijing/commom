@@ -12,6 +12,7 @@ import run.cmdi.common.reader.exception.ConverterExcelException;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.reader.model.eumns.FindModel;
+import run.cmdi.common.validator.annotations.FieldName;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -64,6 +65,12 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
         }
     }
 
+    public void info(FieldName fieldName) {
+        if (!fieldName.value().equals(""))
+            if (name == null || name.equals(""))
+                name = fieldName.value();
+    }
+
     @RegisterAnnotation
     public void info(FormatDate formatDate) {
         if (!formatDate.value().equals(""))
@@ -72,6 +79,9 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
 
     @RegisterAnnotation
     public void info(Field field) {
+        FieldName ann = field.getAnnotation(FieldName.class);
+        if (ann != null)
+            info(ann);
         if (field.getType().isEnum()) {
             type = FieldDetailType.ENUM;
             for (Field declaredField : field.getType().getDeclaredFields()) {
@@ -83,6 +93,7 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
             }
             setEnumFieldName(field.getName());
         }
+
     }
 
     public FindFieldInfo matchInfo(Object value) {

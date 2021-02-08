@@ -53,10 +53,10 @@ public class EntityResult<T, PAGE, UNIT> {
 
 
     public void upDateErrorType() {
-        if (cellErrorList.size() != 0) {
-            for (CellAddressAndMessage message : cellErrorList) {
-                errorType.add(message.getEx().getTypeName());
-            }
-        }
+//        if (cellErrorList.size() != 0) {
+//            for (CellAddressAndMessage message : cellErrorList) {
+//                errorType.add(message.getEx().getTypeName());
+//            }
+//        }
     }
 }

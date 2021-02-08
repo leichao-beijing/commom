@@ -16,6 +16,7 @@ import run.cmdi.common.reader.model.entity.EntityResultConvert;
 import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
+import run.cmdi.common.utils.MapUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.model.ValidatorFieldException;
@@ -119,7 +120,7 @@ public class EntityResultBuildConvert<T> {
         }
         if (list.size() != 0)
             entityResults.getErrorType().add(ConverterErrorType.INDEX_ERROR.getTypeName());
-        entityResults.getCellErrorList().addAll(list);
+        entityResults.getHeardErrorList().addAll(list);
     }
 
 
@@ -128,14 +129,19 @@ public class EntityResultBuildConvert<T> {
      */
     private EntityResultConvert<T> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
-        List<CellAddressAndMessage> checkErrorList = new ArrayList<CellAddressAndMessage>();
+        Map<Integer, CellAddressAndMessage> checkErrorMap = new HashMap<>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
         List<ValidatorFieldException> error = filedInfos.getValidator().validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
             if (findFieldInfo == null) return;
-            checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage()));
+            MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (value) -> {
+                if (value == null)
+                    return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
+                value.add(val.getType(), val.getMessage());
+                return value;
+            });
         });
 
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
@@ -148,16 +154,28 @@ public class EntityResultBuildConvert<T> {
             try {
                 cellValueToClass(value, out, methodName, findFieldInfo);
             } catch (ValidatorException e) {
-                checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
+                MapUtils.lineMap(checkErrorMap, findFieldInfo.getIndex(), (vv) -> {
+                    if (vv == null)
+                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage());
+                    vv.add(e.getType(), e.getMessage());
+                    return vv;
+                });
+                //checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
                 if (filedInfos.getValidator().isConverter(name)) {
-                    checkErrorList.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
+                    MapUtils.lineMap(checkErrorMap, findFieldInfo.getIndex(), (vv) -> {
+                        if (vv == null)
+                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage());
+                        vv.add(e.getType(), e.getMessage());
+                        return vv;
+                    });
+//                    checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
                     tag.getFieldNull().add(name);
                 }
             }
         }
-        return new EntityResultConvert(rowInfo.getRownum(), tag, checkErrorList);// size == 0 ? null : tag;
+        return new EntityResultConvert(rowInfo.getRownum(), tag, checkErrorMap);// size == 0 ? null : tag;
     }
 
     /**
