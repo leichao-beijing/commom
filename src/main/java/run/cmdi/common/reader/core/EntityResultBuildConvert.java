@@ -219,7 +219,7 @@ public class EntityResultBuildConvert<T> {
             } else
                 ReflectUtil.invoke(out, setFunctionValue, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             findFieldInfo.exception(e);
         }
     }
@@ -234,9 +234,9 @@ public class EntityResultBuildConvert<T> {
         Map<String, Object> mapInfo = new HashMap<>();
 
         filedInfos.getMap().forEach((key, info) -> {
-            if (info.getType() == FieldDetailType.SINGLE)
+            if (info.getType() != FieldDetailType.LIST)
                 mapInfo.put(info.getFieldName(), row.get(key));
-            else if (info.getType() == FieldDetailType.LIST) {
+            else {
                 List value = (List) mapInfo.get(info.getFieldName());
                 if (value == null) mapInfo.put(info.getFieldName(), value = new ArrayList<>());
                 if (info.getIndex() == value.size())

@@ -75,7 +75,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
 //            info.addValue(key, value);
 //        });
         validationMap.forEach((key, value) -> {
-            info.addValue(key.getName(), data.get(key));
+            info.addValue(key.getName(), data.get(key.getName()));
         });
         return v.compute(null, info);
     }
