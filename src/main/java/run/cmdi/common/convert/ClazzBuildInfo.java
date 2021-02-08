@@ -56,6 +56,7 @@ public class ClazzBuildInfo<T> {
         try {
             Map<String, FindFieldInfo> map = RegisterAnnotationUtils.build(clazz, FindFieldInfo.class);
             FindFieldConfig config = new FindFieldConfig(map, head.indexes());
+
             List<String> values = config.getSetIndex().stream().filter((index) -> map.get(index) == null).collect(Collectors.toList());
             if (!values.isEmpty())
                 throw new NullPointerException("index;" + values.toString() + " Set method no find.");

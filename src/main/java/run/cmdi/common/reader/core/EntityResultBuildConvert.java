@@ -115,7 +115,8 @@ public class EntityResultBuildConvert<T> {
                     List<String> indexName = IntStream.range(0, indexList.size()).mapToObj(val -> filedInfos.getFileInfo(indexList.get(val)).getName()).collect(Collectors.toList());
                     list.add(new CellAddressAndMessage(resultValue.getPosition(), 0,
                             ConverterErrorType.INDEX_ERROR, "匹配冲突的内容:" + indexName + "." + resultValue.getPosition() + "行与行号:" + overLine + " 冲突."));
-                }
+                } else
+                    map.put(indexValues.get(i), i);
             }
         }
         if (list.size() != 0)

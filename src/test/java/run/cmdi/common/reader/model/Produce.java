@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.annotations.FindColumn;
+import run.cmdi.common.reader.annotations.Index;
 import run.cmdi.common.reader.enums.*;
 import run.cmdi.common.validator.annotations.*;
 import run.cmdi.common.validator.eumns.ValidationType;
@@ -14,7 +15,10 @@ import java.util.Date;
 
 @Getter
 @Setter
-@ConverterHead
+@ConverterHead(
+        indexes = {
+        @Index({"schemeName"})}
+        )
 //@Entity
 //@Table(name = "produce_pre")
 public class Produce {
@@ -23,7 +27,7 @@ public class Produce {
 
     @FieldName("制式")
     @FindColumn(value = "制式", checkColumn = true)
-     private NetworkMode networkMode;
+    private NetworkMode networkMode;
 
     @FieldName("类型")
     @FindColumn(value = "类型", checkColumn = true)
@@ -89,6 +93,7 @@ public class Produce {
      * 系统根据 方案名称 进行自动生成 分公司 + 制式 +站址站名 + 设备厂家 + 基站类型
      */
     @FieldName("方案名称")
+    @FindColumn(value = "方案名称", checkColumn = true)
     private String schemeName;
 
     /**

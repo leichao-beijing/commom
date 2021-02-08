@@ -47,7 +47,8 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
         values = Arrays.asList(findColumn.value());
         this.findModel = findColumn.model();
         this.checkColumn = findColumn.checkColumn();
-        setName(findColumn.name().equals("") ? fieldName : findColumn.name());
+        if (name == null)
+            setName(findColumn.name().equals("") ? fieldName : findColumn.name());
     }
 
     @RegisterAnnotation
