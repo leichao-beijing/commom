@@ -23,7 +23,7 @@ public class WriterOrReaderTest {
         writer.add(3, 1, "31", null);
         writer.add(3, 2, "32", null);
         writer.add(3, 4, "34", null);
-        writer.save(new FileOutputStream("C:\\Users\\leichao\\Desktop\\1.xlsx"));
+        writer.save(new FileOutputStream("d:\\1.xlsx"));
     }
 
     @Test
@@ -40,6 +40,6 @@ public class WriterOrReaderTest {
         writer.add(3, 1, "31", null);
         writer.add(3, 2, "32", null);
         writer.add(3, 4, "34", null);
-        writer.save(new FileOutputStream("C:\\Users\\leichao\\Desktop\\1.csv"));
+        writer.save(new FileOutputStream("d:\\1.csv"));
     }
 }

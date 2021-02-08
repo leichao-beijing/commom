@@ -4,15 +4,12 @@ import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.reader.annotations.RegisterAnnotation;
-import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class RegisterAnnotationUtils<T> {
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> srcClazz, Class<CONFIG> outClass) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -26,11 +23,11 @@ public class RegisterAnnotationUtils<T> {
      */
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, boolean bool) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         Map<String, CONFIG> result = new LinkedHashMap<>();
-        Map<ComputeValue<Method>, Class> parameterMap = parameterMap(configClazz);
-        if (parameterMap.isEmpty())
+        List<ComputeValue> parameterList = parameterMap(configClazz);
+        if (parameterList.isEmpty())
             throw new NullPointerException("@RegisterAnnotation no find");
         for (Field field : analysisClazz.getDeclaredFields()) {
-            CONFIG config = field(field, configClazz, parameterMap, bool);
+            CONFIG config = field(field, configClazz, parameterList, bool);
             if (config != null)
                 result.put(field.getName(), config);
         }
@@ -43,21 +40,21 @@ public class RegisterAnnotationUtils<T> {
      * @param parameterMap
      * @param bool         true时,未匹配到任何 注解的对象将被抛弃并return null
      */
-    private static <CONFIG> CONFIG field(Field field, Class<CONFIG> outClass, Map<ComputeValue<Method>, Class> parameterMap, boolean bool) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private static <CONFIG> CONFIG field(Field field, Class<CONFIG> outClass, List<ComputeValue> parameterMap, boolean bool) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         CONFIG config = outClass.getDeclaredConstructor().newInstance();
         boolean state = false;
-        for (Map.Entry<ComputeValue<Method>, Class> stringClassEntry : parameterMap.entrySet()) {
-            Class value = stringClassEntry.getValue();
-            ComputeValue<Method> method = stringClassEntry.getKey();
-            if (config instanceof RegisterAnnotationInterface)
-                ((RegisterAnnotationInterface) config).setFieldName(field.getName());
-            if (value.isAnnotation()) {
-                Annotation annotation = field.getAnnotation(value);
+
+        if (config instanceof RegisterAnnotationInterface)
+            ((RegisterAnnotationInterface) config).setFieldName(field.getName());
+
+        for (ComputeValue computeValue : parameterMap) {
+            if (computeValue.getClazz().isAnnotation()) {
+                Annotation annotation = field.getAnnotation(computeValue.getClazz());
                 if (annotation == null)
                     continue;
-                ReflectUtil.invoke(config, ReflectLcUtils.methodSetString(method.get().getName()), annotation);
-            } else if (value.isAssignableFrom(Field.class)) {
-                ReflectUtil.invoke(config, ReflectLcUtils.methodSetString(method.get().getName()), field);
+                ReflectUtil.invoke(config, computeValue.getMethod(), annotation);
+            } else if (computeValue.getClazz().isAssignableFrom(Field.class)) {
+                ReflectUtil.invoke(config, computeValue.getMethod(), field);
                 continue;
             } else continue;
             state = true;
@@ -71,41 +68,39 @@ public class RegisterAnnotationUtils<T> {
     /**
      * 将带有@RegisterAnnotation 注解的 method 装入map中 并将所对应的参数进行收集
      */
-    private static <CONFIG> Map<ComputeValue<Method>, Class> parameterMap(Class<CONFIG> outClass) {
+    private static <CONFIG> List<ComputeValue> parameterMap(Class<CONFIG> outClass) {
         Method[] methods = outClass.getDeclaredMethods();
-        Map<ComputeValue<Method>, Class> parameters = new TreeMap<>();
+        List<ComputeValue> parameters = new ArrayList<>();
         for (Method method : methods) {
             RegisterAnnotation registerAnnotation = method.getAnnotation(RegisterAnnotation.class);
             if (registerAnnotation == null)
                 continue;
             if (method.getParameterCount() != 1)
                 continue;
-            parameters.put(new ComputeValue(registerAnnotation.value(), method), method.getParameterTypes()[0]);
+            ComputeValue value = new ComputeValue(registerAnnotation.value(), method, method.getParameterTypes()[0]);
+            parameters.add(value);
         }
+        parameters.sort(new Comparator<ComputeValue>() {
+            @Override
+            public int compare(ComputeValue o1, ComputeValue o2) {
+                return o1.getIndex() - o2.getIndex();
+            }
+        });
         return parameters;
     }
-
-
 }
 
 @Getter
 @Setter
-class ComputeValue<T> implements Comparable<ComputeValue> {
-    public ComputeValue(int index, Method method) {
+class ComputeValue {
+    public ComputeValue(int index, Method method, Class clazz) {
         this.index = index;
+        this.clazz = clazz;
         this.method = method;
-
     }
 
-    public Method get() {
-        return method;
-    }
-
+    private final Class clazz;
     private final int index;
     private final Method method;
 
-    @Override
-    public int compareTo(ComputeValue computeValue) {
-        return index - computeValue.index;
-    }
 }
