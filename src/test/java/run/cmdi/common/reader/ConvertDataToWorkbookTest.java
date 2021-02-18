@@ -61,7 +61,7 @@ public class ConvertDataToWorkbookTest {
 
     @Test
     public void toSheetTest() throws IOException {
-        InputStream is = ClassLoader.getSystemResourceAsStream("data/produceTable.xlsx");
+        InputStream is = ClassLoader.getSystemResourceAsStream("data/testDemand-1.xls");
         PoiReaderConvert convert = PoiReaderConvert.reader(is);
         Sheet sheet = convert.getWorkbook().getSheet("Sheet1");
         ExcelSaveService excelSaveService = new ExcelSaveService();

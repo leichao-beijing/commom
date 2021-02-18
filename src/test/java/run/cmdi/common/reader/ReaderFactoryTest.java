@@ -25,6 +25,6 @@ public class ReaderFactoryTest {
         EntityResultBuildConvert en = entityBuildings.find(convert, 0);
         List list = en.build().getResultList();
 
-        System.err.println(">>>");
+        //System.err.println(">>>");
     }
 }

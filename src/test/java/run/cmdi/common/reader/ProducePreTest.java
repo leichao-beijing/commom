@@ -27,6 +27,6 @@ public class ProducePreTest {
         EntityResultsConvert build = result.build();
         Map list1 = build.getTableErrorMap();
         List<Produce> list = build.getResultList();
-        System.err.println(">>>");
+        //System.err.println(">>>");
     }
 }

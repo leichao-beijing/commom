@@ -40,28 +40,21 @@ public class ExcelTest {
         InputStream ras = getClass().getClassLoader().getResourceAsStream("data/testDemand-1.xls");
         PoiReaderConvert convert;
         PoiReaderClone poi = PoiReaderClone.build(convert = PoiReaderConvert.reader(ras));
-
         Sheet sheet = poi.getWorkbook().getSheetAt(0);
         SheetComment sd = new SheetComment(sheet);
-
         StyleInfo info = new StyleInfo();
         Color c = new Color(255, 255, 255);
         info.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         info.setFillForegroundColor(c);
         CellStyle style = poi.createStyle(info);
-        Color color = poi.getColor(sheet.getRow(0).getCell(0).getCellStyle());
+       // Color color = poi.getColor(sheet.getRow(0).getCell(0).getCellStyle());
         Cell cell = sheet.getRow(0).getCell(2);
-        cell.setCellStyle(style);
-        Comment c1 = sd.getComment("", "c1");
-        Comment c2 = sd.getComment("", "c2");
-        cell.setCellComment(c1);
+        sd.createComment("", "c1",cell);
         cell.removeCellComment();
-        cell.setCellComment(c2);
+        sd.createComment("", "c2",cell);
         cell = sheet.getRow(0).getCell(3);
         cell.setCellStyle(style);
-        //cell.setCellComment(com);
         org.apache.poi.ss.usermodel.Color s = cell.getCellStyle().getFillForegroundColorColor();
         poi.getWorkbook().write(new FileOutputStream(new File("D:\\xxx.xls")));
-        //poi.saveAndClose(new File("D:\\xxx.xls"));
     }
 }

@@ -1,31 +1,12 @@
 package run.cmdi.common.poi.core;
 
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
-
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFComment;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFComment;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 public class SheetComment {
     public final CellStyle whiteBorder;
@@ -43,16 +24,25 @@ public class SheetComment {
 
     }
 
-    public Comment getComment(String maker, String value) throws IOException {
+//    public Comment getComment(String maker, String value) throws IOException {
+//        if (sheet instanceof HSSFSheet)
+//            return commentXssf((HSSFSheet) sheet, maker, value);
+//        if (sheet instanceof XSSFSheet)
+//            return commentHssf((XSSFSheet) sheet, maker, value);
+//        throw new IOException("NO Sheet Instanceof");
+//    }
+
+    public void createComment(String maker, String value, Cell cell) throws IOException {
         if (sheet instanceof HSSFSheet)
-            return commentXssf((HSSFSheet) sheet, maker, value);
+            cell.setCellComment(
+                    commentXssf((HSSFSheet) sheet, maker, value, (short) cell.getColumnIndex(), cell.getRowIndex()));
         if (sheet instanceof XSSFSheet)
-            return commentHssf((XSSFSheet) sheet, maker, value);
-        throw new IOException("NO Sheet Instanceof");
+            cell.setCellComment(
+                    commentHssf((XSSFSheet) sheet, maker, value, (short) cell.getColumnIndex(), cell.getRowIndex()));
     }
 
-    private Comment commentXssf(HSSFSheet sheet, String maker, String value) {
-        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 3, 3, (short) 5, 6);
+    private Comment commentXssf(HSSFSheet sheet, String maker, String value, short col, int row) {
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, col, row, (short) (col + 2), row + 2);
         HSSFPatriarch patriarch = sheet.getDrawingPatriarch();
         if (patriarch == null)
             patriarch = sheet.createDrawingPatriarch();
@@ -77,8 +67,8 @@ public class SheetComment {
         comment.setString(new XSSFRichTextString(value));
     }
 
-    private Comment commentHssf(XSSFSheet sheet, String maker, String value) {
-        ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) 3, 3, (short) 5, 6);
+    private Comment commentHssf(XSSFSheet sheet, String maker, String value, short col, int row) {
+        ClientAnchor anchor = new XSSFClientAnchor(0, 0, 0, 0, col, row, (short) (col + 2), row + 2);
         XSSFDrawing patriarch = sheet.getDrawingPatriarch();
         if (patriarch == null)
             patriarch = sheet.createDrawingPatriarch();
