@@ -131,15 +131,12 @@ public class ProduceTable {
     @FindColumn(value = "错误信息")
     private String errorMessage;
 
-    @FindColumns({@FindColumn(value = "合同编号"), @FindColumn(value = "是否已计提"), @FindColumn(value = "计提内部立项编号"),
-            @FindColumn(value = "计提内部立项名称"), @FindColumn(value = "计提合作单位"), @FindColumn(value = "结算勘察设计费"),
-            @FindColumn(value = "计提金额(元)"), @FindColumn(value = "是否已结算"), @FindColumn(value = "确认单编号"), @FindColumn(value = "备注2"),
-            @FindColumn(value = "是否自有或多项目转为单项目"), @FindColumn(value = "是否在14年8月已核对"), @FindColumn(value = "是否漏报产值"),
-            @FindColumn(value = "签字标签"), @FindColumn(value = "原勘察设计费（元）"), @FindColumn(value = "原自有产值"),
-            @FindColumn(value = "原预估合作费")})
-    @FieldNameList({
-            @FieldName("合同编号"), @FieldName("合同编号1")
-    })
+    @FindColumns({@FindColumn("合同编号"), @FindColumn("是否已计提"), @FindColumn("计提内部立项编号"),
+            @FindColumn("计提内部立项名称"), @FindColumn("计提合作单位"), @FindColumn("结算勘察设计费"),
+            @FindColumn("计提金额(元)"), @FindColumn("是否已结算"), @FindColumn("确认单编号"), @FindColumn("备注2"),
+            @FindColumn("是否自有或多项目转为单项目"), @FindColumn("是否在14年8月已核对"), @FindColumn("是否漏报产值"),
+            @FindColumn("签字标签"), @FindColumn("原勘察设计费（元）"), @FindColumn("原自有产值"),
+            @FindColumn("原预估合作费")})
     private ArrayList<String> list;
 
     public ProduceTable() {

@@ -34,7 +34,7 @@ public class FindFieldInfos {
     private final ConvertOutPage<List> page;
     private Validator validator;
 
-    private final Map<Integer, FindFieldInfo> map;
+    private final Map<Integer,FindFieldInfo> map;
 
     public void setHeadInfo(ClazzBuildInfo convert) {
         this.skipNoAnnotationField = convert.isSkipNoAnnotationField();

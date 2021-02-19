@@ -232,16 +232,18 @@ public class EntityResultBuildConvert<T> {
 
     private Map<String, Object> buildRowMap(List<Object> row) {
         Map<String, Object> mapInfo = new HashMap<>();
-
         filedInfos.getMap().forEach((key, info) -> {
-            if (info.getType() != FieldDetailType.LIST)
+            if (info.getType() != FieldDetailType.LIST) {
+                if (row.size() <= key) return;// OutOfBounds
                 mapInfo.put(info.getFieldName(), row.get(key));
-            else {
+            } else {
                 List value = (List) mapInfo.get(info.getFieldName());
                 if (value == null) mapInfo.put(info.getFieldName(), value = new ArrayList<>());
-                if (info.getIndex() == value.size())
-                    value.add(row.get(info.getIndex()));
-                else if (info.getIndex() > value.size()) {
+                if (info.getIndex() == value.size()) {
+                    if (row.size() <= key) // OutOfBounds)
+                    value.add("");
+                    else value.add(row.get(key));
+                } else if (info.getIndex() > value.size()) {
                     int i = info.getIndex() - value.size();
                     for (int i1 = 0; i1 < i; i1++)
                         value.add("");

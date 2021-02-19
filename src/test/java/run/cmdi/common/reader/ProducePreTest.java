@@ -7,8 +7,11 @@ import run.cmdi.common.reader.core.EntityBuildings;
 import run.cmdi.common.reader.core.EntityResultBuildConvert;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.model.Produce;
+import run.cmdi.common.reader.model.ProduceTable;
 import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -18,7 +21,6 @@ public class ProducePreTest {
 
     @Test
     public void test() throws IOException, ConverterException {
-        //InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\git\\produce-pre\\src\\main\\resources\\data\\测试数据.xlsx"));
         InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
         ReaderFactory convert = new ReaderFactory(is);
 

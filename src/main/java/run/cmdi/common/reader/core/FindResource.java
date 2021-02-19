@@ -9,6 +9,7 @@ import run.cmdi.common.reader.exception.ConverterExceptionUtils;
 import run.cmdi.common.reader.model.FindFieldInfo;
 import run.cmdi.common.reader.model.FindFieldInfos;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
+import run.cmdi.common.reader.model.eumns.FieldDetailType;
 
 import java.util.*;
 
@@ -53,9 +54,6 @@ public class FindResource {
 
         FindFieldInfos infos = list.remove(list.size() - 1);
         list.clear();
-//        if (infos.getException() != null) {
-//            throw infos.getException();
-//        }
         int size = infos.getMap().size();
         if (size < clazzBuildInfo.getMaxWrongCount())
             ConverterExceptionUtils.build("最少匹配到" + clazzBuildInfo.getMaxWrongCount() + "列数据，当前匹配到了" + size, ConverterErrorType.FIND_FIELD_COUNT_WRONG).throwException();
@@ -68,13 +66,22 @@ public class FindResource {
         FindFieldInfos infos = new FindFieldInfos(resultInfo, page, clazzBuildInfo.getConfig(), readHeadRownum);
         List list = page.getValues(readHeadRownum);
         config.getMap().forEach((fieldName, info) -> {
-            for (int i = 0; i < list.size(); i++) {
-                Object headValue = list.get(i);
-                FindFieldInfo val = info.matchInfo(headValue);
-                if (val != null) {
-                    val.setAddress(i);
-                    resultInfo.put(i, val);
-                    break;
+            if (info.getType() != FieldDetailType.LIST)
+                for (int i = 0; i < list.size(); i++) {
+                    Object headValue = list.get(i);
+                    if (info.match(headValue)) {
+                        info.setAddress(i);
+                        resultInfo.put(i, info);
+                        break;
+                    }
+                }
+            else {
+                for (FindFieldInfo findFieldInfo : info.getList()) {
+                    for (int i = 0; i < list.size(); i++) {
+                        if (!findFieldInfo.match(list.get(i))) continue;
+                        findFieldInfo.setAddress(i);
+                        resultInfo.put(i, findFieldInfo);
+                    }
                 }
             }
         });

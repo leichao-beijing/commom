@@ -62,6 +62,8 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
             info.setName(findColumn.name().equals("") ? fieldName + " index:" + i : findColumn.name());
             info.setFieldName(getFieldName());
             info.setFormatDate(getFormatDate());
+            info.setType(FieldDetailType.LIST);
+            info.setIndex(i);
             list.add(info);
         }
     }
@@ -97,18 +99,18 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
 
     }
 
-    public FindFieldInfo matchInfo(Object value) {
-        if (type != FieldDetailType.LIST) {
-            if (match(value))
-                return this;
-            else
-                return null;
-        }
-        for (FindFieldInfo findFieldInfo : list) {
-            if (findFieldInfo.match(value)) return findFieldInfo;
-        }
-        return null;
-    }
+//    public FindFieldInfo matchInfo(Object value) {
+//        if (type != FieldDetailType.LIST) {
+//            if (match(value))
+//                return this;
+//            else
+//                return null;
+//        }
+//        for (FindFieldInfo findFieldInfo : list) {
+//            if (findFieldInfo.match(value)) return findFieldInfo;
+//        }
+//        return null;
+//    }
 
     public boolean match(Object value) {
         if (value == null)
