@@ -8,6 +8,7 @@ import run.cmdi.common.reader.core.EntityResultBuildConvert;
 import run.cmdi.common.reader.exception.ConverterException;
 import run.cmdi.common.reader.model.Produce;
 import run.cmdi.common.reader.model.ProduceTable;
+import run.cmdi.common.reader.model.Project;
 import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 
 import java.io.File;
@@ -21,11 +22,11 @@ public class ProducePreTest {
 
     @Test
     public void test() throws IOException, ConverterException {
-        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\产值表-10个mis201229.xlsx"));
+        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\项目表-10个mis201229.xlsx"));
         //InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
         ReaderFactory convert = new ReaderFactory(is);
 
-        EntityBuildings<Produce> entityBuildings = new EntityBuildings(ProduceTable.class, new ReaderPoiConfig());
+        EntityBuildings<Produce> entityBuildings = new EntityBuildings(Project.class, new ReaderPoiConfig());
         EntityResultBuildConvert result = entityBuildings.find(convert, 0);
         EntityResultsConvert build = result.build();
         Map list1 = build.getTableErrorMap();

@@ -165,16 +165,16 @@ public class EntityResultBuildConvert<T> {
                 //checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
-                if (filedInfos.getValidator().isConverter(name)) {
-                    MapUtils.lineMap(checkErrorMap, findFieldInfo.getIndex(), (vv) -> {
-                        if (vv == null)
-                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage());
-                        vv.add(e.getType(), e.getMessage());
-                        return vv;
-                    });
+                //if (filedInfos.getValidator().isConverter(name)) {
+                MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
+                    if (vv == null)
+                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), e.getMessage());
+                    vv.add(e.getType(), e.getMessage());
+                    return vv;
+                });
 //                    checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
-                    tag.getFieldNull().add(name);
-                }
+                tag.getFieldNull().add(name);
+                // }
             }
         }
         return new EntityResultConvert(rowInfo.getRownum(), tag, checkErrorMap);// size == 0 ? null : tag;
@@ -251,17 +251,6 @@ public class EntityResultBuildConvert<T> {
                 } catch (IndexOutOfBoundsException e) {
                     value.dynamicAdd(info.getIndex(), "");
                 }
-//                if (info.getIndex() == value.size()) {
-//                    if (row.size() <= key) // OutOfBounds)
-//                        value.add("");
-//                    else value.add(row.get(key));
-//                } else if (info.getIndex() > value.size()) {
-//                    int i = info.getIndex() - value.size();
-//                    for (int i1 = 0; i1 < i; i1++)
-//                        value.add("");
-//                    value.add(row.get(key));
-//                } else
-//                    value.set(info.getIndex(), row.get(key));
             }
         });
         return mapInfo;

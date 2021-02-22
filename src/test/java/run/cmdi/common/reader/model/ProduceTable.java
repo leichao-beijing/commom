@@ -26,7 +26,7 @@ import java.util.Date;
  * @date 2020-03-30 01:25:51
  */
 @Getter
-@Setter
+@Setter//项目类型 建设单位 合作内容
 @ConverterHead(maxWrongCount = 1, indexes = {@Index({"demandId", "provider", "cooperateContent"})})
 public class ProduceTable {
     @FieldName("序号")

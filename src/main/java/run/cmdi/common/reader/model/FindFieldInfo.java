@@ -34,7 +34,7 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
     private boolean checkColumn;
     private String formatDate;
     private boolean state = false;
-    private boolean converterException = false;
+    private boolean converterException = true;
 
     private Integer index;
 

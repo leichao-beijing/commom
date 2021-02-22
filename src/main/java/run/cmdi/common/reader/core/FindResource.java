@@ -66,8 +66,6 @@ public class FindResource {
         FindFieldInfos infos = new FindFieldInfos(resultInfo, page, clazzBuildInfo.getConfig(), readHeadRownum);
         List list = page.getValues(readHeadRownum);
         config.getMap().forEach((fieldName, info) -> {
-            if(fieldName.equals("designerCost"))
-                System.err.println("");
             if (info.getType() != FieldDetailType.LIST)
                 for (int i = 0; i < list.size(); i++) {
                      Object headValue = list.get(i);

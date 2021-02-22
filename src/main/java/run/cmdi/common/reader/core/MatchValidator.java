@@ -39,7 +39,7 @@ public class MatchValidator {
                     list.add(mgs);
                 }
             } catch (ValidatorException e) {
-
+                e.printStackTrace();
             }
         }
         return list;
