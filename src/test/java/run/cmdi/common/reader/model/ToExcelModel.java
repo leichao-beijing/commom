@@ -3,11 +3,10 @@ package run.cmdi.common.reader.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import run.cmdi.common.reader.annotations.CellPosition;
-import run.cmdi.common.reader.annotations.ConverterHead;
-import run.cmdi.common.reader.annotations.FindColumn;
-import run.cmdi.common.reader.annotations.IgnoreReader;
+import run.cmdi.common.reader.annotations.*;
 import run.cmdi.common.validator.annotations.FieldName;
+
+import java.util.List;
 
 @ConverterHead(maxWrongCount = 1)
 @Getter
@@ -34,6 +33,9 @@ public class ToExcelModel {
     @FindColumn(value = "这是除外信息")
     private String messageExcept;
 
+
+    @FindColumns({@FindColumn(name = "A1",value = "A1"), @FindColumn(name = "A2",value = "A2")})
+    private List<String> list;
     @IgnoreReader
     private boolean state = true;
 }

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,20 +27,40 @@ public class ConvertDataToWorkbookTest {
         ConvertDataToWorkbook ex = excelSaveService.buildConvert("test", ToExcelModel.class);
         ToExcelModel t = new ToExcelModel("a1", "测试1");
         t.setMessageExcept("除外信息1");
-        ex.add(t);
+        ex.add(t);//1
         t = new ToExcelModel("a2", "测试2");
         t.setMessageExcept("除外信息2");
-        ex.add(t);
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("2");
+        list.add("44");
+        t.setList(list);
+        ex.add(t);//2
 
         Set<String> exceptFieldName = new HashSet<>();
         exceptFieldName.add("messageExcept");
+
         ex = excelSaveService.buildConvert("except", ToExcelModel.class, exceptFieldName);
         t = new ToExcelModel("a1", "测试1");
         t.setMessageExcept("除外信息1");
-        ex.add(t);
+
+        list = new ArrayList<String>();
+        list.add("2 A");
+        list.add("44A");
+        t.setList(list);
+
+        ex.add(t);//3
+
+
         t = new ToExcelModel("a2", "测试2");
         t.setMessageExcept("除外信息2");
-        ex.add(t);
+
+        list = new ArrayList<String>();
+        list.add("2 T");
+        list.add("44 T");
+        t.setList(list);
+
+
+        ex.add(t);//4
 
         Workbook workbook = excelSaveService.getWorkbook();
         Sheet test = workbook.getSheet("test");
@@ -51,7 +72,7 @@ public class ConvertDataToWorkbookTest {
 
         Sheet except = workbook.getSheet("except");
         Assert.assertNotNull(except);
-        Assert.assertTrue(SheetUtils.getCell(except, new CellAddress("C2")).isEmpty());
+        Assert.assertTrue(SheetUtils.getCell(except, new CellAddress("C4")).isEmpty());
 
         FileOutputStream is = new FileOutputStream(new File("D:\\ceshi.xlsx"));
 

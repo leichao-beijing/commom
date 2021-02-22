@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.plugin.PluginAnnotation;
 import run.cmdi.common.plugin.PluginMainOne;
+import run.cmdi.common.reader.annotations.FindColumns;
 import run.cmdi.common.reader.annotations.FormatDate;
 import run.cmdi.common.reader.annotations.IgnoreReader;
 import run.cmdi.common.utils.ReflectLcUtils;
@@ -48,10 +49,12 @@ public class ConvertPlugin<T> {
                 continue;
             FieldName fieldName = field.getAnnotation(FieldName.class);
             FieldNameList fieldNameList = field.getAnnotation(FieldNameList.class);
+            FindColumns findColumns = field.getAnnotation(FindColumns.class);
             FormatDate formatDate = field.getAnnotation(FormatDate.class);
             ConvertPlugin<T> convertPlugin;
-
-            if (fieldNameList != null) {
+            if (findColumns != null) {
+                convertPlugin = new ConvertPluginList<T>(field.getName(), field, findColumns);
+            } else if (fieldNameList != null) {
                 convertPlugin = new ConvertPluginList<T>(field.getName(), field, fieldNameList);
             } else if (fieldName != null)
                 convertPlugin = new ConvertPlugin<T>(fieldName.value().equals("") ? field.getName() : fieldName.value(), field);

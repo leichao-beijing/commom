@@ -3,11 +3,11 @@ package run.cmdi.common.convert.model;
 import lombok.Getter;
 import lombok.Setter;
 import run.cmdi.common.convert.RegisterAnnotationInterface;
+import run.cmdi.common.convert.annotations.DefaultValue;
 import run.cmdi.common.reader.annotations.FindColumn;
 import run.cmdi.common.reader.annotations.FindColumns;
 import run.cmdi.common.reader.annotations.FormatDate;
 import run.cmdi.common.reader.annotations.RegisterAnnotation;
-import run.cmdi.common.reader.model.FindFieldInfo;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.validator.annotations.FieldName;
 
@@ -25,6 +25,7 @@ public class WriterFieldInfo implements RegisterAnnotationInterface {
     private FieldDetailType type = FieldDetailType.SINGLE;
     private List<WriterFieldInfo> list;
 
+
     @RegisterAnnotation
     public void info(FieldName fieldName) {
         this.name = fieldName.value();
@@ -34,6 +35,13 @@ public class WriterFieldInfo implements RegisterAnnotationInterface {
     public void info(FindColumn findColumn) {
         if (!findColumn.name().equals(""))
             this.name = findColumn.name();
+    }
+
+    private String defaultValue;
+    @RegisterAnnotation
+    public void info(DefaultValue defaultValue) {
+        this.defaultValue = defaultValue.value();
+        if (list != null) list.forEach(val -> val.setDefaultValue(defaultValue.value()));
     }
 
     @RegisterAnnotation
@@ -47,6 +55,7 @@ public class WriterFieldInfo implements RegisterAnnotationInterface {
             info.setName(findColumn.name().equals("") ? fieldName + " index:" + i : findColumn.name());
             info.setFieldName(getFieldName());
             info.setFormatDate(getFormatDate());
+            info.setDefaultValue(getDefaultValue());
             list.add(info);
         }
     }

@@ -93,7 +93,8 @@ public class ProduceTable {
     @FindColumn(value = "PRRU数量", model = FindModel.INCLUDE)
     private Double prruValue;
 
-    @FindColumn(value = "合作成本预估", model = FindModel.INCLUDE)
+    //@FindColumn(value = "合作成本预估", model = FindModel.INCLUDE)
+    @FieldName("合作成本预估")
     private Double cooperateCost;
 
     @FindColumn(value = "需求是否已确认核销", checkColumn = true)
