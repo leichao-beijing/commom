@@ -13,7 +13,7 @@ public class DynamicList<T> extends ArrayList<T> {
 
     private final T defaultValue;
 
-    void dynamicAdd(int address, T t) {
+    public  void dynamicAdd(int address, T t) {
         if (size() > address)//10 10
             add(address, t);
         else if (size() == address)

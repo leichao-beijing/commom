@@ -16,6 +16,7 @@ import run.cmdi.common.reader.model.entity.EntityResultConvert;
 import run.cmdi.common.reader.model.entity.EntityResultsConvert;
 import run.cmdi.common.reader.model.eumns.ConverterErrorType;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
+import run.cmdi.common.utils.DynamicList;
 import run.cmdi.common.utils.MapUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.exception.ValidatorException;
@@ -237,19 +238,30 @@ public class EntityResultBuildConvert<T> {
                 if (row.size() <= key) return;// OutOfBounds
                 mapInfo.put(info.getFieldName(), row.get(key));
             } else {
-                List value = (List) mapInfo.get(info.getFieldName());
-                if (value == null) mapInfo.put(info.getFieldName(), value = new ArrayList<>());
-                if (info.getIndex() == value.size()) {
-                    if (row.size() <= key) // OutOfBounds)
-                    value.add("");
-                    else value.add(row.get(key));
-                } else if (info.getIndex() > value.size()) {
-                    int i = info.getIndex() - value.size();
-                    for (int i1 = 0; i1 < i; i1++)
-                        value.add("");
-                    value.add(row.get(key));
-                } else
-                    value.set(info.getIndex(), row.get(key));
+
+                DynamicList value = (DynamicList) mapInfo.get(info.getFieldName());
+                if (value == null) mapInfo.put(info.getFieldName(), value = new DynamicList(""));
+                try {
+                    Object result = row.get(key);
+                    if (result != null)
+                        value.dynamicAdd(info.getIndex(), row.get(key));
+                    else
+                        value.dynamicAdd(info.getIndex(), "");
+
+                } catch (IndexOutOfBoundsException e) {
+                    value.dynamicAdd(info.getIndex(), "");
+                }
+//                if (info.getIndex() == value.size()) {
+//                    if (row.size() <= key) // OutOfBounds)
+//                        value.add("");
+//                    else value.add(row.get(key));
+//                } else if (info.getIndex() > value.size()) {
+//                    int i = info.getIndex() - value.size();
+//                    for (int i1 = 0; i1 < i; i1++)
+//                        value.add("");
+//                    value.add(row.get(key));
+//                } else
+//                    value.set(info.getIndex(), row.get(key));
             }
         });
         return mapInfo;

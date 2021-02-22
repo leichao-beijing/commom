@@ -113,7 +113,7 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
 //    }
 
     public boolean match(Object value) {
-        if (value == null)
+          if (value == null)
             return false;
         switch (findModel) {
             case INCLUDE:

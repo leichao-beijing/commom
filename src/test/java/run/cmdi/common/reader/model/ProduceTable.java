@@ -69,13 +69,13 @@ public class ProduceTable {
     @FindColumn(value = "设计完成", checkColumn = true, model = FindModel.INCLUDE)
     private Date designerDoneDate;
 
-    @FindColumn(value = "勘察费", checkColumn = true, model = FindModel.INCLUDE)
+    @FindColumn(value = "勘察费", checkColumn = true, model = FindModel.EQUALS)
     private Double checkCost;
 
-    @FindColumn(value = "设计费", checkColumn = true, model = FindModel.INCLUDE)
+    @FindColumn(value = "设计费", checkColumn = true, model = FindModel.EQUALS)
     private Double designerCost;
 
-    @FindColumn(value = "勘察设计费", checkColumn = true, model = FindModel.INCLUDE)
+    @FindColumn(value = "勘察设计费", checkColumn = true, model = FindModel.EQUALS)
     private Double checkDesignerCost;
 
     @FindColumn(value = "合作类型", checkColumn = true)

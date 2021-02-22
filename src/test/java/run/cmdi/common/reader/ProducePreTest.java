@@ -21,10 +21,11 @@ public class ProducePreTest {
 
     @Test
     public void test() throws IOException, ConverterException {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
+        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\产值表-10个mis201229.xlsx"));
+        //InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
         ReaderFactory convert = new ReaderFactory(is);
 
-        EntityBuildings<Produce> entityBuildings = new EntityBuildings(Produce.class, new ReaderPoiConfig());
+        EntityBuildings<Produce> entityBuildings = new EntityBuildings(ProduceTable.class, new ReaderPoiConfig());
         EntityResultBuildConvert result = entityBuildings.find(convert, 0);
         EntityResultsConvert build = result.build();
         Map list1 = build.getTableErrorMap();
