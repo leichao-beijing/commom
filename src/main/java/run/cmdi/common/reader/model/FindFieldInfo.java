@@ -105,7 +105,7 @@ public class FindFieldInfo implements RegisterAnnotationInterface {
         switch (findModel) {
             case INCLUDE:
                 for (String s : values) {
-                    if (s.indexOf(value.toString()) != -1)
+                    if (value.toString().indexOf(s) != -1)
                         return true;
                 }
                 return false;

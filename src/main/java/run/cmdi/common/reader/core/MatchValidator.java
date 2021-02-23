@@ -34,8 +34,8 @@ public class MatchValidator {
             if (!require.getMessage().equals(""))
                 mgs = require.getMessage();
             try {
-                if (FieldValidatorUtils.mode(valueFieldName, require.getValue(), require, dataMap)) {
-                    mgs = (mgs != null) ? (mgs) : FieldValidatorUtils.headMessage(valueFieldName) + " " + FieldValidatorUtils.message(require.getMode(), require.getValue(), true);
+                if (FieldValidatorUtils.mode(dataMap.get(require.getFieldName()).getValue(), require.getValue(), require, dataMap)) {
+                    mgs = (mgs != null) ? (mgs) : FieldValidatorUtils.headMessage(dataMap.get(require.getFieldName())) + " " + FieldValidatorUtils.message(require.getMode(), require.getValue(), true);
                     list.add(mgs);
                 }
             } catch (ValidatorException e) {

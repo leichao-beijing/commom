@@ -1,21 +1,27 @@
 package run.cmdi.common.validator.core;
 
+import run.cmdi.common.reader.exception.NotRequireException;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.utils.SpotPath;
+import run.cmdi.common.validator.ResultObjectInterface;
+import run.cmdi.common.validator.exception.ValidatorFieldsException;
+import run.cmdi.common.validator.model.MachModelInfo;
+import run.cmdi.common.validator.model.ValidatorFieldException;
 import run.cmdi.common.validator.plugins.ValidatorPlugin;
 import run.cmdi.common.validator.plugins.ValueFieldName;
-import run.cmdi.common.validator.exception.ValidatorFieldsException;
-import run.cmdi.common.validator.model.*;
-import run.cmdi.common.validator.ResultObjectInterface;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<ValidatorPlugin>, MachModelInfo> {
     //private final Set<Class<? extends ValidatorPlugin>> plugins;
+    private ValidatorTools<T> validatorTools;
 
-    public ValidatorResultObject() {
-
+    public ValidatorResultObject(ValidatorTools<T> validatorTools) {
+        this.validatorTools = validatorTools;
     }
 
     @Override
@@ -58,9 +64,19 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<V
             ValueFieldName valueFieldName = context.get(fieldName);
             if (valueFieldName == null)
                 valueFieldName = ValueFieldName.build(fieldName);
-            for (ValidatorPlugin validatorPlugin : validatorPlugins) {
-                err.addAll(validatorPlugin.validator(valueFieldName, context));
-            }
+
+            boolean exceptionState = true;
+            for (ValidatorPlugin validatorPlugin : validatorPlugins)
+                try {
+                    List<ValidatorFieldException> list = validatorPlugin.validator(valueFieldName, context);
+                    if (list.isEmpty() && !validatorPlugin.isConverterException())
+                        exceptionState = false;
+                    err.addAll(list);
+                } catch (NotRequireException e) {
+                    if (e.getErr() != null)
+                        err.addAll(e.getErr());
+                }
+            validatorTools.getConverterMap().put(next.getKey().getName(), exceptionState);
         }
         return err;
     }

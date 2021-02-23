@@ -26,6 +26,8 @@ public class ValueFieldName<T> implements FieldName {
 
     @Override
     public String toString() {
+        if (name == null)
+            return fieldName + " : " + value;
         return name + " : " + value;
     }
 }

@@ -61,7 +61,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
 
     public List<ValidatorFieldException> validation(T t) {
         try {
-            new EngineObject(t, validationMap, new ValidatorResultObject()).compute();
+            new EngineObject(t, validationMap, new ValidatorResultObject(this)).compute();
         } catch (ValidatorFieldsException e) {
             return e.getErr();
         }
@@ -69,11 +69,8 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
     }
 
     public List<ValidatorFieldException> validationMap(Map<String, Object> data) {
-        ValidatorResultObject v = new ValidatorResultObject();
+        ValidatorResultObject v = new ValidatorResultObject(this);
         MachModelInfo info = new MachModelInfo(validationMap);
-//        data.forEach((key, value) -> {
-//            info.addValue(key, value);
-//        });
         validationMap.forEach((key, value) -> {
             info.addValue(key.getName(), data.get(key.getName()));
         });
@@ -104,7 +101,11 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
 
     public boolean isConverter(String fieldName) {
         Boolean bool = converterMap.get(fieldName);
-        return (bool == null) ? true : bool;  //默认对异常进行响应
+        if (!bool) {//对使用过的进行初始化
+            converterMap.put(fieldName, true);
+            return false;
+        } else return true;
+        //return (bool == null) ? true : bool;  //默认对异常进行响应
     }
 
     private void validatorFieldName(Field field) {

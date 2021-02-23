@@ -21,6 +21,7 @@ import run.cmdi.common.utils.MapUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.model.ValidatorFieldException;
+import run.cmdi.common.validator.plugins.ValueFieldName;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -139,9 +140,13 @@ public class EntityResultBuildConvert<T> {
             FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
             if (findFieldInfo == null) return;
             MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (value) -> {
-                if (value == null)
-                    return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
-                value.add(val.getType(), val.getMessage());
+                try {
+                    if (value == null)
+                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
+                }catch (Exception e){
+                    throw e;
+                }
+                          value.add(val.getType(), val.getMessage());
                 return value;
             });
         });
@@ -165,16 +170,16 @@ public class EntityResultBuildConvert<T> {
                 //checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
-                //if (filedInfos.getValidator().isConverter(name)) {
-                MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
-                    if (vv == null)
-                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), e.getMessage());
-                    vv.add(e.getType(), e.getMessage());
-                    return vv;
-                });
+                if (filedInfos.getValidator().isConverter(name)) {
+                    MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
+                        if (vv == null)
+                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), "不能输入这个值:"+value);
+                        vv.add(e.getType(), e.getMessage());
+                        return vv;
+                    });
 //                    checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
-                tag.getFieldNull().add(name);
-                // }
+                    tag.getFieldNull().add(name);
+                }
             }
         }
         return new EntityResultConvert(rowInfo.getRownum(), tag, checkErrorMap);// size == 0 ? null : tag;
@@ -203,9 +208,10 @@ public class EntityResultBuildConvert<T> {
                     ReflectUtil.invoke(out, setFunctionValue, en);
                     return;
                 } else//todo 处理
-                    throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR, findFieldInfo.getName() + " 只能输入：" + list.toString());
+                    throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR,
+                            ValueFieldName.build(findFieldInfo.getFieldName(),findFieldInfo.getName(),value).toString()+
+                                    " 只能输入：" + list.toString());
             }
-
             if (!value.getClass().equals(parameterClasses)) {
                 Object data;
                 if (ReflectLcUtils.IsInterface(parameterClasses, Date.class)) {
