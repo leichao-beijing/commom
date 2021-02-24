@@ -15,8 +15,7 @@ public class MapIntegerObject {
     @Getter
     private Map<String, Object> map = new HashMap<String, Object>();
     private List<SpotPath> paths = new ArrayList<SpotPath>();
-    ;
-
+    
     /**
      * 已重复的path无法再次添加
      *

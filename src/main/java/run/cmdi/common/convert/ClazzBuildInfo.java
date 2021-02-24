@@ -4,6 +4,7 @@ import lombok.Getter;
 import run.cmdi.common.reader.annotations.ConverterHead;
 import run.cmdi.common.reader.core.FindFieldConfig;
 import run.cmdi.common.reader.model.FindFieldInfo;
+import run.cmdi.common.register.RegisterAnnotationUtils;
 import run.cmdi.common.validator.core.Validator;
 import run.cmdi.common.validator.core.ValidatorTools;
 

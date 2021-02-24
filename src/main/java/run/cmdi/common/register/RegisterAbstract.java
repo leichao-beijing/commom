@@ -1,4 +1,4 @@
-package run.cmdi.common.convert;
+package run.cmdi.common.register;
 
 import cn.hutool.core.lang.Assert;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class RegisterAbstract<IN, REGISTER extends RegisterEntity<IN>> {
     private IN inValue;
 
-    RegisterAbstract(IN inValue) {
+    public RegisterAbstract(IN inValue) {
         Assert.notNull(inValue);
         this.inValue = inValue;
     }

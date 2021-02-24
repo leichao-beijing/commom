@@ -1,4 +1,4 @@
-package run.cmdi.common.reader.annotations;
+package run.cmdi.common.register.anntications;
 
 import java.lang.annotation.*;
 

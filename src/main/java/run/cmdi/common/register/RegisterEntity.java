@@ -1,4 +1,4 @@
-package run.cmdi.common.convert;
+package run.cmdi.common.register;
 
 import java.io.InputStream;
 

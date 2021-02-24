@@ -64,7 +64,6 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<V
             ValueFieldName valueFieldName = context.get(fieldName);
             if (valueFieldName == null)
                 valueFieldName = ValueFieldName.build(fieldName);
-
             boolean exceptionState = true;
             for (ValidatorPlugin validatorPlugin : validatorPlugins)
                 try {

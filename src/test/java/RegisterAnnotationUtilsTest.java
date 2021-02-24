@@ -1,5 +1,5 @@
 import org.junit.Test;
-import run.cmdi.common.convert.RegisterAnnotationUtils;
+import run.cmdi.common.register.RegisterAnnotationUtils;
 import run.cmdi.common.reader.model.FieldInfoAbstract;
 import run.cmdi.common.reader.model.Produce;
 

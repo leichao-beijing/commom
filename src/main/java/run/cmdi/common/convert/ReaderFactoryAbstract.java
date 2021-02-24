@@ -1,5 +1,7 @@
 package run.cmdi.common.convert;
 
+import run.cmdi.common.register.RegisterAbstract;
+
 /**
  * @param <INT> 需要转换的单位泛型
  */

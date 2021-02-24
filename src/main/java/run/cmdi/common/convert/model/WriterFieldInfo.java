@@ -2,12 +2,12 @@ package run.cmdi.common.convert.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import run.cmdi.common.convert.RegisterAnnotationInterface;
+import run.cmdi.common.register.RegisterAnnotationInterface;
 import run.cmdi.common.convert.annotations.DefaultValue;
 import run.cmdi.common.reader.annotations.FindColumn;
 import run.cmdi.common.reader.annotations.FindColumns;
 import run.cmdi.common.reader.annotations.FormatDate;
-import run.cmdi.common.reader.annotations.RegisterAnnotation;
+import run.cmdi.common.register.anntications.RegisterAnnotation;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
 import run.cmdi.common.validator.annotations.FieldName;
 

@@ -24,8 +24,10 @@ public class ProducePreTest {
 
     @Test
     public void test() throws IOException, ConverterException {
-        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\项目表-10个mis201229.xlsx"));
+        //InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\项目表-10个mis201229.xlsx"));
+        //C:\Users\leichao\Desktop\产值工具\v2\项目表-10个mis201229.xlsx
         //InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
+        InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\产值工具\\v2\\项目表-10个mis201229.xlsx"));
         ReaderFactory convert = new ReaderFactory(is);
 
         EntityBuildings<Produce> entityBuildings = new EntityBuildings(Project.class, new ReaderPoiConfig());

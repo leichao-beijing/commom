@@ -3,6 +3,7 @@ package run.cmdi.common.convert;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmdi.common.convert.model.WriterFieldInfo;
 import run.cmdi.common.reader.model.eumns.FieldDetailType;
+import run.cmdi.common.register.RegisterAnnotationUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.io.IOException;

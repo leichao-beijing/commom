@@ -1,9 +1,9 @@
-package run.cmdi.common.convert;
+package run.cmdi.common.register;
 
 import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
 import lombok.Setter;
-import run.cmdi.common.reader.annotations.RegisterAnnotation;
+import run.cmdi.common.register.anntications.RegisterAnnotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -16,12 +16,23 @@ public class RegisterAnnotationUtils<T> {
         return build(srcClazz, outClass, true);
     }
 
+    public static <CONFIG, T> Map<String, CONFIG> build(Class<T> srcClazz, Class<CONFIG> outClass, RegisterParameterPour pour) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
+        return build(srcClazz, outClass, true);
+    }
+
+    private RegisterAnnotationUtils into(RegisterParameterPour pour) {
+        this.pour = pour;
+        return this;
+    }
+
+    private RegisterParameterPour pour;
+
     /**
      * @param analysisClazz
      * @param configClazz
-     * @param bool          true时,未匹配到任何 注解的对象将被抛弃并return null
+     * @param bool
      */
-    public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, boolean bool) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
+    public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, boolean bool, RegisterParameterPour pour) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         Map<String, CONFIG> result = new LinkedHashMap<>();
         List<ComputeValue> parameterList = parameterMap(configClazz);
         if (parameterList.isEmpty())
@@ -38,7 +49,7 @@ public class RegisterAnnotationUtils<T> {
      * @param field
      * @param outClass
      * @param parameterMap
-     * @param bool         true时,未匹配到任何 注解的对象将被抛弃并return null
+     * @param bool         true时,未匹配到任何 注解的对象将被抛弃并 return null
      */
     private static <CONFIG> CONFIG field(Field field, Class<CONFIG> outClass, List<ComputeValue> parameterMap, boolean bool) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         CONFIG config = outClass.getDeclaredConstructor().newInstance();
