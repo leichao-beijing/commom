@@ -23,11 +23,16 @@ public class ReflectLcUtils {
         }
         return list;
     }
-
+    /**
+     * 将 value 首字母大写并在前面添加get字符串
+     * */
     public static String methodGetString(String value) {
         return "get" + ReflectLcUtils.upperCase(value);
     }
 
+    /**
+     * 将 value 首字母大写并在前面添加set字符串
+     * */
     public static String methodSetString(String value) {
         return "set" + ReflectLcUtils.upperCase(value);
     }

@@ -58,7 +58,6 @@ public class RegisterDefaultTable implements ValidatorPlugin {
                         break;
                 }
         }
-
     }
 
     private boolean state = false;
@@ -69,8 +68,9 @@ public class RegisterDefaultTable implements ValidatorPlugin {
     }
 
 
-    private List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context, FieldValidationEntity fieldValidationEntity) {
+    private List<ValidatorFieldException> validator(Map<String, ValueFieldName> context, FieldValidationEntity fieldValidationEntity) {
         List<ValidatorFieldException> err = new ArrayList<>();
+        ValueFieldName value = context.get(fieldName);
         try {
             List<String> list = MatchValidator.validatorFieldRequire(value, fieldValidationEntity.getFieldRequireEntities(), context);
             if (list != null && list.size() != fieldValidationEntity.getFieldRequireEntities().size()) {//条件全部满足才可执行下部操作
@@ -89,13 +89,14 @@ public class RegisterDefaultTable implements ValidatorPlugin {
     }
 
     @Override
-    public List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context) {
+    public List<ValidatorFieldException> validator(Map<String, ValueFieldName> context) {
         List<ValidatorFieldException> err = new ArrayList<>();
+        ValueFieldName value = context.get(fieldName);
         Boolean exception = null;
         if (fieldValidations != null) {
             for (FieldValidationEntity fieldValidationEntity : fieldValidations.getFieldValidationEntities()) {
                 try {
-                    List<ValidatorFieldException> list = validator(value, context, fieldValidationEntity);
+                    List<ValidatorFieldException> list = validator(context, fieldValidationEntity);
                     if (list.isEmpty()) {
                         if (exception == null && !fieldValidationEntity.converterException())
                             exception = false;
@@ -114,7 +115,7 @@ public class RegisterDefaultTable implements ValidatorPlugin {
             return err;
         }
         if (fieldValidationEntity != null)
-            err.addAll(validator(value, context, fieldValidationEntity));
+            err.addAll(validator(context, fieldValidationEntity));
         return err;
     }
 }

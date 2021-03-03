@@ -20,5 +20,5 @@ public interface ValidatorPlugin extends FieldName {
     }
 
 
-    List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context);
+    List<ValidatorFieldException> validator(Map<String, ValueFieldName>  context);
 }

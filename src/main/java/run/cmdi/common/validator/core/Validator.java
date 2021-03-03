@@ -1,28 +1,69 @@
 package run.cmdi.common.validator.core;
 
-import run.cmdi.common.validator.model.ValidatorFieldException;
+import cn.hutool.core.util.ReflectUtil;
+import run.cmdi.common.register.RegisterAnnotationUtils;
+import run.cmdi.common.utils.ReflectLcUtils;
+import run.cmdi.common.validator.model.VerificationResult;
 import run.cmdi.common.validator.plugins.ValidatorPlugin;
+import run.cmdi.common.validator.plugins.ValueFieldName;
 
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
-public interface Validator<T> {
+public class Validator<T> {
+    public Validator(Class<T> t, Map<String, List<ValidatorPlugin>> mapPluginsConfig) throws Exception {
+        this.valueFieldMap = RegisterAnnotationUtils.build(t.getClass(), ValueFieldName.class, null, false);
+        this.mapPluginsConfig = mapPluginsConfig;
+    }
 
-    Validator<T> addValidatorsMap(Map<String, List<ValidatorPlugin>> validationStringMap);
+    private final Map<String, List<ValidatorPlugin>> mapPluginsConfig;
+    private final Map<String, ValueFieldName> valueFieldMap;
 
-    //boolean isConverter(String fieldName);
+    public VerificationResult validation(T t) {
+        Map<String, Object> values = buildMap(t);
+        Map<String, ValueFieldName> map = new HashMap<>();
+        values.forEach((key, value) -> {
+            ValueFieldName val = valueFieldMap.get(key);
+            if (val == null)
+                val = ValueFieldName.build(key);
+            val.build(value);
+            map.put(key, val);
+        });
 
-    /**
-     * 添加扩展注解验证
-     */
-    Validator<T> addValidator(String fieldName, ValidatorPlugin validatorPlugin);
+        return validation(map);
+    }
 
-    Map<String, ValidatorFieldException> validation(T t);
+    public VerificationResult validation(Map<String, ValueFieldName>  data) {
+        Iterator<Map.Entry<String, List<ValidatorPlugin>>> it = mapPluginsConfig.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, List<ValidatorPlugin>> next = it.next();
+            String filedName = next.getKey();
+            List<ValidatorPlugin> list = next.getValue();
+            if (list == null || list.size() == 0)
+                continue;
+            for (ValidatorPlugin validatorPlugin : list) {
+                validatorPlugin.validator(data);
+            }
 
-    Map<String, ValidatorFieldException> validationMap(Map<String, Object> context);
+        }
+        return null;
+    }
 
 
-    Validator addPlugin(Class<? extends ValidatorPlugin> plugin);
-
-
+    private static Map<String, Object> buildMap(Object t) {
+        Field[] fields = t.getClass().getDeclaredFields();
+        List<Field> list = Arrays.asList(fields);
+        Map<String, Object> map = new HashMap<>();
+        for (Field field : list) {
+            String name = ReflectLcUtils.methodGetString(field.getName());
+            Object value = null;
+            try {
+                value = ReflectUtil.invoke(t, name);
+            } catch (Exception e) {
+            }
+            map.put(field.getName(), value);
+        }
+        return map;
+    }
 }
+

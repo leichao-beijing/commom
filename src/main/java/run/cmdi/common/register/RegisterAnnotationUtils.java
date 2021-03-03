@@ -1,9 +1,12 @@
 package run.cmdi.common.register;
 
+import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.Getter;
 import lombok.Setter;
+import run.cmdi.common.register.anntications.ParameterStatic;
 import run.cmdi.common.register.anntications.RegisterAnnotation;
+import run.cmdi.common.utils.ReflectLcUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -13,16 +16,11 @@ import java.util.*;
 
 public class RegisterAnnotationUtils<T> {
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> srcClazz, Class<CONFIG> outClass) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        return build(srcClazz, outClass, true);
+        return build(srcClazz, outClass, null, true);
     }
 
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> srcClazz, Class<CONFIG> outClass, RegisterParameterPour pour) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        return build(srcClazz, outClass, true);
-    }
-
-    private RegisterAnnotationUtils into(RegisterParameterPour pour) {
-        this.pour = pour;
-        return this;
+        return build(srcClazz, outClass, pour, true);
     }
 
     private RegisterParameterPour pour;
@@ -32,15 +30,17 @@ public class RegisterAnnotationUtils<T> {
      * @param configClazz
      * @param bool
      */
-    public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, boolean bool, RegisterParameterPour pour) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
+    public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, RegisterParameterPour pour, boolean bool) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         Map<String, CONFIG> result = new LinkedHashMap<>();
         List<ComputeValue> parameterList = parameterMap(configClazz);
         if (parameterList.isEmpty())
             throw new NullPointerException("@RegisterAnnotation no find");
         for (Field field : analysisClazz.getDeclaredFields()) {
-            CONFIG config = field(field, configClazz, parameterList, bool);
-            if (config != null)
+            CONFIG config = field(field, configClazz, parameterList, pour, bool);
+            if (config != null) {
                 result.put(field.getName(), config);
+                pour.getStaticMap().forEach((key, value) -> UtilsRegister.writeObject(config, ParameterStatic.class, value));
+            }
         }
         return result;
     }
@@ -51,7 +51,7 @@ public class RegisterAnnotationUtils<T> {
      * @param parameterMap
      * @param bool         true时,未匹配到任何 注解的对象将被抛弃并 return null
      */
-    private static <CONFIG> CONFIG field(Field field, Class<CONFIG> outClass, List<ComputeValue> parameterMap, boolean bool) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private static <CONFIG> CONFIG field(Field field, Class<CONFIG> outClass, List<ComputeValue> parameterMap, RegisterParameterPour pour, boolean bool) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         CONFIG config = outClass.getDeclaredConstructor().newInstance();
         boolean state = false;
 
@@ -69,6 +69,8 @@ public class RegisterAnnotationUtils<T> {
                 continue;
             } else continue;
             state = true;
+
+
         }
         if (!state && bool) {
             return null;
@@ -114,4 +116,28 @@ class ComputeValue {
     private final int index;
     private final Method method;
 
+}
+
+class UtilsRegister {
+    /**
+     * 通过set方式注入值
+     * 将 value的值注入 object 符合 set方法中
+     */
+    static void writeObject(Object object, Class<? extends Annotation> annotationClass, Object value) {
+        //获得 value 一致对象类的方法名称
+        List<Field> fieldList = new ArrayList<Field>();
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(annotationClass) && field.getType().equals(value.getClass()))
+                fieldList.add(field);
+        }
+        for (Field field : fieldList) {
+            String parameterValue = ReflectLcUtils.methodSetString(field.getName());
+            try {
+                ReflectUtil.invoke(object, parameterValue, value);
+            } catch (UtilException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

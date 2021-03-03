@@ -135,7 +135,7 @@ public class EntityResultBuildConvert<T> {
         Map<Integer, CellAddressAndMessage> checkErrorMap = new HashMap<>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
-        List<ValidatorFieldException> error = filedInfos.getValidator().validationMap(rowInfo.getData());
+        List<ValidatorFieldException> error = null;//filedInfos.getValidator().validationMap(rowInfo.getData());
         error.forEach((val) -> { //TODO 数据校验层
             FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
             if (findFieldInfo == null) return;
@@ -170,16 +170,17 @@ public class EntityResultBuildConvert<T> {
                 //checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e.getType(), e.getMessage()));
                 tag.getFieldNull().add(name);
             } catch (ConverterExcelException e) {
-                if (filedInfos.getValidator().isConverter(name)) {
-                    MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
-                        if (vv == null)
-                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), "不能输入这个值:"+value);
-                        vv.add(e.getType(), e.getMessage());
-                        return vv;
-                    });
-//                    checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
-                    tag.getFieldNull().add(name);
-                }
+                //todo 转换异常处理
+//                if (filedInfos.getValidator().isConverter(name)) {
+//                    MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
+//                        if (vv == null)
+//                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), "不能输入这个值:"+value);
+//                        vv.add(e.getType(), e.getMessage());
+//                        return vv;
+//                    });
+////                    checkErrorMap.add(new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getIndex(), e));
+//                    tag.getFieldNull().add(name);
+//                }
             }
         }
         return new EntityResultConvert(rowInfo.getRownum(), tag, checkErrorMap);// size == 0 ? null : tag;
