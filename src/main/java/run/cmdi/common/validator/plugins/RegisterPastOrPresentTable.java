@@ -46,8 +46,9 @@ public class RegisterPastOrPresentTable implements ValidatorPlugin {
     }
 
     @Override
-    public List<ValidatorFieldException> validator(ValueFieldName value, Map<String, ValueFieldName> context) {
+    public List<ValidatorFieldException> validator(Map<String, ValueFieldName> context) {
         List<ValidatorFieldException> err = new ArrayList<>();
+        ValueFieldName value = context.get(fieldName);
         if (value.getValue() == null)
             return err;
         try {

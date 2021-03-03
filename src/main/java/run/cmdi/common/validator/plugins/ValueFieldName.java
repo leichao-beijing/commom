@@ -15,6 +15,12 @@ public class ValueFieldName<T> implements FieldName {
         return new ValueFieldName(fieldName, name);
     }
 
+    public static <T> ValueFieldName<T> build(String fieldName, String name, T value) {
+        ValueFieldName valueFieldName = new ValueFieldName(fieldName, name);
+        valueFieldName.setValue(value);
+        return valueFieldName;
+    }
+
     public static ValueFieldName build(String fieldName) {
         return new ValueFieldName(fieldName, fieldName);
     }

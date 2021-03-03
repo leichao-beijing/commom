@@ -67,7 +67,7 @@ public class ValidatorResultObject<T> implements ResultObjectInterface<T, List<V
             boolean exceptionState = true;
             for (ValidatorPlugin validatorPlugin : validatorPlugins)
                 try {
-                    List<ValidatorFieldException> list = validatorPlugin.validator(valueFieldName, context);
+                    List<ValidatorFieldException> list = validatorPlugin.validator(context);
                     if (list.isEmpty() && !validatorPlugin.isConverterException())
                         exceptionState = false;
                     err.addAll(list);

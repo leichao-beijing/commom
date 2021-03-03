@@ -56,8 +56,7 @@ public class ClazzBuildInfo<T> {
             if (!values.isEmpty())
                 throw new NullPointerException("index;" + values.toString() + " Set method no find.");
             clazzBuildInfo.setHeadInfo(head);
-            ///clazzBuildInfo.validator = ValidatorTools.buildValidator(clazz);
-            //todo !!!!!!!!!!!!
+            clazzBuildInfo.validator = ValidatorTools.buildValidator(clazz).buildValidator();
             return config;
         } catch (Exception e) {
             e.printStackTrace();
