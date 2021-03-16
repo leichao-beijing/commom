@@ -232,9 +232,9 @@ public class Project {
             @FindColumn("工作量确认金额(元)"), @FindColumn("是否已结算"), @FindColumn("结算金额(元)"),
             @FindColumn("结算合作单位"), @FindColumn("工作量确认编号")})
 //    @FieldNameList({
-//            @FieldName("我院合同编号"), @FieldName("是否已工作量确认"), @FieldName("工作量确认内部立项号"),
-//            @FieldName("工作量确认金额(元)"), @FieldName("是否已结算"), @FieldName("结算金额(元)"),
-//            @FieldName("结算合作单位"), @FieldName("工作量确认编号")
+//            @FieldRule("我院合同编号"), @FieldRule("是否已工作量确认"), @FieldRule("工作量确认内部立项号"),
+//            @FieldRule("工作量确认金额(元)"), @FieldRule("是否已结算"), @FieldRule("结算金额(元)"),
+//            @FieldRule("结算合作单位"), @FieldRule("工作量确认编号")
 //    })
     private ArrayList<String> list;
 

@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface FieldValidation {
     /**
-     * FieldRequire.FieldName 满足条件时执行后续判断
+     * FieldRequire.FieldRule 满足条件时执行后续判断
      */
     FieldRequire[] require() default {};
 

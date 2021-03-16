@@ -25,6 +25,9 @@ public class ValueFieldName<T> implements FieldName {
         return new ValueFieldName(fieldName, fieldName);
     }
 
+    public ValueFieldName() {
+    }
+
     private ValueFieldName(String fieldName, String name) {
         this.fieldName = fieldName;
         this.name = name;
@@ -35,6 +38,7 @@ public class ValueFieldName<T> implements FieldName {
         valueFieldName.setValue(value);
         return valueFieldName;
     }
+
 
     private String fieldName;
     private String name;

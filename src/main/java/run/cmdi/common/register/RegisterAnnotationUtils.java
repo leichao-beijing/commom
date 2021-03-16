@@ -33,6 +33,8 @@ public class RegisterAnnotationUtils<T> {
     public static <CONFIG, T> Map<String, CONFIG> build(Class<T> analysisClazz, Class<CONFIG> configClazz, RegisterParameterPour pour, boolean bool) throws NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         Map<String, CONFIG> result = new LinkedHashMap<>();
         List<ComputeValue> parameterList = parameterMap(configClazz);
+        if(pour==null)
+            pour=new RegisterParameterPour();
         if (parameterList.isEmpty())
             throw new NullPointerException("@RegisterAnnotation no find");
         for (Field field : analysisClazz.getDeclaredFields()) {

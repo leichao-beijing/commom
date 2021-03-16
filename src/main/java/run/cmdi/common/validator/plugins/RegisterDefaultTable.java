@@ -91,7 +91,7 @@ public class RegisterDefaultTable implements ValidatorPlugin {
     @Override
     public List<ValidatorFieldException> validator(Map<String, ValueFieldName> context) {
         List<ValidatorFieldException> err = new ArrayList<>();
-        ValueFieldName value = context.get(fieldName);
+        //ValueFieldName value = context.get(fieldName);
         Boolean exception = null;
         if (fieldValidations != null) {
             for (FieldValidationEntity fieldValidationEntity : fieldValidations.getFieldValidationEntities()) {

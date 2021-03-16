@@ -49,7 +49,7 @@ public class RegisterPastOrPresentTable implements ValidatorPlugin {
     public List<ValidatorFieldException> validator(Map<String, ValueFieldName> context) {
         List<ValidatorFieldException> err = new ArrayList<>();
         ValueFieldName value = context.get(fieldName);
-        if (value.getValue() == null)
+        if (value == null)
             return err;
         try {
             Date date;

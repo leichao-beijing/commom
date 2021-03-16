@@ -32,7 +32,7 @@ public class CompareField implements RegexModeInterface {
     /**
      * @param fieldCompares
      * @param compareFieldNameSrc 注解所在的field的 fieldName
-     * @param name                注解所在@FieldName.value()值
+     * @param name                注解所在@FieldRule.value()值
      */
     public static List<CompareField> builds(FieldCompare[] fieldCompares, String compareFieldNameSrc, String name) {
         ArrayList<CompareField> list = new ArrayList<CompareField>();
@@ -44,7 +44,7 @@ public class CompareField implements RegexModeInterface {
 
     /**
      * @param compareFieldNameSrc 注解所在的field的 fieldName
-     * @param name                注解所在@FieldName.value()值
+     * @param name                注解所在@FieldRule.value()值
      */
     public static CompareField build(FieldCompare fieldCompare, String compareFieldNameSrc, String name) {
         return new CompareField(fieldCompare, compareFieldNameSrc, name);

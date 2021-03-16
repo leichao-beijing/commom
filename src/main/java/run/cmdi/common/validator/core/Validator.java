@@ -3,6 +3,7 @@ package run.cmdi.common.validator.core;
 import cn.hutool.core.util.ReflectUtil;
 import run.cmdi.common.register.RegisterAnnotationUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
+import run.cmdi.common.validator.model.ValidatorFieldException;
 import run.cmdi.common.validator.model.VerificationResult;
 import run.cmdi.common.validator.plugins.ValidatorPlugin;
 import run.cmdi.common.validator.plugins.ValueFieldName;
@@ -29,26 +30,33 @@ public class Validator<T> {
             val.build(value);
             map.put(key, val);
         });
-
-        return validation(map);
+        return validationFieldInfo(map).setResult(t);
     }
 
-    public VerificationResult validation(Map<String, ValueFieldName>  data) {
+    private VerificationResult validationFieldInfo(Map<String, ValueFieldName> data) {
         Iterator<Map.Entry<String, List<ValidatorPlugin>>> it = mapPluginsConfig.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, List<ValidatorPlugin>> next = it.next();
-            String filedName = next.getKey();
             List<ValidatorPlugin> list = next.getValue();
             if (list == null || list.size() == 0)
                 continue;
             for (ValidatorPlugin validatorPlugin : list) {
-                validatorPlugin.validator(data);
+                List<ValidatorFieldException> error = validatorPlugin.validator(data);
             }
-
         }
         return null;
     }
 
+    public VerificationResult validation(Map<String, Object> data) {
+        Map<String, ValueFieldName> map = new HashMap<>();
+        data.forEach((key, value) -> {
+            ValueFieldName val = valueFieldMap.get(key);
+            if (val == null)
+                val = ValueFieldName.build(key);
+            map.put(key, val.build(value));
+        });
+        return validationFieldInfo(map);
+    }
 
     private static Map<String, Object> buildMap(Object t) {
         Field[] fields = t.getClass().getDeclaredFields();

@@ -21,6 +21,7 @@ import run.cmdi.common.utils.MapUtils;
 import run.cmdi.common.utils.ReflectLcUtils;
 import run.cmdi.common.validator.exception.ValidatorException;
 import run.cmdi.common.validator.model.ValidatorFieldException;
+import run.cmdi.common.validator.model.VerificationResult;
 import run.cmdi.common.validator.plugins.ValueFieldName;
 
 import java.util.*;
@@ -134,22 +135,36 @@ public class EntityResultBuildConvert<T> {
         T out = ReflectUtil.newInstance(classes);
         Map<Integer, CellAddressAndMessage> checkErrorMap = new HashMap<>();
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
-
-        List<ValidatorFieldException> error = null;//filedInfos.getValidator().validationMap(rowInfo.getData());
-        error.forEach((val) -> { //TODO 数据校验层
-            FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
+        VerificationResult<T> result = filedInfos.getValidator().validation(rowInfo.getData());
+        result.getErrorMap().forEach((name,info)->{
+            FindFieldInfo findFieldInfo = filedInfos.getFileInfo(name);
             if (findFieldInfo == null) return;
             MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (value) -> {
                 try {
                     if (value == null)
-                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
+                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), info.getType(), info.getMessage());
                 }catch (Exception e){
                     throw e;
                 }
-                          value.add(val.getType(), val.getMessage());
+                value.add(info.getType(), info.getMessage());
                 return value;
             });
         });
+        System.err.println();
+//        error.forEach((val) -> { //TODO 数据校验层
+//            FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
+//            if (findFieldInfo == null) return;
+//            MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (value) -> {
+//                try {
+//                    if (value == null)
+//                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
+//                }catch (Exception e){
+//                    throw e;
+//                }
+//                          value.add(val.getType(), val.getMessage());
+//                return value;
+//            });
+//        });
 
         Iterator<Map.Entry<String, Object>> it = rowInfo.getData().entrySet().iterator();
         while (it.hasNext()) {

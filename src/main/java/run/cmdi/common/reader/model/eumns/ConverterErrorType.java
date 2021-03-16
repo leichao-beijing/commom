@@ -14,7 +14,7 @@ public enum ConverterErrorType implements TypeName {
     // CUSTOM("自定义错误"),
 
     // SHEET_NAME_NO_EXISTS("sheetName不存在"),
-    FIELD_NAME_OVERLAP("fieldName or @FieldName.value is overlap"),
+    FIELD_NAME_OVERLAP("fieldName or @FieldRule.value is overlap"),
 
     CONVERT_ERROR("转换失败"),
 
