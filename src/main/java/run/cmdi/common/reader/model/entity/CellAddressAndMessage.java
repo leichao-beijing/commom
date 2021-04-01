@@ -14,7 +14,7 @@ import java.util.Set;
  */
 @Getter
 public class CellAddressAndMessage {
-    public CellAddressAndMessage(int row, int column, TypeName ex, String message) {
+    public CellAddressAndMessage(Integer row, Integer column, TypeName ex, String message) {
         this.row = row;
         this.column = column;
         add(ex, message);
@@ -52,8 +52,8 @@ public class CellAddressAndMessage {
 
     private final Set<String> set = new HashSet<>();
     private final Set<String> setEx = new HashSet<>();
-    private final int row;
-    private final int column;
+    private final Integer row;
+    private final Integer column;
 //    private final TypeName ex;
 //    private String message;
 }

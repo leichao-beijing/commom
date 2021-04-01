@@ -133,6 +133,7 @@ public class EntityResultBuildConvert<T> {
     private EntityResultConvert<T> build(RowInfo rowInfo, Class<T> classes) {
         T out = ReflectUtil.newInstance(classes);
         Map<Integer, CellAddressAndMessage> checkErrorMap = new HashMap<>();
+        //List<ValidatorFieldException> list = new ArrayList<>();//存储无法查询到的单元信息
         LocationTag<T> tag = new LocationTag<T>(rowInfo.getRownum(), out);
 
         List<ValidatorFieldException> error = filedInfos.getValidator().validationMap(rowInfo.getData());
@@ -140,13 +141,16 @@ public class EntityResultBuildConvert<T> {
             FindFieldInfo findFieldInfo = filedInfos.getFileInfo(val.getFieldName());
             if (findFieldInfo == null) return;
             MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (value) -> {
-                try {
+//                try {
                     if (value == null)
-                        return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), val.getType(), val.getMessage());
-                }catch (Exception e){
-                    throw e;
-                }
-                          value.add(val.getType(), val.getMessage());
+                        return new CellAddressAndMessage(rowInfo.getRownum(), -1, val.getType(), val.getMessage());
+//                } catch (Exception e) {
+//                    throw e;
+//                }
+//                if (value == null)
+//                    list.add(val);
+//                else
+                    value.add(val.getType(), val.getMessage());
                 return value;
             });
         });
@@ -173,7 +177,7 @@ public class EntityResultBuildConvert<T> {
                 if (filedInfos.getValidator().isConverter(name)) {
                     MapUtils.lineMap(checkErrorMap, findFieldInfo.getAddress(), (vv) -> {
                         if (vv == null)
-                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), "不能输入这个值:"+value);
+                            return new CellAddressAndMessage(rowInfo.getRownum(), findFieldInfo.getAddress(), e.getType(), "不能输入这个值:" + value);
                         vv.add(e.getType(), e.getMessage());
                         return vv;
                     });
@@ -209,7 +213,7 @@ public class EntityResultBuildConvert<T> {
                     return;
                 } else//todo 处理
                     throw new ConverterExcelException(ConverterErrorType.ENUM_ERROR,
-                            ValueFieldName.build(findFieldInfo.getFieldName(),findFieldInfo.getName(),value).toString()+
+                            ValueFieldName.build(findFieldInfo.getFieldName(), findFieldInfo.getName(), value).toString() +
                                     " 只能输入：" + list.toString());
             }
             if (!value.getClass().equals(parameterClasses)) {

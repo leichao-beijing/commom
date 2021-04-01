@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class ProducePreTest {
 
-    @Test
+    //@Test
     public void test() throws IOException, ConverterException {
         InputStream is = new FileInputStream(new File("C:\\Users\\leichao\\Desktop\\项目表-10个mis201229.xlsx"));
         //InputStream is = getClass().getClassLoader().getResourceAsStream("data/测试数据.xlsx");
