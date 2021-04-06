@@ -101,6 +101,7 @@ public class ValidatorTools<T> implements FunctionClazzInterface<List<ValidatorP
 
     public boolean isConverter(String fieldName) {
         Boolean bool = converterMap.get(fieldName);
+        if (bool == null) return false;
         if (!bool) {//对使用过的进行初始化
             converterMap.put(fieldName, true);
             return false;
